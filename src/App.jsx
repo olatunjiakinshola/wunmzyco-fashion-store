@@ -202,6 +202,36 @@ const SectionHeader = styled.div`
   flex-wrap: wrap;
   gap: 12px;
 `
+// Floating WhatsApp Button
+const WhatsAppButton = styled.a`
+  position: fixed;
+  bottom: 25px;
+  right: 25px;
+  background: #25D366;
+  color: white;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 15px rgba(37, 211, 102, 0.4);
+  z-index: 1000;
+  transition: all 0.3s ease;
+  text-decoration: none;
+
+  &:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 20px rgba(37, 211, 102, 0.5);
+  }
+
+  @media (max-width: 480px) {
+    width: 55px;
+    height: 55px;
+    bottom: 20px;
+    right: 20px;
+  }
+`;
 
 // === MAIN APP ===
 function App() {
@@ -318,6 +348,24 @@ function App() {
           cart={cart}
         />
       </Suspense>
+            {/* Floating WhatsApp Button */}
+      <WhatsAppButton
+        href="https://wa.me/2348060230990"   // ← CHANGE THIS NUMBER
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Chat on WhatsApp"
+      >
+        <svg 
+          xmlns="http://www.w3.org/2000/svg" 
+          width="28" 
+          height="28" 
+          fill="currentColor" 
+          viewBox="0 0 24 24"
+        >
+          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.198.297-.767.966-.94 1.164-.173.198-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.485-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.917-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.569-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
+          <path d="M12 2C6.48 2 2 6.59 2 12.25c0 2.78 1.12 5.3 2.93 7.14L4 22l2.76-1.2c1.8 1 3.92 1.58 6.24 1.58 5.52 0 10-4.59 10-10.25S17.52 2 12 2zm0 18.5c-2.1 0-4.04-.75-5.5-2L4.5 19.5l1.2-2.2C4.3 15.7 3.5 14 3.5 12.25 3.5 7.8 7.3 4 12 4s8.5 3.8 8.5 8.25-3.8 8.25-8.5 8.25z"/>
+        </svg>
+      </WhatsAppButton>
     </Container>
   )
 }
