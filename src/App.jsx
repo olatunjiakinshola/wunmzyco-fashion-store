@@ -276,7 +276,7 @@ function App() {
       <Hero>
         <div>
           <p style={{ textTransform: 'uppercase', letterSpacing: '3px', marginBottom: '12px' }}>NEW SEASON 2026</p>
-          <HeroTitle>Timeless.<br />Effortless.<br />WUNMZYCo.</HeroTitle>
+          <HeroTitle>Timeless.<br />Effortless.<br />WunmzyCo.</HeroTitle>
         </div>
       </Hero>
 
