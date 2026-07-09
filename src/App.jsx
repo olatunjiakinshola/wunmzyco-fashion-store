@@ -6,13 +6,13 @@ const ProductsSection = lazy(() => import("./components/ProductsSection"));
 const CartDrawer = lazy(() => import("./components/CartDrawer"));
 const CheckoutModal = lazy(() => import("./components/CheckoutModal"));
 
-// === PRODUCTS ===
+// === PRODUCTS (Updated categories) ===
 const products = [
   {
     id: 1,
     name: "Black Oversized Hoodie",
     price: 75,
-    category: "clothing",
+    category: "joggers",
     image: "https://picsum.photos/id/1015/600/600",
     color: "Black",
   },
@@ -20,7 +20,7 @@ const products = [
     id: 2,
     name: "Slim Fit Denim Jeans",
     price: 95,
-    category: "clothing",
+    category: "joggers",
     image: "https://picsum.photos/id/1060/600/600",
     color: "Blue",
   },
@@ -28,7 +28,7 @@ const products = [
     id: 3,
     name: "Brown Leather Crossbody Bag",
     price: 145,
-    category: "bags",
+    category: "palazzo",
     image: "https://picsum.photos/id/201/600/600",
     color: "Brown",
   },
@@ -36,7 +36,7 @@ const products = [
     id: 4,
     name: "White Minimal Sneakers",
     price: 85,
-    category: "clothing",
+    category: "shoes",
     image: "https://picsum.photos/id/21/600/600",
     color: "White",
   },
@@ -44,7 +44,7 @@ const products = [
     id: 5,
     name: "Canvas Utility Tote Bag",
     price: 55,
-    category: "bags",
+    category: "palazzo",
     image: "https://picsum.photos/id/133/600/600",
     color: "Beige",
   },
@@ -52,7 +52,7 @@ const products = [
     id: 6,
     name: "Beige Cashmere Sweater",
     price: 120,
-    category: "clothing",
+    category: "tops",
     image: "https://picsum.photos/id/106/600/600",
     color: "Beige",
   },
@@ -146,11 +146,11 @@ const SearchIcon = styled.div`
 
 const NavLinks = styled.div`
   display: flex;
-  gap: 28px;
+  gap: 20px;
   font-weight: 500;
 
   @media (max-width: 768px) {
-    gap: 20px;
+    gap: 15px;
   }
 `;
 
@@ -159,7 +159,7 @@ const NavLink = styled.button`
   border: none;
   font-size: 1.05rem;
   cursor: pointer;
-  padding: 8px 18px;
+  padding: 8px 16px;
   border-radius: 50px;
   transition: all 0.3s ease;
   color: ${(props) => (props.active ? "#000" : "#666")};
@@ -191,7 +191,7 @@ const NavLink = styled.button`
 
   @media (max-width: 768px) {
     font-size: 0.95rem;
-    padding: 6px 14px;
+    padding: 6px 12px;
   }
 `;
 
@@ -274,14 +274,13 @@ function App() {
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const [activeCategory, setActiveCategory] = useState("all");
   const [wishlist, setWishlist] = useState([]);
-  const [searchTerm, setSearchTerm] = useState("");   // ← Search State
+  const [searchTerm, setSearchTerm] = useState("");
 
   const filteredProducts = useMemo(() => {
     let result = activeCategory === "all"
       ? products
       : products.filter((p) => p.category === activeCategory);
 
-    // Search Filter
     if (searchTerm.trim() !== "") {
       result = result.filter((product) =>
         product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -311,14 +310,13 @@ function App() {
             WumzyCo
           </Logo>
 
-          {/* Search Bar */}
           <SearchContainer>
             <SearchIcon>
               <Search size={20} />
             </SearchIcon>
             <SearchInput
               type="text"
-              placeholder="Search products... (pallazo, tops, joggers, shoes...)"
+              placeholder="Search products... (palazzo, tops, joggers, shoes...)"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -332,16 +330,28 @@ function App() {
               All
             </NavLink>
             <NavLink
-              active={activeCategory === "clothing"}
-              onClick={() => setActiveCategory("clothing")}
+              active={activeCategory === "palazzo"}
+              onClick={() => setActiveCategory("palazzo")}
             >
-              Clothing
+              Palazzo
             </NavLink>
             <NavLink
-              active={activeCategory === "bags"}
-              onClick={() => setActiveCategory("bags")}
+              active={activeCategory === "tops"}
+              onClick={() => setActiveCategory("tops")}
             >
-              Bags
+              Tops
+            </NavLink>
+            <NavLink
+              active={activeCategory === "joggers"}
+              onClick={() => setActiveCategory("joggers")}
+            >
+              Joggers
+            </NavLink>
+            <NavLink
+              active={activeCategory === "shoes"}
+              onClick={() => setActiveCategory("shoes")}
+            >
+              Shoes
             </NavLink>
           </NavLinks>
 
