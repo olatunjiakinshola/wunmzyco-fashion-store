@@ -6,7 +6,7 @@ const ProductsSection = lazy(() => import('./components/ProductsSection'))
 const CartDrawer = lazy(() => import('./components/CartDrawer'))
 const CheckoutModal = lazy(() => import('./components/CheckoutModal'))
 
-// ==================== YOUR PRODUCTS ====================
+// === YOUR PRODUCTS ===
 const products = [
   {
     id: 1,
@@ -58,7 +58,7 @@ const products = [
   },
 ]
 
-// ==================== STYLED COMPONENTS ====================
+// === STYLED COMPONENTS ===
 const Container = styled.div`
   min-height: 100vh;
   background-color: #f8f9fa;
@@ -203,7 +203,7 @@ const SectionHeader = styled.div`
   gap: 12px;
 `
 
-// ==================== MAIN APP ====================
+// === MAIN APP ===
 function App() {
   const [cart, setCart] = useState([])
   const [isCartOpen, setIsCartOpen] = useState(false)
@@ -229,8 +229,8 @@ function App() {
       <Navbar>
         <NavContent>
           <Logo>
-            <BrandDot>L</BrandDot>
-            LUXE
+            <BrandDot>W</BrandDot>
+            WUNMZYCo
           </Logo>
 
           <NavLinks>
@@ -276,7 +276,7 @@ function App() {
       <Hero>
         <div>
           <p style={{ textTransform: 'uppercase', letterSpacing: '3px', marginBottom: '12px' }}>NEW SEASON 2026</p>
-          <HeroTitle>Timeless.<br />Effortless.<br />LUXE.</HeroTitle>
+          <HeroTitle>Timeless.<br />Effortless.<br />WUNMZYCo.</HeroTitle>
         </div>
       </Hero>
 
@@ -297,8 +297,8 @@ function App() {
       </ProductsWrapper>
 
       <footer style={{ background: '#111', color: '#aaa', textAlign: 'center', padding: '60px 20px' }}>
-        <h2 style={{ color: 'white', marginBottom: '8px' }}>LUXE</h2>
-        <p>© 2026 Portfolio Demo</p>
+        <h2 style={{ color: 'white', marginBottom: '8px' }}>WUNMZYCo</h2>
+        <p>© 2026 WunmzyCo. All rights reserved.</p>
       </footer>
 
       <Suspense fallback={null}>
