@@ -6,59 +6,31 @@ const ProductsSection = lazy(() => import("./components/ProductsSection"));
 const CartDrawer = lazy(() => import("./components/CartDrawer"));
 const CheckoutModal = lazy(() => import("./components/CheckoutModal"));
 
-// === PRODUCTS (Updated categories) ===
+// === 20 PRODUCTS ===
 const products = [
-  {
-    id: 1,
-    name: "Black Oversized Hoodie",
-    price: 75,
-    category: "joggers",
-    image: "https://picsum.photos/id/1015/600/600",
-    color: "Black",
-  },
-  {
-    id: 2,
-    name: "Slim Fit Denim Jeans",
-    price: 95,
-    category: "joggers",
-    image: "https://picsum.photos/id/1060/600/600",
-    color: "Blue",
-  },
-  {
-    id: 3,
-    name: "Brown Leather Crossbody Bag",
-    price: 145,
-    category: "palazzo",
-    image: "https://picsum.photos/id/201/600/600",
-    color: "Brown",
-  },
-  {
-    id: 4,
-    name: "White Minimal Sneakers",
-    price: 85,
-    category: "shoes",
-    image: "https://picsum.photos/id/21/600/600",
-    color: "White",
-  },
-  {
-    id: 5,
-    name: "Canvas Utility Tote Bag",
-    price: 55,
-    category: "palazzo",
-    image: "https://picsum.photos/id/133/600/600",
-    color: "Beige",
-  },
-  {
-    id: 6,
-    name: "Beige Cashmere Sweater",
-    price: 120,
-    category: "tops",
-    image: "https://picsum.photos/id/106/600/600",
-    color: "Beige",
-  },
+  { id: 1, name: "Black Oversized Hoodie", price: 75, category: "joggers", image: "https://picsum.photos/id/1015/600/600", color: "Black" },
+  { id: 2, name: "Slim Fit Denim Jeans", price: 95, category: "joggers", image: "https://picsum.photos/id/1060/600/600", color: "Blue" },
+  { id: 3, name: "Brown Leather Crossbody Bag", price: 145, category: "palazzo", image: "https://picsum.photos/id/201/600/600", color: "Brown" },
+  { id: 4, name: "White Minimal Sneakers", price: 85, category: "shoes", image: "https://picsum.photos/id/21/600/600", color: "White" },
+  { id: 5, name: "Canvas Utility Tote Bag", price: 55, category: "palazzo", image: "https://picsum.photos/id/133/600/600", color: "Beige" },
+  { id: 6, name: "Beige Cashmere Sweater", price: 120, category: "tops", image: "https://picsum.photos/id/106/600/600", color: "Beige" },
+  { id: 7, name: "Navy Blue Palazzo Pants", price: 65, category: "palazzo", image: "https://picsum.photos/id/1074/600/600", color: "Navy" },
+  { id: 8, name: "White Crop Top", price: 45, category: "tops", image: "https://picsum.photos/id/64/600/600", color: "White" },
+  { id: 9, name: "Grey Joggers Pants", price: 70, category: "joggers", image: "https://picsum.photos/id/201/600/600", color: "Grey" },
+  { id: 10, name: "Black Leather Sneakers", price: 110, category: "shoes", image: "https://picsum.photos/id/180/600/600", color: "Black" },
+  { id: 11, name: "Pink Wide Leg Palazzo", price: 80, category: "palazzo", image: "https://picsum.photos/id/1011/600/600", color: "Pink" },
+  { id: 12, name: "Red Off-Shoulder Top", price: 55, category: "tops", image: "https://picsum.photos/id/1005/600/600", color: "Red" },
+  { id: 13, name: "Black Cargo Joggers", price: 85, category: "joggers", image: "https://picsum.photos/id/1027/600/600", color: "Black" },
+  { id: 14, name: "Brown Chelsea Boots", price: 130, category: "shoes", image: "https://picsum.photos/id/669/600/600", color: "Brown" },
+  { id: 15, name: "Cream Silk Top", price: 60, category: "tops", image: "https://picsum.photos/id/201/600/600", color: "Cream" },
+  { id: 16, name: "Green Palazzo Set", price: 95, category: "palazzo", image: "https://picsum.photos/id/133/600/600", color: "Green" },
+  { id: 17, name: "White Running Sneakers", price: 75, category: "shoes", image: "https://picsum.photos/id/21/600/600", color: "White" },
+  { id: 18, name: "Mustard Yellow Top", price: 50, category: "tops", image: "https://picsum.photos/id/106/600/600", color: "Mustard" },
+  { id: 19, name: "Blue Denim Joggers", price: 78, category: "joggers", image: "https://picsum.photos/id/1060/600/600", color: "Blue" },
+  { id: 20, name: "Tan Leather Tote Bag", price: 135, category: "palazzo", image: "https://picsum.photos/id/201/600/600", color: "Tan" },
 ];
 
-// === STYLED COMPONENTS ===
+// === STYLED COMPONENTS (Your existing styles + Search) ===
 const Container = styled.div`
   min-height: 100vh;
   background-color: #f8f9fa;
@@ -114,7 +86,7 @@ const BrandDot = styled.div`
   font-weight: bold;
 `;
 
-// Search Bar Styles
+// Search Bar
 const SearchContainer = styled.div`
   flex: 1;
   max-width: 500px;
@@ -187,11 +159,6 @@ const NavLink = styled.button`
 
   &:hover::after {
     width: 60%;
-  }
-
-  @media (max-width: 768px) {
-    font-size: 0.95rem;
-    padding: 6px 12px;
   }
 `;
 
@@ -323,65 +290,17 @@ function App() {
           </SearchContainer>
 
           <NavLinks>
-            <NavLink
-              active={activeCategory === "all"}
-              onClick={() => setActiveCategory("all")}
-            >
-              All
-            </NavLink>
-            <NavLink
-              active={activeCategory === "palazzo"}
-              onClick={() => setActiveCategory("palazzo")}
-            >
-              Palazzo
-            </NavLink>
-            <NavLink
-              active={activeCategory === "tops"}
-              onClick={() => setActiveCategory("tops")}
-            >
-              Tops
-            </NavLink>
-            <NavLink
-              active={activeCategory === "joggers"}
-              onClick={() => setActiveCategory("joggers")}
-            >
-              Joggers
-            </NavLink>
-            <NavLink
-              active={activeCategory === "shoes"}
-              onClick={() => setActiveCategory("shoes")}
-            >
-              Shoes
-            </NavLink>
+            <NavLink active={activeCategory === "all"} onClick={() => setActiveCategory("all")}>All</NavLink>
+            <NavLink active={activeCategory === "palazzo"} onClick={() => setActiveCategory("palazzo")}>Palazzo</NavLink>
+            <NavLink active={activeCategory === "tops"} onClick={() => setActiveCategory("tops")}>Tops</NavLink>
+            <NavLink active={activeCategory === "joggers"} onClick={() => setActiveCategory("joggers")}>Joggers</NavLink>
+            <NavLink active={activeCategory === "shoes"} onClick={() => setActiveCategory("shoes")}>Shoes</NavLink>
           </NavLinks>
 
-          <button
-            onClick={() => setIsCartOpen(true)}
-            style={{
-              position: "relative",
-              background: "none",
-              border: "none",
-              cursor: "pointer",
-            }}
-          >
+          <button onClick={() => setIsCartOpen(true)} style={{ position: "relative", background: "none", border: "none", cursor: "pointer" }}>
             <ShoppingCart size={26} />
             {cart.length > 0 && (
-              <span
-                style={{
-                  position: "absolute",
-                  top: "-6px",
-                  right: "-6px",
-                  background: "black",
-                  color: "white",
-                  fontSize: "12px",
-                  width: "20px",
-                  height: "20px",
-                  borderRadius: "50%",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
+              <span style={{position: "absolute", top: "-6px", right: "-6px", background: "black", color: "white", fontSize: "12px", width: "20px", height: "20px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center"}}>
                 {cart.length}
               </span>
             )}
@@ -391,30 +310,14 @@ function App() {
 
       <Hero>
         <div>
-          <p
-            style={{
-              textTransform: "uppercase",
-              letterSpacing: "3px",
-              marginBottom: "12px",
-            }}
-          >
-            NEW SEASON 2026
-          </p>
-          <HeroTitle>
-            Timeless.
-            <br />
-            Effortless.
-            <br />
-            WumzyCo.
-          </HeroTitle>
+          <p style={{ textTransform: "uppercase", letterSpacing: "3px", marginBottom: "12px" }}>NEW SEASON 2026</p>
+          <HeroTitle>Timeless.<br />Effortless.<br />WumzyCo.</HeroTitle>
         </div>
       </Hero>
 
       <ProductsWrapper>
         <SectionHeader>
-          <h2 style={{ fontSize: "2.4rem", fontWeight: "700" }}>
-            Our Collection
-          </h2>
+          <h2 style={{ fontSize: "2.4rem", fontWeight: "700" }}>Our Collection</h2>
           <p>{filteredProducts.length} products</p>
         </SectionHeader>
 
@@ -428,14 +331,7 @@ function App() {
         </Suspense>
       </ProductsWrapper>
 
-      <footer
-        style={{
-          background: "#111",
-          color: "#aaa",
-          textAlign: "center",
-          padding: "60px 20px",
-        }}
-      >
+      <footer style={{ background: "#111", color: "#aaa", textAlign: "center", padding: "60px 20px" }}>
         <h2 style={{ color: "white", marginBottom: "8px" }}>WUMZYCo</h2>
         <p>© 2026 WumzyCo. All rights reserved.</p>
       </footer>
@@ -447,10 +343,7 @@ function App() {
           cart={cart}
           removeFromCart={removeFromCart}
           totalPrice={totalPrice}
-          onCheckout={() => {
-            setIsCartOpen(false);
-            setIsCheckoutOpen(true);
-          }}
+          onCheckout={() => { setIsCartOpen(false); setIsCheckoutOpen(true); }}
         />
 
         <CheckoutModal
@@ -467,13 +360,7 @@ function App() {
         target="_blank"
         rel="noopener noreferrer"
       >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="28"
-          height="28"
-          fill="currentColor"
-          viewBox="0 0 24 24"
-        >
+        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="currentColor" viewBox="0 0 24 24">
           <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.198.297-.767.966-.94 1.164-.173.198-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.485-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.917-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.569-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
         </svg>
       </WhatsAppButton>
