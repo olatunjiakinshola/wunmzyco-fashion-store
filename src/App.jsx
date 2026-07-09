@@ -230,7 +230,7 @@ function App() {
         <NavContent>
           <Logo>
             <BrandDot>W</BrandDot>
-            WUNMZYCo
+            WunmzyCo
           </Logo>
 
           <NavLinks>
