@@ -1,13 +1,12 @@
-import { useState, lazy, Suspense, useMemo } from "react";
-import styled from "styled-components";
-import { ShoppingCart } from "lucide-react";
-import { Helmet } from "react-helmet-async";
+import { useState, lazy, Suspense, useMemo } from 'react'
+import styled from 'styled-components'
+import { ShoppingCart } from 'lucide-react'
 
-const ProductsSection = lazy(() => import("./components/ProductsSection"));
-const CartDrawer = lazy(() => import("./components/CartDrawer"));
-const CheckoutModal = lazy(() => import("./components/CheckoutModal"));
+const ProductsSection = lazy(() => import('./components/ProductsSection'))
+const CartDrawer = lazy(() => import('./components/CartDrawer'))
+const CheckoutModal = lazy(() => import('./components/CheckoutModal'))
 
-// === PRODUCTS ===
+// ==================== YOUR PRODUCTS ====================
 const products = [
   {
     id: 1,
@@ -15,7 +14,7 @@ const products = [
     price: 75,
     category: "clothing",
     image: "https://picsum.photos/id/1015/600/600",
-    color: "Black",
+    color: "Black"
   },
   {
     id: 2,
@@ -23,7 +22,7 @@ const products = [
     price: 95,
     category: "clothing",
     image: "https://picsum.photos/id/1060/600/600",
-    color: "Blue",
+    color: "Blue"
   },
   {
     id: 3,
@@ -31,7 +30,7 @@ const products = [
     price: 145,
     category: "bags",
     image: "https://picsum.photos/id/201/600/600",
-    color: "Brown",
+    color: "Brown"
   },
   {
     id: 4,
@@ -39,7 +38,7 @@ const products = [
     price: 85,
     category: "clothing",
     image: "https://picsum.photos/id/21/600/600",
-    color: "White",
+    color: "White"
   },
   {
     id: 5,
@@ -47,7 +46,7 @@ const products = [
     price: 55,
     category: "bags",
     image: "https://picsum.photos/id/133/600/600",
-    color: "Beige",
+    color: "Beige"
   },
   {
     id: 6,
@@ -55,15 +54,15 @@ const products = [
     price: 120,
     category: "clothing",
     image: "https://picsum.photos/id/106/600/600",
-    color: "Beige",
+    color: "Beige"
   },
-];
+]
 
-// === STYLED COMPONENTS ===
+// ==================== STYLED COMPONENTS ====================
 const Container = styled.div`
   min-height: 100vh;
   background-color: #f8f9fa;
-`;
+`
 
 const Navbar = styled.nav`
   position: sticky;
@@ -72,7 +71,7 @@ const Navbar = styled.nav`
   border-bottom: 1px solid #eee;
   z-index: 50;
   padding: 1rem 0;
-`;
+`
 
 const NavContent = styled.div`
   max-width: 1280px;
@@ -85,7 +84,7 @@ const NavContent = styled.div`
   @media (max-width: 768px) {
     padding: 0 16px;
   }
-`;
+`
 
 const Logo = styled.div`
   display: flex;
@@ -98,7 +97,7 @@ const Logo = styled.div`
   @media (max-width: 480px) {
     font-size: 22px;
   }
-`;
+`
 
 const BrandDot = styled.div`
   width: 32px;
@@ -110,7 +109,7 @@ const BrandDot = styled.div`
   align-items: center;
   justify-content: center;
   font-weight: bold;
-`;
+`
 
 const NavLinks = styled.div`
   display: flex;
@@ -120,7 +119,7 @@ const NavLinks = styled.div`
   @media (max-width: 768px) {
     gap: 20px;
   }
-`;
+`
 
 const NavLink = styled.button`
   background: none;
@@ -130,8 +129,8 @@ const NavLink = styled.button`
   padding: 8px 18px;
   border-radius: 50px;
   transition: all 0.3s ease;
-  color: ${(props) => (props.active ? "#000" : "#666")};
-  font-weight: ${(props) => (props.active ? "600" : "500")};
+  color: ${props => props.active ? '#000' : '#666'};
+  font-weight: ${props => props.active ? '600' : '500'};
   position: relative;
 
   &:hover {
@@ -141,12 +140,12 @@ const NavLink = styled.button`
   }
 
   &::after {
-    content: "";
+    content: '';
     position: absolute;
     bottom: -4px;
     left: 50%;
     transform: translateX(-50%);
-    width: ${(props) => (props.active ? "60%" : "0")};
+    width: ${props => props.active ? '60%' : '0'};
     height: 3px;
     background: black;
     border-radius: 10px;
@@ -161,7 +160,7 @@ const NavLink = styled.button`
     font-size: 0.95rem;
     padding: 6px 14px;
   }
-`;
+`
 
 const Hero = styled.section`
   background: black;
@@ -172,7 +171,7 @@ const Hero = styled.section`
   @media (max-width: 768px) {
     padding: 100px 16px 80px;
   }
-`;
+`
 
 const HeroTitle = styled.h1`
   font-size: 4rem;
@@ -183,7 +182,7 @@ const HeroTitle = styled.h1`
   @media (max-width: 768px) {
     font-size: 2.8rem;
   }
-`;
+`
 
 const ProductsWrapper = styled.section`
   max-width: 1280px;
@@ -193,7 +192,7 @@ const ProductsWrapper = styled.section`
   @media (max-width: 768px) {
     padding: 40px 16px;
   }
-`;
+`
 
 const SectionHeader = styled.div`
   display: flex;
@@ -202,97 +201,71 @@ const SectionHeader = styled.div`
   margin-bottom: 40px;
   flex-wrap: wrap;
   gap: 12px;
-`;
+`
 
-// === MAIN APP ===
+// ==================== MAIN APP ====================
 function App() {
-  const [cart, setCart] = useState([]);
-  const [isCartOpen, setIsCartOpen] = useState(false);
-  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
-  const [activeCategory, setActiveCategory] = useState("all");
-  const [wishlist, setWishlist] = useState([]);
+  const [cart, setCart] = useState([])
+  const [isCartOpen, setIsCartOpen] = useState(false)
+  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false)
+  const [activeCategory, setActiveCategory] = useState('all')
+  const [wishlist, setWishlist] = useState([])
 
   const filteredProducts = useMemo(() => {
-    return activeCategory === "all"
-      ? products
-      : products.filter((p) => p.category === activeCategory);
-  }, [activeCategory]);
+    return activeCategory === 'all' 
+      ? products 
+      : products.filter(p => p.category === activeCategory)
+  }, [activeCategory])
 
-  const addToCart = (product) => setCart((prev) => [...prev, product]);
-  const removeFromCart = (index) =>
-    setCart((prev) => prev.filter((_, i) => i !== index));
+  const addToCart = (product) => setCart(prev => [...prev, product])
+  const removeFromCart = (index) => setCart(prev => prev.filter((_, i) => i !== index))
   const toggleWishlist = (id) => {
-    setWishlist((prev) =>
-      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
-    );
-  };
-  const totalPrice = cart.reduce((sum, item) => sum + item.price, 0);
+    setWishlist(prev => prev.includes(id) ? prev.filter(item => item !== id) : [...prev, id])
+  }
+  const totalPrice = cart.reduce((sum, item) => sum + item.price, 0)
 
   return (
     <Container>
-      <Helmet>
-        <title>WumzyCo - Buy Fashion Online in Nigeria | Palazzos, Joggers, Tops & Shoes</title>
-        <meta
-          name="description"
-          content="Shop premium palazzo, joggers, tops and bags in Nigeria. Fast delivery to Lagos, Abuja, Port Harcourt and more."
-        />
-      </Helmet>
-
       <Navbar>
         <NavContent>
           <Logo>
-            <BrandDot>W</BrandDot>
-            WumzyCo
+            <BrandDot>L</BrandDot>
+            LUXE
           </Logo>
 
           <NavLinks>
-            <NavLink
-              active={activeCategory === "all"}
-              onClick={() => setActiveCategory("all")}
+            <NavLink 
+              active={activeCategory === 'all'} 
+              onClick={() => setActiveCategory('all')}
             >
               All
             </NavLink>
-            <NavLink
-              active={activeCategory === "clothing"}
-              onClick={() => setActiveCategory("clothing")}
+            <NavLink 
+              active={activeCategory === 'clothing'} 
+              onClick={() => setActiveCategory('clothing')}
             >
               Clothing
             </NavLink>
-            <NavLink
-              active={activeCategory === "bags"}
-              onClick={() => setActiveCategory("bags")}
+            <NavLink 
+              active={activeCategory === 'bags'} 
+              onClick={() => setActiveCategory('bags')}
             >
               Bags
             </NavLink>
           </NavLinks>
 
-          <button
-            onClick={() => setIsCartOpen(true)}
-            style={{
-              position: "relative",
-              background: "none",
-              border: "none",
-              cursor: "pointer",
-            }}
+          <button 
+            onClick={() => setIsCartOpen(true)} 
+            style={{ position: 'relative', background: 'none', border: 'none', cursor: 'pointer' }}
           >
             <ShoppingCart size={26} />
             {cart.length > 0 && (
-              <span
-                style={{
-                  position: "absolute",
-                  top: "-6px",
-                  right: "-6px",
-                  background: "black",
-                  color: "white",
-                  fontSize: "12px",
-                  width: "20px",
-                  height: "20px",
-                  borderRadius: "50%",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
+              <span style={{
+                position: 'absolute', top: '-6px', right: '-6px',
+                background: 'black', color: 'white', fontSize: '12px',
+                width: '20px', height: '20px', borderRadius: '50%',
+                display: 'flex', alignItems: 'center', justifyContent: 'center'
+              }}>
                 {cart.length}
               </span>
             )}
@@ -302,35 +275,19 @@ function App() {
 
       <Hero>
         <div>
-          <p
-            style={{
-              textTransform: "uppercase",
-              letterSpacing: "3px",
-              marginBottom: "12px",
-            }}
-          >
-            NEW SEASON 2026
-          </p>
-          <HeroTitle>
-            Timeless.
-            <br />
-            Effortless.
-            <br />
-            WumzyCo.
-          </HeroTitle>
+          <p style={{ textTransform: 'uppercase', letterSpacing: '3px', marginBottom: '12px' }}>NEW SEASON 2026</p>
+          <HeroTitle>Timeless.<br />Effortless.<br />LUXE.</HeroTitle>
         </div>
       </Hero>
 
       <ProductsWrapper>
         <SectionHeader>
-          <h2 style={{ fontSize: "2.4rem", fontWeight: "700" }}>
-            Our Collection
-          </h2>
+          <h2 style={{ fontSize: '2.4rem', fontWeight: '700' }}>Our Collection</h2>
           <p>{filteredProducts.length} products</p>
         </SectionHeader>
 
         <Suspense fallback={<p>Loading products...</p>}>
-          <ProductsSection
+          <ProductsSection 
             products={filteredProducts}
             addToCart={addToCart}
             toggleWishlist={toggleWishlist}
@@ -339,32 +296,22 @@ function App() {
         </Suspense>
       </ProductsWrapper>
 
-      <footer
-        style={{
-          background: "#111",
-          color: "#aaa",
-          textAlign: "center",
-          padding: "60px 20px",
-        }}
-      >
-        <h2 style={{ color: "white", marginBottom: "8px" }}>WUMZYCo</h2>
+      <footer style={{ background: '#111', color: '#aaa', textAlign: 'center', padding: '60px 20px' }}>
+        <h2 style={{ color: 'white', marginBottom: '8px' }}>LUXE</h2>
         <p>© 2026 Portfolio Demo</p>
       </footer>
 
       <Suspense fallback={null}>
-        <CartDrawer
+        <CartDrawer 
           isOpen={isCartOpen}
           onClose={() => setIsCartOpen(false)}
           cart={cart}
           removeFromCart={removeFromCart}
           totalPrice={totalPrice}
-          onCheckout={() => {
-            setIsCartOpen(false);
-            setIsCheckoutOpen(true);
-          }}
+          onCheckout={() => { setIsCartOpen(false); setIsCheckoutOpen(true) }}
         />
 
-        <CheckoutModal
+        <CheckoutModal 
           isOpen={isCheckoutOpen}
           onClose={() => setIsCheckoutOpen(false)}
           totalPrice={totalPrice}
@@ -372,7 +319,7 @@ function App() {
         />
       </Suspense>
     </Container>
-  );
+  )
 }
 
-export default App;
+export default App
