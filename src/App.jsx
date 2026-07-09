@@ -1,6 +1,6 @@
 import { useState, lazy, Suspense, useMemo } from "react";
 import styled from "styled-components";
-import { ShoppingCart, Search } from "lucide-react";
+import { ShoppingCart, Search, Menu, X } from "lucide-react";
 
 const ProductsSection = lazy(() => import("./components/ProductsSection"));
 const CartDrawer = lazy(() => import("./components/CartDrawer"));
@@ -30,7 +30,7 @@ const products = [
   { id: 20, name: "Tan Leather Tote Bag", price: 135, category: "palazzo", image: "https://picsum.photos/id/201/600/600", color: "Tan" },
 ];
 
-// === STYLED COMPONENTS (Your existing styles + Search) ===
+// === STYLED COMPONENTS ===
 const Container = styled.div`
   min-height: 100vh;
   background-color: #f8f9fa;
@@ -52,12 +52,10 @@ const NavContent = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 20px;
+  gap: 15px;
 
   @media (max-width: 768px) {
     padding: 0 16px;
-    flex-wrap: wrap;
-    gap: 15px;
   }
 `;
 
@@ -68,10 +66,6 @@ const Logo = styled.div`
   font-size: 26px;
   font-weight: 800;
   letter-spacing: -1px;
-
-  @media (max-width: 480px) {
-    font-size: 22px;
-  }
 `;
 
 const BrandDot = styled.div`
@@ -86,7 +80,6 @@ const BrandDot = styled.div`
   font-weight: bold;
 `;
 
-// Search Bar
 const SearchContainer = styled.div`
   flex: 1;
   max-width: 500px;
@@ -116,13 +109,38 @@ const SearchIcon = styled.div`
   color: #666;
 `;
 
+const Hamburger = styled.button`
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+
+  @media (max-width: 768px) {
+    display: block;
+  }
+`;
+
+const MobileMenu = styled.div`
+  display: ${props => props.open ? 'flex' : 'none'};
+  flex-direction: column;
+  gap: 15px;
+  position: absolute;
+  top: 70px;
+  left: 0;
+  right: 0;
+  background: white;
+  padding: 20px;
+  box-shadow: 0 10px 15px rgba(0,0,0,0.1);
+  z-index: 60;
+`;
+
 const NavLinks = styled.div`
   display: flex;
   gap: 20px;
   font-weight: 500;
 
   @media (max-width: 768px) {
-    gap: 15px;
+    display: none;
   }
 `;
 
@@ -242,6 +260,7 @@ function App() {
   const [activeCategory, setActiveCategory] = useState("all");
   const [wishlist, setWishlist] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);   // Hamburger State
 
   const filteredProducts = useMemo(() => {
     let result = activeCategory === "all"
@@ -283,12 +302,13 @@ function App() {
             </SearchIcon>
             <SearchInput
               type="text"
-              placeholder="Search products... (palazzo, tops, joggers, shoes...)"
+              placeholder="Search products..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </SearchContainer>
 
+          {/* Desktop Menu */}
           <NavLinks>
             <NavLink active={activeCategory === "all"} onClick={() => setActiveCategory("all")}>All</NavLink>
             <NavLink active={activeCategory === "palazzo"} onClick={() => setActiveCategory("palazzo")}>Palazzo</NavLink>
@@ -297,15 +317,47 @@ function App() {
             <NavLink active={activeCategory === "shoes"} onClick={() => setActiveCategory("shoes")}>Shoes</NavLink>
           </NavLinks>
 
-          <button onClick={() => setIsCartOpen(true)} style={{ position: "relative", background: "none", border: "none", cursor: "pointer" }}>
+          {/* Hamburger Button */}
+          <Hamburger onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
+            {isMobileMenuOpen ? <X size={28} /> : <Menu size={28} />}
+          </Hamburger>
+
+          <button
+            onClick={() => setIsCartOpen(true)}
+            style={{ position: "relative", background: "none", border: "none", cursor: "pointer" }}
+          >
             <ShoppingCart size={26} />
             {cart.length > 0 && (
-              <span style={{position: "absolute", top: "-6px", right: "-6px", background: "black", color: "white", fontSize: "12px", width: "20px", height: "20px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center"}}>
+              <span
+                style={{
+                  position: "absolute",
+                  top: "-6px",
+                  right: "-6px",
+                  background: "black",
+                  color: "white",
+                  fontSize: "12px",
+                  width: "20px",
+                  height: "20px",
+                  borderRadius: "50%",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
                 {cart.length}
               </span>
             )}
           </button>
         </NavContent>
+
+        {/* Mobile Menu */}
+        <MobileMenu open={isMobileMenuOpen}>
+          <NavLink active={activeCategory === "all"} onClick={() => { setActiveCategory("all"); setIsMobileMenuOpen(false); }}>All</NavLink>
+          <NavLink active={activeCategory === "palazzo"} onClick={() => { setActiveCategory("palazzo"); setIsMobileMenuOpen(false); }}>Palazzo</NavLink>
+          <NavLink active={activeCategory === "tops"} onClick={() => { setActiveCategory("tops"); setIsMobileMenuOpen(false); }}>Tops</NavLink>
+          <NavLink active={activeCategory === "joggers"} onClick={() => { setActiveCategory("joggers"); setIsMobileMenuOpen(false); }}>Joggers</NavLink>
+          <NavLink active={activeCategory === "shoes"} onClick={() => { setActiveCategory("shoes"); setIsMobileMenuOpen(false); }}>Shoes</NavLink>
+        </MobileMenu>
       </Navbar>
 
       <Hero>
