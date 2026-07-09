@@ -223,7 +223,7 @@ function App() {
     setCart((prev) => prev.filter((_, i) => i !== index));
   const toggleWishlist = (id) => {
     setWishlist((prev) =>
-      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id],
+      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
     );
   };
   const totalPrice = cart.reduce((sum, item) => sum + item.price, 0);
@@ -237,6 +237,7 @@ function App() {
           content="Shop premium palazzo, joggers, tops and bags in Nigeria. Fast delivery to Lagos, Abuja, Port Harcourt and more."
         />
       </Helmet>
+
       <Navbar>
         <NavContent>
           <Logo>
@@ -258,10 +259,10 @@ function App() {
               Clothing
             </NavLink>
             <NavLink
-              active={activeCategory === "shoes"}
-              onClick={() => setActiveCategory("shoes")}
+              active={activeCategory === "bags"}
+              onClick={() => setActiveCategory("bags")}
             >
-              Shoes
+              Bags
             </NavLink>
           </NavLinks>
 
