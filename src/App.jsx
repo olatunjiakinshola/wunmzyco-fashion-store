@@ -152,8 +152,8 @@ const NavLink = styled.button`
   padding: 8px 16px;
   border-radius: 50px;
   transition: all 0.3s ease;
-  color: ${(props) => (props.active ? "#000" : "#666")};
-  font-weight: ${(props) => (props.active ? "600" : "500")};
+  color: ${(props) => (props.$active ? "#000" : "#666")};
+  font-weight: ${(props) => (props.$active ? "600" : "500")};
   position: relative;
 
   &:hover {
@@ -168,7 +168,7 @@ const NavLink = styled.button`
     bottom: -4px;
     left: 50%;
     transform: translateX(-50%);
-    width: ${(props) => (props.active ? "60%" : "0")};
+    width: ${(props) => (props.$active ? "60%" : "0")};
     height: 3px;
     background: black;
     border-radius: 10px;
@@ -317,10 +317,10 @@ function App() {
 
           {/* Desktop Menu */}
           <NavLinks>
-            <NavLink active={activeCategory === "all"} onClick={() => setActiveCategory("all")}>All</NavLink>
-            <NavLink active={activeCategory === "palazzo"} onClick={() => setActiveCategory("palazzo")}>Palazzo</NavLink>
-            <NavLink active={activeCategory === "tops"} onClick={() => setActiveCategory("tops")}>Tops</NavLink>
-            <NavLink active={activeCategory === "joggers"} onClick={() => setActiveCategory("joggers")}>Joggers</NavLink>
+            <NavLink $active={activeCategory === "all"} onClick={() => setActiveCategory("all")}>All</NavLink>
+            <NavLink $active={activeCategory === "palazzos"} onClick={() => setActiveCategory("palazzos")}>Palazzos</NavLink>
+            <NavLink $active={activeCategory === "tops"} onClick={() => setActiveCategory("tops")}>Tops</NavLink>
+            <NavLink $active={activeCategory === "joggers"} onClick={() => setActiveCategory("joggers")}>Joggers</NavLink>
             <NavLink active={activeCategory === "shoes"} onClick={() => setActiveCategory("shoes")}>Shoes</NavLink>
           </NavLinks>
 
@@ -359,11 +359,11 @@ function App() {
 
         {/* Mobile Menu */}
         <MobileMenu open={isMobileMenuOpen}>
-          <NavLink active={activeCategory === "all"} onClick={() => { setActiveCategory("all"); setIsMobileMenuOpen(false); }}>All</NavLink>
-          <NavLink active={activeCategory === "palazzo"} onClick={() => { setActiveCategory("palazzo"); setIsMobileMenuOpen(false); }}>Palazzo</NavLink>
-          <NavLink active={activeCategory === "tops"} onClick={() => { setActiveCategory("tops"); setIsMobileMenuOpen(false); }}>Tops</NavLink>
-          <NavLink active={activeCategory === "joggers"} onClick={() => { setActiveCategory("joggers"); setIsMobileMenuOpen(false); }}>Joggers</NavLink>
-          <NavLink active={activeCategory === "shoes"} onClick={() => { setActiveCategory("shoes"); setIsMobileMenuOpen(false); }}>Shoes</NavLink>
+          <NavLink $active={activeCategory === "all"} onClick={() => { setActiveCategory("all"); setIsMobileMenuOpen(false); }}>All</NavLink>
+          <NavLink $active={activeCategory === "palazzos"} onClick={() => { setActiveCategory("palazzos"); setIsMobileMenuOpen(false); }}>Palazzos</NavLink>
+          <NavLink $active={activeCategory === "tops"} onClick={() => { setActiveCategory("tops"); setIsMobileMenuOpen(false); }}>Tops</NavLink>
+          <NavLink $active={activeCategory === "joggers"} onClick={() => { setActiveCategory("joggers"); setIsMobileMenuOpen(false); }}>Joggers</NavLink>
+          <NavLink $active={activeCategory === "shoes"} onClick={() => { setActiveCategory("shoes"); setIsMobileMenuOpen(false); }}>Shoes</NavLink>
         </MobileMenu>
       </Navbar>
 
