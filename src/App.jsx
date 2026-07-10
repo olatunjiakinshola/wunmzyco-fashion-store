@@ -236,7 +236,6 @@ const WhatsAppButton = styled.a`
 function App() {
   const [cart, setCart] = useState(() => {
     const savedCart = localStorage.getItem("cart");
-
     return savedCart ? JSON.parse(savedCart) : [];
   });
   const [isCartOpen, setIsCartOpen] = useState(false);
@@ -244,7 +243,7 @@ function App() {
   const [activeCategory, setActiveCategory] = useState("all");
   const [wishlist, setWishlist] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false); // Hamburger State
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
 
@@ -262,7 +261,7 @@ function App() {
       result = result.filter(
         (product) =>
           product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          product.color.toLowerCase().includes(searchTerm.toLowerCase()),
+          product.color.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
@@ -276,38 +275,25 @@ function App() {
       if (existingProduct) {
         return prev.map((item) =>
           item.id === product.id
-            ? {
-                ...item,
-                quantity: item.quantity + 1,
-              }
-            : item,
+            ? { ...item, quantity: item.quantity + 1 }
+            : item
         );
       }
 
-      const openProductModal = (product) => {
-        setSelectedProduct(product);
-        setIsModalOpen(true);
-      };
-
       return [
         ...prev,
-        {
-          ...product,
-          quantity: 1,
-        },
+        { ...product, quantity: 1 },
       ];
     });
   };
+
   const increaseQuantity = (id) => {
     setCart((prev) =>
       prev.map((item) =>
         item.id === id
-          ? {
-              ...item,
-              quantity: item.quantity + 1,
-            }
-          : item,
-      ),
+          ? { ...item, quantity: item.quantity + 1 }
+          : item
+      )
     );
   };
 
@@ -316,25 +302,31 @@ function App() {
       prev
         .map((item) =>
           item.id === id
-            ? {
-                ...item,
-                quantity: item.quantity - 1,
-              }
-            : item,
+            ? { ...item, quantity: item.quantity - 1 }
+            : item
         )
-        .filter((item) => item.quantity > 0),
+        .filter((item) => item.quantity > 0)
     );
   };
+
   const removeFromCart = (id) =>
     setCart((prev) => prev.filter((item) => item.id !== id));
+
   const toggleWishlist = (id) => {
     setWishlist((prev) =>
-      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id],
+      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
     );
   };
+
+  // ✅ This was the problem - now correctly placed
+  const openProductModal = (product) => {
+    setSelectedProduct(product);
+    setIsModalOpen(true);
+  };
+
   const totalPrice = cart.reduce(
     (sum, item) => sum + item.price * item.quantity,
-    0,
+    0
   );
 
   return (
@@ -360,36 +352,11 @@ function App() {
 
           {/* Desktop Menu */}
           <NavLinks>
-            <NavLink
-              $active={activeCategory === "all"}
-              onClick={() => setActiveCategory("all")}
-            >
-              All
-            </NavLink>
-            <NavLink
-              $active={activeCategory === "palazzos"}
-              onClick={() => setActiveCategory("palazzos")}
-            >
-              Palazzos
-            </NavLink>
-            <NavLink
-              $active={activeCategory === "tops"}
-              onClick={() => setActiveCategory("tops")}
-            >
-              Tops
-            </NavLink>
-            <NavLink
-              $active={activeCategory === "joggers"}
-              onClick={() => setActiveCategory("joggers")}
-            >
-              Joggers
-            </NavLink>
-            <NavLink
-              $active={activeCategory === "shoes"}
-              onClick={() => setActiveCategory("shoes")}
-            >
-              Shoes
-            </NavLink>
+            <NavLink $active={activeCategory === "all"} onClick={() => setActiveCategory("all")}>All</NavLink>
+            <NavLink $active={activeCategory === "palazzos"} onClick={() => setActiveCategory("palazzos")}>Palazzos</NavLink>
+            <NavLink $active={activeCategory === "tops"} onClick={() => setActiveCategory("tops")}>Tops</NavLink>
+            <NavLink $active={activeCategory === "joggers"} onClick={() => setActiveCategory("joggers")}>Joggers</NavLink>
+            <NavLink $active={activeCategory === "shoes"} onClick={() => setActiveCategory("shoes")}>Shoes</NavLink>
           </NavLinks>
 
           {/* Hamburger Button */}
@@ -399,31 +366,24 @@ function App() {
 
           <button
             onClick={() => setIsCartOpen(true)}
-            style={{
-              position: "relative",
-              background: "none",
-              border: "none",
-              cursor: "pointer",
-            }}
+            style={{ position: "relative", background: "none", border: "none", cursor: "pointer" }}
           >
             <ShoppingCart size={26} />
             {cart.length > 0 && (
-              <span
-                style={{
-                  position: "absolute",
-                  top: "-6px",
-                  right: "-6px",
-                  background: "black",
-                  color: "white",
-                  fontSize: "12px",
-                  width: "20px",
-                  height: "20px",
-                  borderRadius: "50%",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
+              <span style={{
+                position: "absolute",
+                top: "-6px",
+                right: "-6px",
+                background: "black",
+                color: "white",
+                fontSize: "12px",
+                width: "20px",
+                height: "20px",
+                borderRadius: "50%",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}>
                 {cart.length}
               </span>
             )}
@@ -432,80 +392,24 @@ function App() {
 
         {/* Mobile Menu */}
         <MobileMenu open={isMobileMenuOpen}>
-          <NavLink
-            $active={activeCategory === "all"}
-            onClick={() => {
-              setActiveCategory("all");
-              setIsMobileMenuOpen(false);
-            }}
-          >
-            All
-          </NavLink>
-          <NavLink
-            $active={activeCategory === "palazzos"}
-            onClick={() => {
-              setActiveCategory("palazzos");
-              setIsMobileMenuOpen(false);
-            }}
-          >
-            Palazzos
-          </NavLink>
-          <NavLink
-            $active={activeCategory === "tops"}
-            onClick={() => {
-              setActiveCategory("tops");
-              setIsMobileMenuOpen(false);
-            }}
-          >
-            Tops
-          </NavLink>
-          <NavLink
-            $active={activeCategory === "joggers"}
-            onClick={() => {
-              setActiveCategory("joggers");
-              setIsMobileMenuOpen(false);
-            }}
-          >
-            Joggers
-          </NavLink>
-          <NavLink
-            $active={activeCategory === "shoes"}
-            onClick={() => {
-              setActiveCategory("shoes");
-              setIsMobileMenuOpen(false);
-            }}
-          >
-            Shoes
-          </NavLink>
+          <NavLink $active={activeCategory === "all"} onClick={() => { setActiveCategory("all"); setIsMobileMenuOpen(false); }}>All</NavLink>
+          <NavLink $active={activeCategory === "palazzos"} onClick={() => { setActiveCategory("palazzos"); setIsMobileMenuOpen(false); }}>Palazzos</NavLink>
+          <NavLink $active={activeCategory === "tops"} onClick={() => { setActiveCategory("tops"); setIsMobileMenuOpen(false); }}>Tops</NavLink>
+          <NavLink $active={activeCategory === "joggers"} onClick={() => { setActiveCategory("joggers"); setIsMobileMenuOpen(false); }}>Joggers</NavLink>
+          <NavLink $active={activeCategory === "shoes"} onClick={() => { setActiveCategory("shoes"); setIsMobileMenuOpen(false); }}>Shoes</NavLink>
         </MobileMenu>
       </Navbar>
 
       <Hero>
         <div>
-          <p
-            style={{
-              textTransform: "uppercase",
-              letterSpacing: "3px",
-              marginBottom: "12px",
-            }}
-          >
-            NEW SEASON 2026
-          </p>
-          <HeroTitle>
-            Timeless.
-            <br />
-            Effortless.
-            <br />
-            WunmzyCo.
-          </HeroTitle>
+          <p style={{ textTransform: "uppercase", letterSpacing: "3px", marginBottom: "12px" }}>NEW SEASON 2026</p>
+          <HeroTitle>Timeless.<br />Effortless.<br />WunmzyCo.</HeroTitle>
         </div>
       </Hero>
 
       <ProductsWrapper>
         <SectionHeader>
-          <h2 style={{ fontSize: "2.4rem", fontWeight: "700" }}>
-            Our Collection
-          </h2>
+          <h2 style={{ fontSize: "2.4rem", fontWeight: "700" }}>Our Collection</h2>
           <p>{filteredProducts.length} products</p>
         </SectionHeader>
 
@@ -520,14 +424,7 @@ function App() {
         </Suspense>
       </ProductsWrapper>
 
-      <footer
-        style={{
-          background: "#111",
-          color: "#aaa",
-          textAlign: "center",
-          padding: "60px 20px",
-        }}
-      >
+      <footer style={{ background: "#111", color: "#aaa", textAlign: "center", padding: "60px 20px" }}>
         <h2 style={{ color: "white", marginBottom: "8px" }}>WUNMZYCo</h2>
         <p>© 2026 WunmzyCo. All rights reserved.</p>
       </footer>
@@ -541,10 +438,7 @@ function App() {
           increaseQuantity={increaseQuantity}
           decreaseQuantity={decreaseQuantity}
           totalPrice={totalPrice}
-          onCheckout={() => {
-            setIsCartOpen(false);
-            setIsCheckoutOpen(true);
-          }}
+          onCheckout={() => { setIsCartOpen(false); setIsCheckoutOpen(true); }}
         />
 
         <CheckoutModal
@@ -573,13 +467,7 @@ function App() {
         target="_blank"
         rel="noopener noreferrer"
       >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="28"
-          height="28"
-          fill="currentColor"
-          viewBox="0 0 24 24"
-        >
+        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="currentColor" viewBox="0 0 24 24">
           <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.198.297-.767.966-.94 1.164-.173.198-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.485-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.917-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.569-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" />
         </svg>
       </WhatsAppButton>
