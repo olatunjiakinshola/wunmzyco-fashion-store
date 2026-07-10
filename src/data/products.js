@@ -10,7 +10,7 @@ const products = [
     id: 1,
     name: "Brown Oversized Hoodie",
     price: 35000,
-    category: "Tops",
+    category: "tops",
     image: BrownHoodie,
     color: "Brown",
 
@@ -28,7 +28,7 @@ const products = [
     id: 2,
     name: "Black Oversized Gown",
     price: 10000,
-    category: "Tops",
+    category: "tops",
     image: BlackGown,
     color: "Black",
 
@@ -45,7 +45,7 @@ const products = [
     id: 3,
     name: "Blue Oversized Gown",
     price: 20000,
-    category: "Tops",
+    category: "tops",
     image: BlueGown,
     color: "Blue",
 
@@ -62,7 +62,7 @@ const products = [
     id: 4,
     name: "Black Gown",
     price: 25000,
-    category: "Tops",
+    category: "tops",
     image: BlackGownn,
     color: "Black",
 
@@ -79,7 +79,7 @@ const products = [
     id: 5,
     name: "Oversized Blue Gown",
     price: 50000,
-    category: "Tops",
+    category: "tops",
     image: BlueGownn,
     color: "Blue",
 
