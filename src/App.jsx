@@ -293,7 +293,7 @@ function App() {
         <NavContent>
           <Logo>
             <BrandDot>W</BrandDot>
-            WumzyCo
+            WunmzyCo
           </Logo>
 
           <SearchContainer>
@@ -363,7 +363,7 @@ function App() {
       <Hero>
         <div>
           <p style={{ textTransform: "uppercase", letterSpacing: "3px", marginBottom: "12px" }}>NEW SEASON 2026</p>
-          <HeroTitle>Timeless.<br />Effortless.<br />WumzyCo.</HeroTitle>
+          <HeroTitle>Timeless.<br />Effortless.<br />WunmzyCo.</HeroTitle>
         </div>
       </Hero>
 
@@ -385,7 +385,7 @@ function App() {
 
       <footer style={{ background: "#111", color: "#aaa", textAlign: "center", padding: "60px 20px" }}>
         <h2 style={{ color: "white", marginBottom: "8px" }}>WUMZYCo</h2>
-        <p>© 2026 WumzyCo. All rights reserved.</p>
+        <p>© 2026 WunmzyCo. All rights reserved.</p>
       </footer>
 
       <Suspense fallback={null}>
