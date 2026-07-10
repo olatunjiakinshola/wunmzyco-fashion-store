@@ -354,7 +354,7 @@ const decreaseQuantity = (id) => {
             <NavLink $active={activeCategory === "palazzos"} onClick={() => setActiveCategory("palazzos")}>Palazzos</NavLink>
             <NavLink $active={activeCategory === "tops"} onClick={() => setActiveCategory("tops")}>Tops</NavLink>
             <NavLink $active={activeCategory === "joggers"} onClick={() => setActiveCategory("joggers")}>Joggers</NavLink>
-            <NavLink active={activeCategory === "shoes"} onClick={() => setActiveCategory("shoes")}>Shoes</NavLink>
+            <NavLink $active={activeCategory === "shoes"} onClick={() => setActiveCategory("shoes")}>Shoes</NavLink>
           </NavLinks>
 
           {/* Hamburger Button */}
