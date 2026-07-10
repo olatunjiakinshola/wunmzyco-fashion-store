@@ -122,7 +122,9 @@ const NavLinks = styled.div`
   }
 `;
 
-const NavLink = styled.button`
+const NavLink = styled.button.withConfig({
+  shouldForwardProp: (prop) => prop !== "active",
+})`
   background: none;
   border: none;
   font-size: 1.05rem;
