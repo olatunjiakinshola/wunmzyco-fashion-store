@@ -8,7 +8,6 @@ const Card = styled.div`
   overflow: hidden;
   box-shadow: 0 4px 15px rgba(0,0,0,0.06);
   transition: all 0.3s ease;
-
   &:hover {
     transform: translateY(-10px);
     box-shadow: 0 20px 35px rgba(0,0,0,0.12);
@@ -19,7 +18,6 @@ const ImageContainer = styled.div`
   position: relative;
   height: 320px;
   overflow: hidden;
-
   @media (max-width: 480px) {
     height: 280px;
   }
@@ -31,7 +29,6 @@ const ProductImage = styled.img`
   object-fit: cover;
   cursor: pointer;
   transition: transform 0.5s ease;
-
   ${Card}:hover & {
     transform: scale(1.1);
   }
@@ -62,7 +59,6 @@ const HoverOverlay = styled.div`
   justify-content: center;
   opacity: 0;
   transition: opacity 0.3s;
-
   ${Card}:hover & {
     opacity: 1;
   }
@@ -97,14 +93,21 @@ const Price = styled.p`
 `;
 
 const ProductCard = memo(
-  ({ product, addToCart, toggleWishlist, wishlist, onOpenModal }) => {
+  ({ 
+    product, 
+    addToCart, 
+    toggleWishlist, 
+    wishlist,
+    onOpenModal 
+  }) => {
     return (
       <Card>
         <ImageContainer>
-          <ProductImage  src={product.image}
-  alt={product.name}
-  onClick={() => onOpenModal(product)}/>
-
+          <ProductImage 
+            src={product.image}
+            alt={product.name}
+            onClick={() => onOpenModal(product)}   // ← This must be here
+          />
           <WishlistButton onClick={() => toggleWishlist(product.id)}>
             <Heart
               size={20}
@@ -112,7 +115,6 @@ const ProductCard = memo(
               color={wishlist.includes(product.id) ? "#ef4444" : "#333"}
             />
           </WishlistButton>
-
           <HoverOverlay>
             <AddButton onClick={() => addToCart(product)}>
               <ShoppingCart size={18} />
@@ -120,14 +122,11 @@ const ProductCard = memo(
             </AddButton>
           </HoverOverlay>
         </ImageContainer>
-
         <ProductInfo>
           <ProductName>{product.name}</ProductName>
-
           <p style={{ color: "#666", marginBottom: "8px" }}>
             {product.color}
           </p>
-
           <Price>₦{product.price.toLocaleString()}</Price>
         </ProductInfo>
       </Card>

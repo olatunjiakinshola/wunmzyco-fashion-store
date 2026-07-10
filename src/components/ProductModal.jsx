@@ -5,7 +5,7 @@ import { X, ShoppingCart, Heart } from 'lucide-react';
 const ModalOverlay = styled.div`
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.7);
+  background: rgba(0, 0, 0, 0.75);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -54,15 +54,16 @@ const ImageSection = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 40px 20px;
+  padding: 30px 20px;
   min-height: 400px;
 `;
 
 const ProductImage = styled.img`
   max-width: 100%;
-  max-height: 480px;
+  max-height: 500px;
   object-fit: contain;
   border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
   cursor: zoom-in;
 `;
 
@@ -73,13 +74,13 @@ const DetailsSection = styled.div`
 `;
 
 const ProductName = styled.h2`
-  font-size: 1.8rem;
+  font-size: 1.85rem;
   font-weight: 700;
   margin-bottom: 8px;
 `;
 
 const Price = styled.p`
-  font-size: 2rem;
+  font-size: 2.1rem;
   font-weight: 700;
   color: #000;
   margin: 16px 0;
@@ -89,6 +90,7 @@ const Description = styled.p`
   color: #555;
   line-height: 1.7;
   margin-bottom: 24px;
+  font-size: 1.05rem;
 `;
 
 const SizeContainer = styled.div`
@@ -114,6 +116,7 @@ const SizeButton = styled.button`
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s;
+
   &:hover {
     border-color: #000;
   }
@@ -139,6 +142,7 @@ const AddToCartButton = styled.button`
   justify-content: center;
   gap: 12px;
   margin-top: 20px;
+
   &:hover {
     background: #222;
   }
@@ -180,12 +184,14 @@ const ProductModal = memo(({
 
           <DetailsSection>
             <ProductName>{product.name}</ProductName>
-            <p style={{ color: "#666" }}>{product.color}</p>
+            <p style={{ color: "#666", marginBottom: "8px" }}>{product.color}</p>
             
             <Price>₦{product.price.toLocaleString()}</Price>
 
-            {product.description && (
+            {product.description ? (
               <Description>{product.description}</Description>
+            ) : (
+              <Description>No description available for this product.</Description>
             )}
 
             {product.sizes && product.sizes.length > 0 && (
@@ -201,11 +207,7 @@ const ProductModal = memo(({
               </SizeContainer>
             )}
 
-            <AddToCartButton onClick={() => {
-              addToCart(product);
-              // Optional: close modal after adding
-              // onClose();
-            }}>
+            <AddToCartButton onClick={() => addToCart(product)}>
               <ShoppingCart size={20} />
               Add to Cart
             </AddToCartButton>
@@ -223,10 +225,15 @@ const ProductModal = memo(({
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                gap: "8px"
+                gap: "8px",
+                fontSize: "1rem"
               }}
             >
-              <Heart size={20} fill={isWishlisted ? "#ef4444" : "none"} color={isWishlisted ? "#ef4444" : "#333"} />
+              <Heart 
+                size={20} 
+                fill={isWishlisted ? "#ef4444" : "none"} 
+                color={isWishlisted ? "#ef4444" : "#333"} 
+              />
               {isWishlisted ? "Remove from Wishlist" : "Add to Wishlist"}
             </button>
           </DetailsSection>
