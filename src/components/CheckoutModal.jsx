@@ -64,7 +64,7 @@ const CheckoutModal = memo(({ isOpen, onClose, totalPrice, cart }) => {
   const phoneNumber = "+2348060230990"   
 
   const createWhatsAppMessage = () => {
-    let message = `*New Order from WumzyCo Website*\n\n`;
+    let message = `*New Order from WunmzyCo Website*\n\n`;
     
     cart.forEach((item, index) => {
       message += `${index + 1}. ${item.name} - *$${item.price}*\n`;
