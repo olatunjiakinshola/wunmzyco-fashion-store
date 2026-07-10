@@ -384,7 +384,7 @@ function App() {
       </ProductsWrapper>
 
       <footer style={{ background: "#111", color: "#aaa", textAlign: "center", padding: "60px 20px" }}>
-        <h2 style={{ color: "white", marginBottom: "8px" }}>WUMZYCo</h2>
+        <h2 style={{ color: "white", marginBottom: "8px" }}>WUNMZYCo</h2>
         <p>© 2026 WunmzyCo. All rights reserved.</p>
       </footer>
 
