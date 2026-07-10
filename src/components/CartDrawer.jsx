@@ -112,7 +112,7 @@ const CartDrawer = memo(({ isOpen, onClose, cart, removeFromCart, totalPrice, on
                 <ItemImage src={item.image} alt={item.name} />
                 <div style={{ flex: 1 }}>
                   <h4>{item.name}</h4>
-                  <p style={{ fontWeight: 'bold', margin: '8px 0' }}>#{item.price}</p>
+                  <p style={{ fontWeight: 'bold', margin: '8px 0' }}>₦{item.price}</p>
                   <button 
                     onClick={() => removeFromCart(index)}
                     style={{ color: '#ef4444', fontSize: '0.95rem' }}
@@ -129,7 +129,7 @@ const CartDrawer = memo(({ isOpen, onClose, cart, removeFromCart, totalPrice, on
           <Footer>
             <Total>
               <span>Total</span>
-              <span>#{totalPrice}</span>
+              <span>₦{totalPrice}</span>
             </Total>
             <CheckoutButton onClick={onCheckout}>
               Proceed to Checkout

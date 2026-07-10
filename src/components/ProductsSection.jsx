@@ -121,7 +121,7 @@ const ProductsSection = memo(({ products, addToCart, toggleWishlist, wishlist })
           <ProductInfo>
             <ProductName>{product.name}</ProductName>
             <p style={{ color: '#666', marginBottom: '8px' }}>{product.color}</p>
-            <p style={{ fontSize: '1.4rem', fontWeight: '700' }}>#{product.price}</p>
+            <p style={{ fontSize: '1.4rem', fontWeight: '700' }}>₦{product.price}</p>
           </ProductInfo>
         </ProductCard>
       ))}

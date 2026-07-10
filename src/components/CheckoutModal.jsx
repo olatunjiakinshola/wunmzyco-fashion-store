@@ -67,10 +67,10 @@ const CheckoutModal = memo(({ isOpen, onClose, totalPrice, cart }) => {
     let message = `*New Order from WunmzyCo Website*\n\n`;
     
     cart.forEach((item, index) => {
-      message += `${index + 1}. ${item.name} - *$${item.price}*\n`;
+      message += `${index + 1}. ${item.name} - *$₦{item.price}*\n`;
     });
 
-    message += `\n*Total Amount: $#{totalPrice}*\n\n`;
+    message += `\n*Total Amount: $₦{totalPrice}*\n\n`;
     message += `Please confirm my order. Thank you! 🙏`;
 
     return encodeURIComponent(message);
@@ -107,7 +107,7 @@ const CheckoutModal = memo(({ isOpen, onClose, totalPrice, cart }) => {
               borderBottom: i !== cart.length - 1 ? '1px solid #ddd' : 'none'
             }}>
               <span>{item.name}</span>
-              <span style={{ fontWeight: '600' }}>#{item.price}</span>
+              <span style={{ fontWeight: '600' }}>₦{item.price}</span>
             </div>
           ))}
           
@@ -119,7 +119,7 @@ const CheckoutModal = memo(({ isOpen, onClose, totalPrice, cart }) => {
             fontWeight: '700'
           }}>
             <span>Total</span>
-            <span>#{totalPrice}</span>
+            <span>₦{totalPrice}</span>
           </div>
         </OrderSummary>
 
