@@ -144,7 +144,7 @@ const CartDrawer = memo(
                       </button>
                     </div>
                     <button
-                      onClick={() => removeFromCart(index)}
+                      onClick={() => removeFromCart(id)}
                       style={{ color: "#ef4444", fontSize: "0.95rem" }}
                     >
                       Remove

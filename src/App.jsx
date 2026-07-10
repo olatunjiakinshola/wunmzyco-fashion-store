@@ -318,8 +318,8 @@ const decreaseQuantity = (id) => {
       .filter((item) => item.quantity > 0)
   );
 };
-  const removeFromCart = (index) =>
-    setCart((prev) => prev.filter((_, i) => i !== index));
+  const removeFromCart = (id) =>
+    setCart((prev) => prev.filter((item) => item.id !== id));
   const toggleWishlist = (id) => {
     setWishlist((prev) =>
       prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
