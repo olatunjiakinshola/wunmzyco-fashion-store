@@ -31,7 +31,6 @@ const NavContent = styled.div`
   justify-content: space-between;
   align-items: center;
   gap: 15px;
-
   @media (max-width: 768px) {
     padding: 0 16px;
   }
@@ -72,10 +71,9 @@ const SearchInput = styled.input`
   font-size: 1rem;
   outline: none;
   transition: all 0.3s;
-
   &:focus {
     border-color: #000;
-    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0 0 3px rgba(0,0,0,0.1);
   }
 `;
 
@@ -92,7 +90,6 @@ const Hamburger = styled.button`
   background: none;
   border: none;
   cursor: pointer;
-
   @media (max-width: 768px) {
     display: block;
   }
@@ -108,7 +105,7 @@ const MobileMenu = styled.div`
   right: 0;
   background: white;
   padding: 20px;
-  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 10px 15px rgba(0,0,0,0.1);
   z-index: 60;
 `;
 
@@ -116,7 +113,6 @@ const NavLinks = styled.div`
   display: flex;
   gap: 20px;
   font-weight: 500;
-
   @media (max-width: 768px) {
     display: none;
   }
@@ -135,13 +131,11 @@ const NavLink = styled.button.withConfig({
   color: ${(props) => (props.$active ? "#000" : "#666")};
   font-weight: ${(props) => (props.$active ? "600" : "500")};
   position: relative;
-
   &:hover {
     color: #000;
     background-color: #f1f1f1;
     transform: translateY(-2px);
   }
-
   &::after {
     content: "";
     position: absolute;
@@ -154,7 +148,6 @@ const NavLink = styled.button.withConfig({
     border-radius: 10px;
     transition: all 0.3s ease;
   }
-
   &:hover::after {
     width: 60%;
   }
@@ -165,7 +158,6 @@ const Hero = styled.section`
   color: white;
   padding: 140px 20px 100px;
   text-align: center;
-
   @media (max-width: 768px) {
     padding: 100px 16px 80px;
   }
@@ -176,7 +168,6 @@ const HeroTitle = styled.h1`
   line-height: 1.1;
   font-weight: 800;
   margin-bottom: 20px;
-
   @media (max-width: 768px) {
     font-size: 2.8rem;
   }
@@ -186,7 +177,6 @@ const ProductsWrapper = styled.section`
   max-width: 1280px;
   margin: 0 auto;
   padding: 60px 20px;
-
   @media (max-width: 768px) {
     padding: 40px 16px;
   }
@@ -218,12 +208,10 @@ const WhatsAppButton = styled.a`
   z-index: 1000;
   transition: all 0.3s ease;
   text-decoration: none;
-
   &:hover {
     transform: scale(1.1);
     box-shadow: 0 6px 20px rgba(37, 211, 102, 0.5);
   }
-
   @media (max-width: 480px) {
     width: 55px;
     height: 55px;
@@ -247,31 +235,40 @@ function App() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
 
+  // Cart persistence
   useEffect(() => {
     localStorage.setItem("cart", JSON.stringify(cart));
   }, [cart]);
 
+  // Wishlist persistence
+  useEffect(() => {
+    const savedWishlist = localStorage.getItem("wishlist");
+    if (savedWishlist) {
+      setWishlist(JSON.parse(savedWishlist));
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem("wishlist", JSON.stringify(wishlist));
+  }, [wishlist]);
+
   const filteredProducts = useMemo(() => {
-    let result =
-      activeCategory === "all"
-        ? products
-        : products.filter((p) => p.category === activeCategory);
+    let result = activeCategory === "all"
+      ? products
+      : products.filter((p) => p.category === activeCategory);
 
     if (searchTerm.trim() !== "") {
-      result = result.filter(
-        (product) =>
-          product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          product.color.toLowerCase().includes(searchTerm.toLowerCase())
+      result = result.filter((product) =>
+        product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        product.color.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
-
     return result;
   }, [activeCategory, searchTerm]);
 
   const addToCart = (product) => {
     setCart((prev) => {
       const existingProduct = prev.find((item) => item.id === product.id);
-
       if (existingProduct) {
         return prev.map((item) =>
           item.id === product.id
@@ -279,20 +276,14 @@ function App() {
             : item
         );
       }
-
-      return [
-        ...prev,
-        { ...product, quantity: 1 },
-      ];
+      return [...prev, { ...product, quantity: 1 }];
     });
   };
 
   const increaseQuantity = (id) => {
     setCart((prev) =>
       prev.map((item) =>
-        item.id === id
-          ? { ...item, quantity: item.quantity + 1 }
-          : item
+        item.id === id ? { ...item, quantity: item.quantity + 1 } : item
       )
     );
   };
@@ -301,9 +292,7 @@ function App() {
     setCart((prev) =>
       prev
         .map((item) =>
-          item.id === id
-            ? { ...item, quantity: item.quantity - 1 }
-            : item
+          item.id === id ? { ...item, quantity: item.quantity - 1 } : item
         )
         .filter((item) => item.quantity > 0)
     );
@@ -318,16 +307,12 @@ function App() {
     );
   };
 
-  // ✅ This was the problem - now correctly placed
   const openProductModal = (product) => {
     setSelectedProduct(product);
     setIsModalOpen(true);
   };
 
-  const totalPrice = cart.reduce(
-    (sum, item) => sum + item.price * item.quantity,
-    0
-  );
+  const totalPrice = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
   return (
     <Container>
@@ -337,7 +322,6 @@ function App() {
             <BrandDot>W</BrandDot>
             WunmzyCo
           </Logo>
-
           <SearchContainer>
             <SearchIcon>
               <Search size={20} />
@@ -349,8 +333,6 @@ function App() {
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </SearchContainer>
-
-          {/* Desktop Menu */}
           <NavLinks>
             <NavLink $active={activeCategory === "all"} onClick={() => setActiveCategory("all")}>All</NavLink>
             <NavLink $active={activeCategory === "palazzos"} onClick={() => setActiveCategory("palazzos")}>Palazzos</NavLink>
@@ -358,39 +340,19 @@ function App() {
             <NavLink $active={activeCategory === "joggers"} onClick={() => setActiveCategory("joggers")}>Joggers</NavLink>
             <NavLink $active={activeCategory === "shoes"} onClick={() => setActiveCategory("shoes")}>Shoes</NavLink>
           </NavLinks>
-
-          {/* Hamburger Button */}
           <Hamburger onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
             {isMobileMenuOpen ? <X size={28} /> : <Menu size={28} />}
           </Hamburger>
-
-          <button
-            onClick={() => setIsCartOpen(true)}
-            style={{ position: "relative", background: "none", border: "none", cursor: "pointer" }}
-          >
+          <button onClick={() => setIsCartOpen(true)} style={{ position: "relative", background: "none", border: "none", cursor: "pointer" }}>
             <ShoppingCart size={26} />
             {cart.length > 0 && (
-              <span style={{
-                position: "absolute",
-                top: "-6px",
-                right: "-6px",
-                background: "black",
-                color: "white",
-                fontSize: "12px",
-                width: "20px",
-                height: "20px",
-                borderRadius: "50%",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}>
+              <span style={{ position: "absolute", top: "-6px", right: "-6px", background: "black", color: "white", fontSize: "12px", width: "20px", height: "20px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center" }}>
                 {cart.length}
               </span>
             )}
           </button>
         </NavContent>
 
-        {/* Mobile Menu */}
         <MobileMenu open={isMobileMenuOpen}>
           <NavLink $active={activeCategory === "all"} onClick={() => { setActiveCategory("all"); setIsMobileMenuOpen(false); }}>All</NavLink>
           <NavLink $active={activeCategory === "palazzos"} onClick={() => { setActiveCategory("palazzos"); setIsMobileMenuOpen(false); }}>Palazzos</NavLink>
@@ -412,7 +374,6 @@ function App() {
           <h2 style={{ fontSize: "2.4rem", fontWeight: "700" }}>Our Collection</h2>
           <p>{filteredProducts.length} products</p>
         </SectionHeader>
-
         <Suspense fallback={<p>Loading products...</p>}>
           <ProductsSection
             products={filteredProducts}
@@ -440,20 +401,15 @@ function App() {
           totalPrice={totalPrice}
           onCheckout={() => { setIsCartOpen(false); setIsCheckoutOpen(true); }}
         />
-
         <CheckoutModal
           isOpen={isCheckoutOpen}
           onClose={() => setIsCheckoutOpen(false)}
           totalPrice={totalPrice}
           cart={cart}
         />
-
         <ProductModal
           isOpen={isModalOpen}
-          onClose={() => {
-            setIsModalOpen(false);
-            setSelectedProduct(null);
-          }}
+          onClose={() => { setIsModalOpen(false); setSelectedProduct(null); }}
           product={selectedProduct}
           addToCart={addToCart}
           toggleWishlist={toggleWishlist}
@@ -461,12 +417,7 @@ function App() {
         />
       </Suspense>
 
-      {/* Floating WhatsApp Button */}
-      <WhatsAppButton
-        href="https://wa.me/2348060230990"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
+      <WhatsAppButton href="https://wa.me/2348060230990" target="_blank" rel="noopener noreferrer">
         <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="currentColor" viewBox="0 0 24 24">
           <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.198.297-.767.966-.94 1.164-.173.198-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.485-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.917-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.569-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" />
         </svg>

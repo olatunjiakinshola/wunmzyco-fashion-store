@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import { memo, useState } from 'react';
 import styled from 'styled-components';
 import { X, ShoppingCart, Heart } from 'lucide-react';
 
@@ -116,7 +116,6 @@ const SizeButton = styled.button`
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s;
-
   &:hover {
     border-color: #000;
   }
@@ -142,7 +141,6 @@ const AddToCartButton = styled.button`
   justify-content: center;
   gap: 12px;
   margin-top: 20px;
-
   &:hover {
     background: #222;
   }
@@ -156,9 +154,19 @@ const ProductModal = memo(({
   toggleWishlist,
   wishlist
 }) => {
+  const [selectedSize, setSelectedSize] = useState(null);
+
   if (!isOpen || !product) return null;
 
   const isWishlisted = wishlist.includes(product.id);
+
+  const handleAddToCart = () => {
+    const itemToAdd = {
+      ...product,
+      selectedSize: selectedSize || (product.sizes && product.sizes[0]) || "M"
+    };
+    addToCart(itemToAdd);
+  };
 
   return (
     <ModalOverlay onClick={onClose}>
@@ -199,7 +207,11 @@ const ProductModal = memo(({
                 <SizeLabel>Select Size</SizeLabel>
                 <SizeButtons>
                   {product.sizes.map(size => (
-                    <SizeButton key={size} className="selected">
+                    <SizeButton 
+                      key={size} 
+                      className={selectedSize === size ? "selected" : ""}
+                      onClick={() => setSelectedSize(size)}
+                    >
                       {size}
                     </SizeButton>
                   ))}
@@ -207,7 +219,7 @@ const ProductModal = memo(({
               </SizeContainer>
             )}
 
-            <AddToCartButton onClick={() => addToCart(product)}>
+            <AddToCartButton onClick={handleAddToCart}>
               <ShoppingCart size={20} />
               Add to Cart
             </AddToCartButton>
