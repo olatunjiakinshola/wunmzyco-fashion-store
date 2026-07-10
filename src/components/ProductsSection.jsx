@@ -1,6 +1,6 @@
-import { memo } from 'react'
-import styled from 'styled-components'
-import { Heart, ShoppingCart } from 'lucide-react'
+import { memo } from "react";
+import styled from "styled-components";
+import ProductCard from "./ProductCard";
 
 const Grid = styled.div`
   display: grid;
@@ -11,122 +11,24 @@ const Grid = styled.div`
     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
     gap: 20px;
   }
-`
+`;
 
-const ProductCard = styled.div`
-  background: white;
-  border-radius: 20px;
-  overflow: hidden;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.06);
-  transition: all 0.3s ease;
-
-  &:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 20px 35px rgba(0,0,0,0.12);
+const ProductsSection = memo(
+  ({ products, addToCart, toggleWishlist, wishlist }) => {
+    return (
+      <Grid>
+        {products.map((product) => (
+          <ProductCard
+            key={product.id}
+            product={product}
+            addToCart={addToCart}
+            toggleWishlist={toggleWishlist}
+            wishlist={wishlist}
+          />
+        ))}
+      </Grid>
+    );
   }
-`
+);
 
-const ImageContainer = styled.div`
-  position: relative;
-  height: 320px;
-  overflow: hidden;
-
-  @media (max-width: 480px) {
-    height: 280px;
-  }
-`
-
-const ProductImage = styled.img`
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 0.5s ease;
-
-  #{ProductCard}:hover & {
-    transform: scale(1.1);
-  }
-`
-
-const WishlistButton = styled.button`
-  position: absolute;
-  top: 14px;
-  right: 14px;
-  background: white;
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: none;
-  cursor: pointer;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-`
-
-const HoverOverlay = styled.div`
-  position: absolute;
-  inset: 0;
-  background: rgba(0,0,0,0.45);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0;
-  transition: opacity 0.3s;
-
-  #{ProductCard}:hover & {
-    opacity: 1;
-  }
-`
-
-const AddButton = styled.button`
-  background: white;
-  color: black;
-  border: none;
-  padding: 12px 24px;
-  border-radius: 50px;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  cursor: pointer;
-`
-
-const ProductInfo = styled.div`
-  padding: 20px;
-`
-
-const ProductName = styled.h3`
-  font-size: 1.15rem;
-  font-weight: 600;
-  margin-bottom: 4px;
-`
-
-const ProductsSection = memo(({ products, addToCart, toggleWishlist, wishlist }) => {
-  return (
-    <Grid>
-      {products.map(product => (
-        <ProductCard key={product.id}>
-          <ImageContainer>
-            <ProductImage src={product.image} alt={product.name} />
-            <WishlistButton onClick={() => toggleWishlist(product.id)}>
-              <Heart size={20} fill={wishlist.includes(product.id) ? "#ef4444" : "none"} color={wishlist.includes(product.id) ? "#ef4444" : "#333"} />
-            </WishlistButton>
-            <HoverOverlay>
-              <AddButton onClick={() => addToCart(product)}>
-                <ShoppingCart size={18} /> Add to Cart
-              </AddButton>
-            </HoverOverlay>
-          </ImageContainer>
-
-          <ProductInfo>
-            <ProductName>{product.name}</ProductName>
-            <p style={{ color: '#666', marginBottom: '8px' }}>{product.color}</p>
-            <p style={{ fontSize: '1.4rem', fontWeight: '700' }}>₦{product.price}</p>
-          </ProductInfo>
-        </ProductCard>
-      ))}
-    </Grid>
-  )
-})
-
-export default ProductsSection
+export default ProductsSection;
