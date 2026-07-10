@@ -70,7 +70,7 @@ const CheckoutModal = memo(({ isOpen, onClose, totalPrice, cart }) => {
      message += `${index + 1}. ${item.name} - *₦${item.price.toLocaleString()}*\n`;
     });
 
-    message += `\n*Total Amount: $₦{totalPrice}*\n\n`;
+    message += `\n*Total Amount: ₦${totalPrice.toLocaleString()}*\n\n`;
     message += `Please confirm my order. Thank you! 🙏`;
 
     return encodeURIComponent(message);
