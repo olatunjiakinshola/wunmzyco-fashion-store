@@ -42,7 +42,7 @@ const ProductImage = styled.img`
   object-fit: cover;
   transition: transform 0.5s ease;
 
-  ${ProductCard}:hover & {
+  #{ProductCard}:hover & {
     transform: scale(1.1);
   }
 `
@@ -73,7 +73,7 @@ const HoverOverlay = styled.div`
   opacity: 0;
   transition: opacity 0.3s;
 
-  ${ProductCard}:hover & {
+  #{ProductCard}:hover & {
     opacity: 1;
   }
 `
@@ -121,7 +121,7 @@ const ProductsSection = memo(({ products, addToCart, toggleWishlist, wishlist })
           <ProductInfo>
             <ProductName>{product.name}</ProductName>
             <p style={{ color: '#666', marginBottom: '8px' }}>{product.color}</p>
-            <p style={{ fontSize: '1.4rem', fontWeight: '700' }}>${product.price}</p>
+            <p style={{ fontSize: '1.4rem', fontWeight: '700' }}>#{product.price}</p>
           </ProductInfo>
         </ProductCard>
       ))}
