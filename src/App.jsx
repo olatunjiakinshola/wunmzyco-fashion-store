@@ -262,7 +262,60 @@ function App() {
     return result;
   }, [activeCategory, searchTerm]);
 
-  const addToCart = (product) => setCart((prev) => [...prev, product]);
+  const addToCart = (product) => {
+  setCart((prev) => {
+    const existingProduct = prev.find(
+      (item) => item.id === product.id
+    );
+
+    if (existingProduct) {
+      return prev.map((item) =>
+        item.id === product.id
+          ? {
+              ...item,
+              quantity: item.quantity + 1,
+            }
+          : item
+      );
+    }
+
+    return [
+      ...prev,
+      {
+        ...product,
+        quantity: 1,
+      },
+    ];
+  });
+};
+  const increaseQuantity = (id) => {
+  setCart((prev) =>
+    prev.map((item) =>
+      item.id === id
+        ? {
+            ...item,
+            quantity: item.quantity + 1,
+          }
+        : item
+    )
+  );
+};
+
+
+const decreaseQuantity = (id) => {
+  setCart((prev) =>
+    prev
+      .map((item) =>
+        item.id === id
+          ? {
+              ...item,
+              quantity: item.quantity - 1,
+            }
+          : item
+      )
+      .filter((item) => item.quantity > 0)
+  );
+};
   const removeFromCart = (index) =>
     setCart((prev) => prev.filter((_, i) => i !== index));
   const toggleWishlist = (id) => {
@@ -270,7 +323,7 @@ function App() {
       prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
     );
   };
-  const totalPrice = cart.reduce((sum, item) => sum + item.price, 0);
+  const totalPrice = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
 
   return (
     <Container>
@@ -379,6 +432,8 @@ function App() {
           onClose={() => setIsCartOpen(false)}
           cart={cart}
           removeFromCart={removeFromCart}
+          increaseQuantity={increaseQuantity}
+          decreaseQuantity={decreaseQuantity}
           totalPrice={totalPrice}
           onCheckout={() => { setIsCartOpen(false); setIsCheckoutOpen(true); }}
         />
