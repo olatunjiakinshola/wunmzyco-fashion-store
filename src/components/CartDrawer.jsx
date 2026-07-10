@@ -123,7 +123,7 @@ const CartDrawer = memo(
                 Your cart is empty
               </p>
             ) : (
-              cart.map((item, index) => (
+              cart.map((item, id) => (
                 <Item key={index}>
                   <ItemImage src={item.image} alt={item.name} />
                   <div style={{ flex: 1 }}>
