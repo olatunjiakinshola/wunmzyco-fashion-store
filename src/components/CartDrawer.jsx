@@ -124,7 +124,7 @@ const CartDrawer = memo(
               </p>
             ) : (
               cart.map((item, id) => (
-                <Item key={index}>
+                <Item key={id}>
                   <ItemImage src={item.image} alt={item.name} />
                   <div style={{ flex: 1 }}>
                     <h4>{item.name}</h4>
@@ -144,7 +144,7 @@ const CartDrawer = memo(
                       </button>
                     </div>
                     <button
-                      onClick={() => removeFromCart(id)}
+                      onClick={() => removeFromCart(item.id)}
                       style={{ color: "#ef4444", fontSize: "0.95rem" }}
                     >
                       Remove

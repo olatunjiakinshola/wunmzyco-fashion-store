@@ -18,6 +18,7 @@ const ImageContainer = styled.div`
   position: relative;
   height: 320px;
   overflow: hidden;
+  cursor: pointer;
   @media (max-width: 480px) {
     height: 280px;
   }
@@ -27,7 +28,6 @@ const ProductImage = styled.img`
   width: 100%;
   height: 100%;
   object-fit: cover;
-  cursor: pointer;
   transition: transform 0.5s ease;
   ${Card}:hover & {
     transform: scale(1.1);
@@ -48,6 +48,7 @@ const WishlistButton = styled.button`
   border: none;
   cursor: pointer;
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  z-index: 3;
 `;
 
 const HoverOverlay = styled.div`
@@ -59,6 +60,7 @@ const HoverOverlay = styled.div`
   justify-content: center;
   opacity: 0;
   transition: opacity 0.3s;
+  z-index: 2;
   ${Card}:hover & {
     opacity: 1;
   }
@@ -75,6 +77,7 @@ const AddButton = styled.button`
   align-items: center;
   gap: 8px;
   cursor: pointer;
+  z-index: 3;
 `;
 
 const ProductInfo = styled.div`
@@ -100,28 +103,44 @@ const ProductCard = memo(
     wishlist,
     onOpenModal 
   }) => {
+    const handleImageClick = (e) => {
+      e.stopPropagation();
+      onOpenModal(product);
+    };
+
     return (
       <Card>
-        <ImageContainer>
+        <ImageContainer onClick={handleImageClick}>
           <ProductImage 
             src={product.image}
             alt={product.name}
-            onClick={() => onOpenModal(product)}   // ← This must be here
           />
-          <WishlistButton onClick={() => toggleWishlist(product.id)}>
+          <WishlistButton 
+            onClick={(e) => {
+              e.stopPropagation();
+              toggleWishlist(product.id);
+            }}
+          >
             <Heart
               size={20}
               fill={wishlist.includes(product.id) ? "#ef4444" : "none"}
               color={wishlist.includes(product.id) ? "#ef4444" : "#333"}
             />
           </WishlistButton>
+
           <HoverOverlay>
-            <AddButton onClick={() => addToCart(product)}>
+            <AddButton 
+              onClick={(e) => {
+                e.stopPropagation();
+                addToCart(product);
+              }}
+            >
               <ShoppingCart size={18} />
               Add to Cart
             </AddButton>
           </HoverOverlay>
         </ImageContainer>
+
         <ProductInfo>
           <ProductName>{product.name}</ProductName>
           <p style={{ color: "#666", marginBottom: "8px" }}>

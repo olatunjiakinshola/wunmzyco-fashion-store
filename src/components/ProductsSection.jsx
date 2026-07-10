@@ -6,7 +6,6 @@ const Grid = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 28px;
-
   @media (max-width: 640px) {
     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
     gap: 20px;
@@ -14,7 +13,13 @@ const Grid = styled.div`
 `;
 
 const ProductsSection = memo(
-  ({ products, addToCart, toggleWishlist, wishlist }) => {
+  ({ 
+    products, 
+    addToCart, 
+    toggleWishlist, 
+    wishlist,
+    onOpenModal   
+  }) => {
     return (
       <Grid>
         {products.map((product) => (
@@ -24,6 +29,7 @@ const ProductsSection = memo(
             addToCart={addToCart}
             toggleWishlist={toggleWishlist}
             wishlist={wishlist}
+            onOpenModal={onOpenModal}     
           />
         ))}
       </Grid>
