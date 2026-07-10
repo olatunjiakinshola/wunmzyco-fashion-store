@@ -67,7 +67,7 @@ const CheckoutModal = memo(({ isOpen, onClose, totalPrice, cart }) => {
     let message = `*New Order from WunmzyCo Website*\n\n`;
     
     cart.forEach((item, index) => {
-      message += `${index + 1}. ${item.name} - *$₦{item.price}*\n`;
+     message += `${index + 1}. ${item.name} - *₦${item.price.toLocaleString()}*\n`;
     });
 
     message += `\n*Total Amount: $₦{totalPrice}*\n\n`;
