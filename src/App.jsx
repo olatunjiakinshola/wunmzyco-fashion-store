@@ -6,7 +6,7 @@ import products from "./data/Products";
 const ProductsSection = lazy(() => import("./components/ProductsSection"));
 const CartDrawer = lazy(() => import("./components/CartDrawer"));
 const CheckoutModal = lazy(() => import("./components/CheckoutModal"));
-
+const ProductModal = lazy(() => import("./components/ProductModal"));
 
 // === STYLED COMPONENTS ===
 const Container = styled.div`
@@ -75,7 +75,7 @@ const SearchInput = styled.input`
 
   &:focus {
     border-color: #000;
-    box-shadow: 0 0 0 3px rgba(0,0,0,0.1);
+    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1);
   }
 `;
 
@@ -99,7 +99,7 @@ const Hamburger = styled.button`
 `;
 
 const MobileMenu = styled.div`
-  display: ${props => props.open ? 'flex' : 'none'};
+  display: ${(props) => (props.open ? "flex" : "none")};
   flex-direction: column;
   gap: 15px;
   position: absolute;
@@ -108,7 +108,7 @@ const MobileMenu = styled.div`
   right: 0;
   background: white;
   padding: 20px;
-  box-shadow: 0 10px 15px rgba(0,0,0,0.1);
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
   z-index: 60;
 `;
 
@@ -206,7 +206,7 @@ const WhatsAppButton = styled.a`
   position: fixed;
   bottom: 25px;
   right: 25px;
-  background: #25D366;
+  background: #25d366;
   color: white;
   width: 60px;
   height: 60px;
@@ -244,20 +244,25 @@ function App() {
   const [activeCategory, setActiveCategory] = useState("all");
   const [wishlist, setWishlist] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);   // Hamburger State
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false); // Hamburger State
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+
   useEffect(() => {
-  localStorage.setItem("cart", JSON.stringify(cart));
-}, [cart]);
+    localStorage.setItem("cart", JSON.stringify(cart));
+  }, [cart]);
 
   const filteredProducts = useMemo(() => {
-    let result = activeCategory === "all"
-      ? products
-      : products.filter((p) => p.category === activeCategory);
+    let result =
+      activeCategory === "all"
+        ? products
+        : products.filter((p) => p.category === activeCategory);
 
     if (searchTerm.trim() !== "") {
-      result = result.filter((product) =>
-        product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        product.color.toLowerCase().includes(searchTerm.toLowerCase())
+      result = result.filter(
+        (product) =>
+          product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          product.color.toLowerCase().includes(searchTerm.toLowerCase()),
       );
     }
 
@@ -265,67 +270,72 @@ function App() {
   }, [activeCategory, searchTerm]);
 
   const addToCart = (product) => {
-  setCart((prev) => {
-    const existingProduct = prev.find(
-      (item) => item.id === product.id
-    );
+    setCart((prev) => {
+      const existingProduct = prev.find((item) => item.id === product.id);
 
-    if (existingProduct) {
-      return prev.map((item) =>
-        item.id === product.id
+      if (existingProduct) {
+        return prev.map((item) =>
+          item.id === product.id
+            ? {
+                ...item,
+                quantity: item.quantity + 1,
+              }
+            : item,
+        );
+      }
+
+      const openProductModal = (product) => {
+        setSelectedProduct(product);
+        setIsModalOpen(true);
+      };
+
+      return [
+        ...prev,
+        {
+          ...product,
+          quantity: 1,
+        },
+      ];
+    });
+  };
+  const increaseQuantity = (id) => {
+    setCart((prev) =>
+      prev.map((item) =>
+        item.id === id
           ? {
               ...item,
               quantity: item.quantity + 1,
             }
-          : item
-      );
-    }
+          : item,
+      ),
+    );
+  };
 
-    return [
-      ...prev,
-      {
-        ...product,
-        quantity: 1,
-      },
-    ];
-  });
-};
-  const increaseQuantity = (id) => {
-  setCart((prev) =>
-    prev.map((item) =>
-      item.id === id
-        ? {
-            ...item,
-            quantity: item.quantity + 1,
-          }
-        : item
-    )
-  );
-};
-
-
-const decreaseQuantity = (id) => {
-  setCart((prev) =>
-    prev
-      .map((item) =>
-        item.id === id
-          ? {
-              ...item,
-              quantity: item.quantity - 1,
-            }
-          : item
-      )
-      .filter((item) => item.quantity > 0)
-  );
-};
+  const decreaseQuantity = (id) => {
+    setCart((prev) =>
+      prev
+        .map((item) =>
+          item.id === id
+            ? {
+                ...item,
+                quantity: item.quantity - 1,
+              }
+            : item,
+        )
+        .filter((item) => item.quantity > 0),
+    );
+  };
   const removeFromCart = (id) =>
     setCart((prev) => prev.filter((item) => item.id !== id));
   const toggleWishlist = (id) => {
     setWishlist((prev) =>
-      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
+      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id],
     );
   };
-  const totalPrice = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  const totalPrice = cart.reduce(
+    (sum, item) => sum + item.price * item.quantity,
+    0,
+  );
 
   return (
     <Container>
@@ -350,11 +360,36 @@ const decreaseQuantity = (id) => {
 
           {/* Desktop Menu */}
           <NavLinks>
-            <NavLink $active={activeCategory === "all"} onClick={() => setActiveCategory("all")}>All</NavLink>
-            <NavLink $active={activeCategory === "palazzos"} onClick={() => setActiveCategory("palazzos")}>Palazzos</NavLink>
-            <NavLink $active={activeCategory === "tops"} onClick={() => setActiveCategory("tops")}>Tops</NavLink>
-            <NavLink $active={activeCategory === "joggers"} onClick={() => setActiveCategory("joggers")}>Joggers</NavLink>
-            <NavLink $active={activeCategory === "shoes"} onClick={() => setActiveCategory("shoes")}>Shoes</NavLink>
+            <NavLink
+              $active={activeCategory === "all"}
+              onClick={() => setActiveCategory("all")}
+            >
+              All
+            </NavLink>
+            <NavLink
+              $active={activeCategory === "palazzos"}
+              onClick={() => setActiveCategory("palazzos")}
+            >
+              Palazzos
+            </NavLink>
+            <NavLink
+              $active={activeCategory === "tops"}
+              onClick={() => setActiveCategory("tops")}
+            >
+              Tops
+            </NavLink>
+            <NavLink
+              $active={activeCategory === "joggers"}
+              onClick={() => setActiveCategory("joggers")}
+            >
+              Joggers
+            </NavLink>
+            <NavLink
+              $active={activeCategory === "shoes"}
+              onClick={() => setActiveCategory("shoes")}
+            >
+              Shoes
+            </NavLink>
           </NavLinks>
 
           {/* Hamburger Button */}
@@ -364,7 +399,12 @@ const decreaseQuantity = (id) => {
 
           <button
             onClick={() => setIsCartOpen(true)}
-            style={{ position: "relative", background: "none", border: "none", cursor: "pointer" }}
+            style={{
+              position: "relative",
+              background: "none",
+              border: "none",
+              cursor: "pointer",
+            }}
           >
             <ShoppingCart size={26} />
             {cart.length > 0 && (
@@ -392,24 +432,80 @@ const decreaseQuantity = (id) => {
 
         {/* Mobile Menu */}
         <MobileMenu open={isMobileMenuOpen}>
-          <NavLink $active={activeCategory === "all"} onClick={() => { setActiveCategory("all"); setIsMobileMenuOpen(false); }}>All</NavLink>
-          <NavLink $active={activeCategory === "palazzos"} onClick={() => { setActiveCategory("palazzos"); setIsMobileMenuOpen(false); }}>Palazzos</NavLink>
-          <NavLink $active={activeCategory === "tops"} onClick={() => { setActiveCategory("tops"); setIsMobileMenuOpen(false); }}>Tops</NavLink>
-          <NavLink $active={activeCategory === "joggers"} onClick={() => { setActiveCategory("joggers"); setIsMobileMenuOpen(false); }}>Joggers</NavLink>
-          <NavLink $active={activeCategory === "shoes"} onClick={() => { setActiveCategory("shoes"); setIsMobileMenuOpen(false); }}>Shoes</NavLink>
+          <NavLink
+            $active={activeCategory === "all"}
+            onClick={() => {
+              setActiveCategory("all");
+              setIsMobileMenuOpen(false);
+            }}
+          >
+            All
+          </NavLink>
+          <NavLink
+            $active={activeCategory === "palazzos"}
+            onClick={() => {
+              setActiveCategory("palazzos");
+              setIsMobileMenuOpen(false);
+            }}
+          >
+            Palazzos
+          </NavLink>
+          <NavLink
+            $active={activeCategory === "tops"}
+            onClick={() => {
+              setActiveCategory("tops");
+              setIsMobileMenuOpen(false);
+            }}
+          >
+            Tops
+          </NavLink>
+          <NavLink
+            $active={activeCategory === "joggers"}
+            onClick={() => {
+              setActiveCategory("joggers");
+              setIsMobileMenuOpen(false);
+            }}
+          >
+            Joggers
+          </NavLink>
+          <NavLink
+            $active={activeCategory === "shoes"}
+            onClick={() => {
+              setActiveCategory("shoes");
+              setIsMobileMenuOpen(false);
+            }}
+          >
+            Shoes
+          </NavLink>
         </MobileMenu>
       </Navbar>
 
       <Hero>
         <div>
-          <p style={{ textTransform: "uppercase", letterSpacing: "3px", marginBottom: "12px" }}>NEW SEASON 2026</p>
-          <HeroTitle>Timeless.<br />Effortless.<br />WunmzyCo.</HeroTitle>
+          <p
+            style={{
+              textTransform: "uppercase",
+              letterSpacing: "3px",
+              marginBottom: "12px",
+            }}
+          >
+            NEW SEASON 2026
+          </p>
+          <HeroTitle>
+            Timeless.
+            <br />
+            Effortless.
+            <br />
+            WunmzyCo.
+          </HeroTitle>
         </div>
       </Hero>
 
       <ProductsWrapper>
         <SectionHeader>
-          <h2 style={{ fontSize: "2.4rem", fontWeight: "700" }}>Our Collection</h2>
+          <h2 style={{ fontSize: "2.4rem", fontWeight: "700" }}>
+            Our Collection
+          </h2>
           <p>{filteredProducts.length} products</p>
         </SectionHeader>
 
@@ -419,11 +515,19 @@ const decreaseQuantity = (id) => {
             addToCart={addToCart}
             toggleWishlist={toggleWishlist}
             wishlist={wishlist}
+            onOpenModal={openProductModal}
           />
         </Suspense>
       </ProductsWrapper>
 
-      <footer style={{ background: "#111", color: "#aaa", textAlign: "center", padding: "60px 20px" }}>
+      <footer
+        style={{
+          background: "#111",
+          color: "#aaa",
+          textAlign: "center",
+          padding: "60px 20px",
+        }}
+      >
         <h2 style={{ color: "white", marginBottom: "8px" }}>WUNMZYCo</h2>
         <p>© 2026 WunmzyCo. All rights reserved.</p>
       </footer>
@@ -437,7 +541,10 @@ const decreaseQuantity = (id) => {
           increaseQuantity={increaseQuantity}
           decreaseQuantity={decreaseQuantity}
           totalPrice={totalPrice}
-          onCheckout={() => { setIsCartOpen(false); setIsCheckoutOpen(true); }}
+          onCheckout={() => {
+            setIsCartOpen(false);
+            setIsCheckoutOpen(true);
+          }}
         />
 
         <CheckoutModal
@@ -445,6 +552,18 @@ const decreaseQuantity = (id) => {
           onClose={() => setIsCheckoutOpen(false)}
           totalPrice={totalPrice}
           cart={cart}
+        />
+
+        <ProductModal
+          isOpen={isModalOpen}
+          onClose={() => {
+            setIsModalOpen(false);
+            setSelectedProduct(null);
+          }}
+          product={selectedProduct}
+          addToCart={addToCart}
+          toggleWishlist={toggleWishlist}
+          wishlist={wishlist}
         />
       </Suspense>
 
@@ -454,8 +573,14 @@ const decreaseQuantity = (id) => {
         target="_blank"
         rel="noopener noreferrer"
       >
-        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="currentColor" viewBox="0 0 24 24">
-          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.198.297-.767.966-.94 1.164-.173.198-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.485-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.917-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.569-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="28"
+          height="28"
+          fill="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.198.297-.767.966-.94 1.164-.173.198-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.485-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.917-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.569-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" />
         </svg>
       </WhatsAppButton>
     </Container>
