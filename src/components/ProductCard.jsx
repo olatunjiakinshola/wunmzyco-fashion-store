@@ -97,18 +97,13 @@ const Price = styled.p`
 `;
 
 const ProductCard = memo(
-  ({ product, addToCart, toggleWishlist, wishlist }) => {
+  ({ product, addToCart, toggleWishlist, wishlist, onOpenModal }) => {
     return (
       <Card>
         <ImageContainer>
           <ProductImage  src={product.image}
   alt={product.name}
-  onClick={() => {
-    const imageWindow = window.open();
-    imageWindow.document.write(
-      `<img src="${product.image}" style="width:100%;height:auto;" />`
-    );
-  }}/>
+  onClick={() => onOpenModal(product)}/>
 
           <WishlistButton onClick={() => toggleWishlist(product.id)}>
             <Heart
