@@ -29,6 +29,7 @@ const ProductImage = styled.img`
   width: 100%;
   height: 100%;
   object-fit: cover;
+  cursor: pointer;
   transition: transform 0.5s ease;
 
   ${Card}:hover & {
@@ -100,7 +101,14 @@ const ProductCard = memo(
     return (
       <Card>
         <ImageContainer>
-          <ProductImage src={product.image} alt={product.name} />
+          <ProductImage  src={product.image}
+  alt={product.name}
+  onClick={() => {
+    const imageWindow = window.open();
+    imageWindow.document.write(
+      `<img src="${product.image}" style="width:100%;height:auto;" />`
+    );
+  }}/>
 
           <WishlistButton onClick={() => toggleWishlist(product.id)}>
             <Heart
