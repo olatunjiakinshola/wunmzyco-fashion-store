@@ -1,4 +1,4 @@
-import{a as e,i as t,n,o as r,s as i,t as a}from"./index-BtwhFf3n.js";var o=t(`message-circle`,[[`path`,{d:`M2.992 16.342a2 2 0 0 1 .094 1.167l-1.065 3.29a1 1 0 0 0 1.236 1.168l3.413-.998a2 2 0 0 1 1.099.092 10 10 0 1 0-4.777-4.719`,key:`1sd12s`}]]),s=i(r(),1),c=a(),l=e.div`
+import{a as e,i as t,n,o as r,s as i,t as a}from"./index-Bba8bTFN.js";var o=t(`message-circle`,[[`path`,{d:`M2.992 16.342a2 2 0 0 1 .094 1.167l-1.065 3.29a1 1 0 0 0 1.236 1.168l3.413-.998a2 2 0 0 1 1.099.092 10 10 0 1 0-4.777-4.719`,key:`1sd12s`}]]),s=i(r(),1),c=a(),l=e.div`
   position: fixed;
   inset: 0;
   background: rgba(0,0,0,0.7);
