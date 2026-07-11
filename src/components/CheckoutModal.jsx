@@ -108,7 +108,7 @@ const CheckoutModal = memo(({ isOpen, onClose, totalPrice, cart }) => {
                 {item.name}
                 {item.selectedSize && <span style={{ color: "#666" }}> (Size: {item.selectedSize})</span>}
               </span>
-              <span style={{ fontWeight: '600' }}>₦{item.price}</span>
+              <span style={{ fontWeight: '600' }}>₦{item.price.toLocaleString()}</span>
             </div>
           ))}
           
@@ -120,7 +120,7 @@ const CheckoutModal = memo(({ isOpen, onClose, totalPrice, cart }) => {
             fontWeight: '700'
           }}>
             <span>Total</span>
-            <span>₦{totalPrice}</span>
+            <span>₦{totalPrice.toLocaleString()}</span>
           </div>
         </OrderSummary>
 
