@@ -386,9 +386,24 @@ function App() {
       </ProductsWrapper>
 
       <footer style={{ background: "#111", color: "#aaa", textAlign: "center", padding: "60px 20px" }}>
-        <h2 style={{ color: "white", marginBottom: "8px" }}>WUNMZYCo</h2>
-        <p>© 2026 WunmzyCo. All rights reserved.</p>
-      </footer>
+  <h2 style={{ color: "white", marginBottom: "8px" }}>WUNMZYCo</h2>
+  <p>© 2026 WunmzyCo. All rights reserved.</p>
+  
+  <div style={{ marginTop: "20px" }}>
+    <p style={{ marginBottom: "12px", color: "#ccc" }}>Follow us</p>
+    <div style={{ display: "flex", justifyContent: "center", gap: "20px" }}>
+      <a href="https://facebook.com/wunmzyco" target="_blank" rel="noopener noreferrer" style={{ color: "#aaa", fontSize: "1.5rem" }}>
+        <i className="fab fa-facebook"></i> Facebook
+      </a>
+      <a href="https://tiktok.com/@wunmzy.co1" target="_blank" rel="noopener noreferrer" style={{ color: "#aaa", fontSize: "1.5rem" }}>
+        <i className="fab fa-tiktok"></i> TikTok
+      </a>
+      <a href="https://wa.me/2348060230990" target="_blank" rel="noopener noreferrer" style={{ color: "#aaa", fontSize: "1.5rem" }}>
+        WhatsApp
+      </a>
+    </div>
+  </div>
+</footer>
 
       <Suspense fallback={null}>
         <CartDrawer
