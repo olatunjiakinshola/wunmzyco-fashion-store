@@ -81,95 +81,86 @@ const CheckoutButton = styled.button`
   font-weight: 600;
   border-radius: 12px;
   cursor: pointer;
-
   &:hover {
     background: #222;
   }
 `;
 
-const CartDrawer = memo(
-  ({
-    isOpen,
-    onClose,
-    cart,
-    removeFromCart,
-    increaseQuantity,
-    decreaseQuantity,
-    totalPrice,
-    onCheckout,
-  }) => {
-    if (!isOpen) return null;
+const CartDrawer = memo(({
+  isOpen,
+  onClose,
+  cart,
+  removeFromCart,
+  increaseQuantity,
+  decreaseQuantity,
+  totalPrice,
+  onCheckout,
+}) => {
+  if (!isOpen) return null;
 
-    return (
-      <>
-        <Overlay onClick={onClose} />
-        <Drawer>
-          <Header>
-            <h2>Your Cart ({cart.length})</h2>
-            <CloseButton onClick={onClose}>
-              <X size={28} />
-            </CloseButton>
-          </Header>
+  return (
+    <>
+      <Overlay onClick={onClose} />
+      <Drawer>
+        <Header>
+          <h2>Your Cart ({cart.length})</h2>
+          <CloseButton onClick={onClose}>
+            <X size={28} />
+          </CloseButton>
+        </Header>
 
-          <Content>
-            {cart.length === 0 ? (
-              <p
-                style={{
-                  textAlign: "center",
-                  marginTop: "80px",
-                  color: "#888",
-                }}
-              >
-                Your cart is empty
-              </p>
-            ) : (
-              cart.map((item, id) => (
-                <Item key={id}>
-                  <ItemImage src={item.image} alt={item.name} />
-                  <div style={{ flex: 1 }}>
-                    <h4>{item.name}</h4>
-                    <p style={{ fontWeight: "bold", margin: "8px 0" }}>
-                      ₦{item.price * item.quantity}
+        <Content>
+          {cart.length === 0 ? (
+            <p style={{ textAlign: "center", marginTop: "80px", color: "#888" }}>
+              Your cart is empty
+            </p>
+          ) : (
+            cart.map((item) => (
+              <Item key={item.id}>
+                <ItemImage src={item.image} alt={item.name} />
+                <div style={{ flex: 1 }}>
+                  <h4>{item.name}</h4>
+                  {item.selectedSize && (
+                    <p style={{ margin: "4px 0", color: "#666", fontSize: "0.95rem" }}>
+                      Size: {item.selectedSize}
                     </p>
+                  )}
+                  <p style={{ fontWeight: "bold", margin: "8px 0" }}>
+                    ₦{item.price * item.quantity}
+                  </p>
 
-                    <div>
-                      <button onClick={() => decreaseQuantity(item.id)}>
-                        -
-                      </button>
-
-                      <span style={{ margin: "0 12px" }}>{item.quantity}</span>
-
-                      <button onClick={() => increaseQuantity(item.id)}>
-                        +
-                      </button>
-                    </div>
-                    <button
-                      onClick={() => removeFromCart(item.id)}
-                      style={{ color: "#ef4444", fontSize: "0.95rem" }}
-                    >
-                      Remove
-                    </button>
+                  <div>
+                    <button onClick={() => decreaseQuantity(item.id)}>-</button>
+                    <span style={{ margin: "0 12px" }}>{item.quantity}</span>
+                    <button onClick={() => increaseQuantity(item.id)}>+</button>
                   </div>
-                </Item>
-              ))
-            )}
-          </Content>
 
-          {cart.length > 0 && (
-            <Footer>
-              <Total>
-                <span>Total</span>
-                <span>₦{totalPrice}</span>
-              </Total>
-              <CheckoutButton onClick={onCheckout}>
-                Proceed to Checkout
-              </CheckoutButton>
-            </Footer>
+                  <button
+                    onClick={() => removeFromCart(item.id)}
+                    style={{ color: "#ef4444", fontSize: "0.95rem", marginTop: "8px" }}
+                  >
+                    Remove
+                  </button>
+                </div>
+              </Item>
+            ))
           )}
-        </Drawer>
-      </>
-    );
-  },
-);
+        </Content>
+
+        {cart.length > 0 && (
+          <Footer>
+            <Total>
+              <span>Total</span>
+              <span>₦{totalPrice}</span>
+            </Total>
+            <CheckoutButton onClick={onCheckout}>
+              Proceed to Checkout
+            </CheckoutButton>
+          </Footer>
+        )}
+      </Drawer>
+    </>
+  );
+});
 
 export default CartDrawer;

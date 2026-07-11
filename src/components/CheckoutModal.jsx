@@ -26,7 +26,7 @@ const ModalHeader = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 24px;
+  margin-bottom: 24px
 `
 
 const WhatsAppButton = styled.button`
@@ -44,7 +44,6 @@ const WhatsAppButton = styled.button`
   justify-content: center;
   gap: 12px;
   margin-top: 20px;
-
   &:hover {
     background: #20ba5c;
   }
@@ -60,27 +59,26 @@ const OrderSummary = styled.div`
 const CheckoutModal = memo(({ isOpen, onClose, totalPrice, cart }) => {
   if (!isOpen) return null
 
- 
-  const phoneNumber = "+2348060230990"   
+  const phoneNumber = "+2348060230990"
 
   const createWhatsAppMessage = () => {
     let message = `*New Order from WunmzyCo Website*\n\n`;
     
     cart.forEach((item, index) => {
-     message += `${index + 1}. ${item.name} - *₦${item.price.toLocaleString()}*\n`;
+      const sizeInfo = item.selectedSize ? ` (Size: ${item.selectedSize})` : '';
+      message += `${index + 1}. ${item.name}${sizeInfo} - *₦${item.price.toLocaleString()}*\n`;
     });
 
     message += `\n*Total Amount: ₦${totalPrice.toLocaleString()}*\n\n`;
     message += `Please confirm my order. Thank you! 🙏`;
-
     return encodeURIComponent(message);
   }
 
   const handleSendToWhatsApp = () => {
     const message = createWhatsAppMessage();
-    const whatsappUrl = `https://wa.me/${+2348060230990}?text=${message}`;
+    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${message}`;
     window.open(whatsappUrl, '_blank');
-    onClose(); // Close modal after opening WhatsApp
+    onClose();
   }
 
   return (
@@ -100,20 +98,23 @@ const CheckoutModal = memo(({ isOpen, onClose, totalPrice, cart }) => {
         <OrderSummary>
           <h4 style={{ marginBottom: '16px' }}>Order Summary ({cart.length} items)</h4>
           {cart.map((item, i) => (
-            <div key={i} style={{ 
-              display: 'flex', 
-              justifyContent: 'space-between', 
+            <div key={i} style={{
+              display: 'flex',
+              justifyContent: 'space-between',
               padding: '10px 0',
               borderBottom: i !== cart.length - 1 ? '1px solid #ddd' : 'none'
             }}>
-              <span>{item.name}</span>
+              <span>
+                {item.name}
+                {item.selectedSize && <span style={{ color: "#666" }}> (Size: {item.selectedSize})</span>}
+              </span>
               <span style={{ fontWeight: '600' }}>₦{item.price}</span>
             </div>
           ))}
           
-          <div style={{ 
-            display: 'flex', 
-            justifyContent: 'space-between', 
+          <div style={{
+            display: 'flex',
+            justifyContent: 'space-between',
             marginTop: '20px',
             fontSize: '1.4rem',
             fontWeight: '700'
@@ -128,11 +129,11 @@ const CheckoutModal = memo(({ isOpen, onClose, totalPrice, cart }) => {
           Send Order via WhatsApp
         </WhatsAppButton>
 
-        <p style={{ 
-          textAlign: 'center', 
-          marginTop: '20px', 
-          fontSize: '0.9rem', 
-          color: '#666' 
+        <p style={{
+          textAlign: 'center',
+          marginTop: '20px',
+          fontSize: '0.9rem',
+          color: '#666'
         }}>
           You will be redirected to WhatsApp to chat with the seller
         </p>
