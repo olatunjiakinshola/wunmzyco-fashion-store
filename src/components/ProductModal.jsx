@@ -18,8 +18,8 @@ const ModalContent = styled.div`
   width: 100%;
   max-width: 900px;
   border-radius: 20px;
-  overflow: hidden;
   max-height: 95vh;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
 `;
@@ -30,6 +30,10 @@ const ModalHeader = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+  position: sticky;
+  top: 0;
+  background: white;
+  z-index: 10;
 `;
 
 const CloseButton = styled.button`
@@ -40,38 +44,29 @@ const CloseButton = styled.button`
 `;
 
 const ModalBody = styled.div`
-  display: flex;
-  flex: 1;
-  overflow: hidden;
-  @media (max-width: 768px) {
-    flex-direction: column;
-  }
+  padding: 0 24px 32px;
 `;
 
 const ImageSection = styled.div`
-  flex: 1;
+  width: 100%;
   background: #f8f9fa;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 30px 20px;
-  min-height: 400px;
+  border-radius: 16px;
+  margin-bottom: 24px;
 `;
 
 const ProductImage = styled.img`
   max-width: 100%;
-  max-height: 500px;
+  max-height: 420px;
   object-fit: contain;
-  border-radius: 16px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  border-radius: 12px;
   cursor: zoom-in;
 `;
 
-const DetailsSection = styled.div`
-  flex: 1;
-  padding: 32px;
-  overflow-y: auto;
-`;
+const DetailsSection = styled.div``;
 
 const ProductName = styled.h2`
   font-size: 1.85rem;
@@ -83,7 +78,7 @@ const Price = styled.p`
   font-size: 2.1rem;
   font-weight: 700;
   color: #000;
-  margin: 16px 0;
+  margin: 12px 0 20px;
 `;
 
 const Description = styled.p`
@@ -193,7 +188,6 @@ const ProductModal = memo(({
           <DetailsSection>
             <ProductName>{product.name}</ProductName>
             <p style={{ color: "#666", marginBottom: "8px" }}>{product.color}</p>
-            
             <Price>₦{product.price.toLocaleString()}</Price>
 
             {product.description ? (
