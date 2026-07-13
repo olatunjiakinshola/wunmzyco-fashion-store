@@ -1,12 +1,13 @@
 import { useState, lazy, Suspense, useMemo, useEffect } from "react";
 import styled from "styled-components";
-import { ShoppingCart, Search, Menu, X } from "lucide-react";
+import { ShoppingCart, Search, Menu, X, Heart } from "lucide-react";
 import products from "./data/Products";
 
 const ProductsSection = lazy(() => import("./components/ProductsSection"));
 const CartDrawer = lazy(() => import("./components/CartDrawer"));
 const CheckoutModal = lazy(() => import("./components/CheckoutModal"));
 const ProductModal = lazy(() => import("./components/ProductModal"));
+const WishlistDrawer = lazy(() => import("./components/WishlistDrawer"));
 
 // === STYLED COMPONENTS ===
 const Container = styled.div`
@@ -234,17 +235,22 @@ function App() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
+  const [isWishlistOpen, setIsWishlistOpen] = useState(false);
 
   // Cart persistence
   useEffect(() => {
     localStorage.setItem("cart", JSON.stringify(cart));
   }, [cart]);
 
-  // Wishlist persistence
+  // Wishlist persistence - Improved
   useEffect(() => {
     const savedWishlist = localStorage.getItem("wishlist");
     if (savedWishlist) {
-      setWishlist(JSON.parse(savedWishlist));
+      try {
+        setWishlist(JSON.parse(savedWishlist));
+      } catch (e) {
+        console.error("Failed to load wishlist from localStorage");
+      }
     }
   }, []);
 
@@ -271,9 +277,7 @@ function App() {
       const existingProduct = prev.find((item) => item.id === product.id);
       if (existingProduct) {
         return prev.map((item) =>
-          item.id === product.id
-            ? { ...item, quantity: item.quantity + 1 }
-            : item
+          item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
         );
       }
       return [...prev, { ...product, quantity: 1 }];
@@ -312,6 +316,8 @@ function App() {
     setIsModalOpen(true);
   };
 
+  const wishlistItems = products.filter(product => wishlist.includes(product.id));
+
   const totalPrice = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
   return (
@@ -333,6 +339,7 @@ function App() {
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </SearchContainer>
+
           <NavLinks>
             <NavLink $active={activeCategory === "all"} onClick={() => setActiveCategory("all")}>All</NavLink>
             <NavLink $active={activeCategory === "palazzos"} onClick={() => setActiveCategory("palazzos")}>Palazzos</NavLink>
@@ -340,9 +347,41 @@ function App() {
             <NavLink $active={activeCategory === "joggers"} onClick={() => setActiveCategory("joggers")}>Joggers</NavLink>
             <NavLink $active={activeCategory === "shoes"} onClick={() => setActiveCategory("shoes")}>Shoes</NavLink>
           </NavLinks>
+
           <Hamburger onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
             {isMobileMenuOpen ? <X size={28} /> : <Menu size={28} />}
           </Hamburger>
+
+          {/* Wishlist Button */}
+          <button
+            onClick={() => setIsWishlistOpen(true)}
+            style={{ position: "relative", background: "none", border: "none", cursor: "pointer", marginRight: "12px" }}
+          >
+            <Heart 
+              size={26} 
+              fill={wishlist.length > 0 ? "#ef4444" : "none"} 
+              color={wishlist.length > 0 ? "#ef4444" : "#333"} 
+            />
+            {wishlist.length > 0 && (
+              <span style={{
+                position: "absolute",
+                top: "-6px",
+                right: "-6px",
+                background: "red",
+                color: "white",
+                fontSize: "10px",
+                width: "18px",
+                height: "18px",
+                borderRadius: "50%",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}>
+                {wishlist.length}
+              </span>
+            )}
+          </button>
+
           <button onClick={() => setIsCartOpen(true)} style={{ position: "relative", background: "none", border: "none", cursor: "pointer" }}>
             <ShoppingCart size={26} />
             {cart.length > 0 && (
@@ -385,25 +424,26 @@ function App() {
         </Suspense>
       </ProductsWrapper>
 
+      {/* Footer Restored */}
       <footer style={{ background: "#111", color: "#aaa", textAlign: "center", padding: "60px 20px" }}>
-  <h2 style={{ color: "white", marginBottom: "8px" }}>WUNMZYCo</h2>
-  <p>© 2026 WunmzyCo. All rights reserved.</p>
-  
-  <div style={{ marginTop: "20px" }}>
-    <p style={{ marginBottom: "12px", color: "#ccc" }}>Follow us</p>
-    <div style={{ display: "flex", justifyContent: "center", gap: "20px" }}>
-      <a href="https://facebook.com/wunmzyco" target="_blank" rel="noopener noreferrer" style={{ color: "#aaa", fontSize: "1.5rem" }}>
-        <i className="fab fa-facebook"></i> Facebook
-      </a>
-      <a href="https://tiktok.com/@wunmzy.co1" target="_blank" rel="noopener noreferrer" style={{ color: "#aaa", fontSize: "1.5rem" }}>
-        <i className="fab fa-tiktok"></i> TikTok
-      </a>
-      <a href="https://wa.me/2348060230990" target="_blank" rel="noopener noreferrer" style={{ color: "#aaa", fontSize: "1.5rem" }}>
-        WhatsApp
-      </a>
-    </div>
-  </div>
-</footer>
+        <h2 style={{ color: "white", marginBottom: "8px" }}>WUNMZYCo</h2>
+        <p>© 2026 WunmzyCo. All rights reserved.</p>
+        
+        <div style={{ marginTop: "20px" }}>
+          <p style={{ marginBottom: "12px", color: "#ccc" }}>Follow us</p>
+          <div style={{ display: "flex", justifyContent: "center", gap: "20px" }}>
+            <a href="https://facebook.com/wunmzyco" target="_blank" rel="noopener noreferrer" style={{ color: "#aaa", fontSize: "1.5rem" }}>
+              Facebook
+            </a>
+            <a href="https://tiktok.com/@wunmzy.co1" target="_blank" rel="noopener noreferrer" style={{ color: "#aaa", fontSize: "1.5rem" }}>
+              TikTok
+            </a>
+            <a href="https://wa.me/2348060230990" target="_blank" rel="noopener noreferrer" style={{ color: "#aaa", fontSize: "1.5rem" }}>
+              WhatsApp
+            </a>
+          </div>
+        </div>
+      </footer>
 
       <Suspense fallback={null}>
         <CartDrawer
@@ -429,6 +469,14 @@ function App() {
           addToCart={addToCart}
           toggleWishlist={toggleWishlist}
           wishlist={wishlist}
+        />
+
+        <WishlistDrawer
+          isOpen={isWishlistOpen}
+          onClose={() => setIsWishlistOpen(false)}
+          wishlistItems={wishlistItems}
+          addToCart={addToCart}
+          toggleWishlist={toggleWishlist}
         />
       </Suspense>
 
