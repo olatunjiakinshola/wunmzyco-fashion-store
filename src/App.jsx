@@ -97,17 +97,18 @@ const Hamburger = styled.button`
 `;
 
 const MobileMenu = styled.div`
-  display: ${(props) => (props.open ? "flex" : "none")};
-  flex-direction: column;
-  gap: 15px;
-  position: absolute;
-  top: 70px;
+  position: fixed;
+  top: 0;
   left: 0;
-  right: 0;
+  width: 100%;
+  height: 100vh;
   background: white;
-  padding: 20px;
-  box-shadow: 0 10px 15px rgba(0,0,0,0.1);
-  z-index: 60;
+  transform: translateX(${props => props.open ? '0' : '-100%'});
+  transition: transform 0.3s ease;
+  z-index: 70;
+  padding: 80px 20px 20px;
+  box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+  overflow-y: auto;
 `;
 
 const NavLinks = styled.div`
@@ -192,10 +193,45 @@ const SectionHeader = styled.div`
   gap: 12px;
 `;
 
+const BottomNav = styled.div`
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: white;
+  border-top: 1px solid #eee;
+  z-index: 90;
+  padding: 8px 0;
+  box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+
+  @media (max-width: 768px) {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+  }
+`;
+
+const NavItem = styled.button`
+  background: none;
+  border: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #666;
+  font-size: 0.75rem;
+  cursor: pointer;
+  padding: 4px 8px;
+
+  &:active {
+    color: #000;
+  }
+`;
+
 // Floating WhatsApp Button
 const WhatsAppButton = styled.a`
   position: fixed;
-  bottom: 25px;
+  bottom: 70px;
   right: 25px;
   background: #25d366;
   color: white;
@@ -214,9 +250,7 @@ const WhatsAppButton = styled.a`
     box-shadow: 0 6px 20px rgba(37, 211, 102, 0.5);
   }
   @media (max-width: 480px) {
-    width: 55px;
-    height: 55px;
-    bottom: 20px;
+    bottom: 65px;
     right: 20px;
   }
 `;
@@ -237,21 +271,13 @@ function App() {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [isWishlistOpen, setIsWishlistOpen] = useState(false);
 
-  // Cart persistence
   useEffect(() => {
     localStorage.setItem("cart", JSON.stringify(cart));
   }, [cart]);
 
-  // Wishlist persistence - Improved
   useEffect(() => {
     const savedWishlist = localStorage.getItem("wishlist");
-    if (savedWishlist) {
-      try {
-        setWishlist(JSON.parse(savedWishlist));
-      } catch (e) {
-        console.error("Failed to load wishlist from localStorage");
-      }
-    }
+    if (savedWishlist) setWishlist(JSON.parse(savedWishlist));
   }, []);
 
   useEffect(() => {
@@ -286,18 +312,14 @@ function App() {
 
   const increaseQuantity = (id) => {
     setCart((prev) =>
-      prev.map((item) =>
-        item.id === id ? { ...item, quantity: item.quantity + 1 } : item
-      )
+      prev.map((item) => item.id === id ? { ...item, quantity: item.quantity + 1 } : item)
     );
   };
 
   const decreaseQuantity = (id) => {
     setCart((prev) =>
       prev
-        .map((item) =>
-          item.id === id ? { ...item, quantity: item.quantity - 1 } : item
-        )
+        .map((item) => item.id === id ? { ...item, quantity: item.quantity - 1 } : item)
         .filter((item) => item.quantity > 0)
     );
   };
@@ -352,7 +374,6 @@ function App() {
             {isMobileMenuOpen ? <X size={28} /> : <Menu size={28} />}
           </Hamburger>
 
-          {/* Wishlist Button */}
           <button
             onClick={() => setIsWishlistOpen(true)}
             style={{ position: "relative", background: "none", border: "none", cursor: "pointer", marginRight: "12px" }}
@@ -363,20 +384,7 @@ function App() {
               color={wishlist.length > 0 ? "#ef4444" : "#333"} 
             />
             {wishlist.length > 0 && (
-              <span style={{
-                position: "absolute",
-                top: "-6px",
-                right: "-6px",
-                background: "red",
-                color: "white",
-                fontSize: "10px",
-                width: "18px",
-                height: "18px",
-                borderRadius: "50%",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}>
+              <span style={{ position: "absolute", top: "-6px", right: "-6px", background: "red", color: "white", fontSize: "10px", width: "18px", height: "18px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center" }}>
                 {wishlist.length}
               </span>
             )}
@@ -444,6 +452,22 @@ function App() {
           </div>
         </div>
       </footer>
+
+      {/* Bottom Navigation */}
+      <BottomNav>
+        <NavItem onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
+          <Search size={24} />
+          Shop
+        </NavItem>
+        <NavItem onClick={() => setIsWishlistOpen(true)}>
+          <Heart size={24} fill={wishlist.length > 0 ? "#ef4444" : "none"} />
+          Wishlist
+        </NavItem>
+        <NavItem onClick={() => setIsCartOpen(true)}>
+          <ShoppingCart size={24} />
+          Cart
+        </NavItem>
+      </BottomNav>
 
       <Suspense fallback={null}>
         <CartDrawer
