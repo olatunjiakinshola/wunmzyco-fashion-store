@@ -1,4 +1,4 @@
-import{t as e}from"./heart-CfIA8_at.js";import{a as t,o as n,r,s as i,t as a}from"./index-Bba8bTFN.js";var o=i(n(),1),s=a(),c=t.div`
+import{c as e,i as t,o as n,r,s as i,t as a}from"./index-gG7mlA69.js";var o=e(i(),1),s=a(),c=n.div`
   background: white;
   border-radius: 20px;
   overflow: hidden;
@@ -8,7 +8,7 @@ import{t as e}from"./heart-CfIA8_at.js";import{a as t,o as n,r,s as i,t as a}fro
     transform: translateY(-10px);
     box-shadow: 0 20px 35px rgba(0,0,0,0.12);
   }
-`,l=t.div`
+`,l=n.div`
   position: relative;
   height: 320px;
   overflow: hidden;
@@ -16,7 +16,7 @@ import{t as e}from"./heart-CfIA8_at.js";import{a as t,o as n,r,s as i,t as a}fro
   @media (max-width: 480px) {
     height: 280px;
   }
-`,u=t.img`
+`,u=n.img`
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -24,7 +24,7 @@ import{t as e}from"./heart-CfIA8_at.js";import{a as t,o as n,r,s as i,t as a}fro
   ${c}:hover & {
     transform: scale(1.1);
   }
-`,d=t.button`
+`,d=n.button`
   position: absolute;
   top: 14px;
   right: 14px;
@@ -39,7 +39,7 @@ import{t as e}from"./heart-CfIA8_at.js";import{a as t,o as n,r,s as i,t as a}fro
   cursor: pointer;
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
   z-index: 3;
-`,f=t.div`
+`,f=n.div`
   position: absolute;
   inset: 0;
   background: rgba(0,0,0,0.45);
@@ -52,7 +52,7 @@ import{t as e}from"./heart-CfIA8_at.js";import{a as t,o as n,r,s as i,t as a}fro
   ${c}:hover & {
     opacity: 1;
   }
-`,p=t.button`
+`,p=n.button`
   background: white;
   color: black;
   border: none;
@@ -64,16 +64,16 @@ import{t as e}from"./heart-CfIA8_at.js";import{a as t,o as n,r,s as i,t as a}fro
   gap: 8px;
   cursor: pointer;
   z-index: 3;
-`,m=t.div`
+`,m=n.div`
   padding: 20px;
-`,h=t.h3`
+`,h=n.h3`
   font-size: 1.15rem;
   font-weight: 600;
   margin-bottom: 4px;
-`,g=t.p`
+`,g=n.p`
   font-size: 1.4rem;
   font-weight: 700;
-`,_=(0,o.memo)(({product:t,addToCart:n,toggleWishlist:i,wishlist:a,onOpenModal:o})=>(0,s.jsxs)(c,{children:[(0,s.jsxs)(l,{onClick:e=>{e.stopPropagation(),o(t)},children:[(0,s.jsx)(u,{src:t.image,alt:t.name}),(0,s.jsx)(d,{onClick:e=>{e.stopPropagation(),i(t.id)},children:(0,s.jsx)(e,{size:20,fill:a.includes(t.id)?`#ef4444`:`none`,color:a.includes(t.id)?`#ef4444`:`#333`})}),(0,s.jsx)(f,{children:(0,s.jsxs)(p,{onClick:e=>{e.stopPropagation(),n(t)},children:[(0,s.jsx)(r,{size:18}),`Add to Cart`]})})]}),(0,s.jsxs)(m,{children:[(0,s.jsx)(h,{children:t.name}),(0,s.jsx)(`p`,{style:{color:`#666`,marginBottom:`8px`},children:t.color}),(0,s.jsxs)(g,{children:[`₦`,t.price.toLocaleString()]})]})]})),v=t.div`
+`,_=(0,o.memo)(({product:e,addToCart:n,toggleWishlist:i,wishlist:a,onOpenModal:o})=>(0,s.jsxs)(c,{children:[(0,s.jsxs)(l,{onClick:t=>{t.stopPropagation(),o(e)},children:[(0,s.jsx)(u,{src:e.image,alt:e.name}),(0,s.jsx)(d,{onClick:t=>{t.stopPropagation(),i(e.id)},children:(0,s.jsx)(t,{size:20,fill:a.includes(e.id)?`#ef4444`:`none`,color:a.includes(e.id)?`#ef4444`:`#333`})}),(0,s.jsx)(f,{children:(0,s.jsxs)(p,{onClick:t=>{t.stopPropagation(),n(e)},children:[(0,s.jsx)(r,{size:18}),`Add to Cart`]})})]}),(0,s.jsxs)(m,{children:[(0,s.jsx)(h,{children:e.name}),(0,s.jsx)(`p`,{style:{color:`#666`,marginBottom:`8px`},children:e.color}),(0,s.jsxs)(g,{children:[`₦`,e.price.toLocaleString()]})]})]})),v=n.div`
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 28px;

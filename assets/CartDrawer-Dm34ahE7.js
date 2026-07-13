@@ -1,9 +1,9 @@
-import{a as e,n as t,o as n,s as r,t as i}from"./index-Bba8bTFN.js";var a=r(n(),1),o=i(),s=e.div`
+import{c as e,n as t,o as n,s as r,t as i}from"./index-gG7mlA69.js";var a=e(r(),1),o=i(),s=n.div`
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.6);
   z-index: 100;
-`,c=e.div`
+`,c=n.div`
   position: fixed;
   top: 0;
   right: 0;
@@ -15,41 +15,41 @@ import{a as e,n as t,o as n,s as r,t as i}from"./index-Bba8bTFN.js";var a=r(n(),
   z-index: 101;
   display: flex;
   flex-direction: column;
-`,l=e.div`
+`,l=n.div`
   padding: 24px;
   border-bottom: 1px solid #eee;
   display: flex;
   justify-content: space-between;
   align-items: center;
-`,u=e.button`
+`,u=n.button`
   background: none;
   border: none;
   cursor: pointer;
-`,d=e.div`
+`,d=n.div`
   flex: 1;
   padding: 24px;
   overflow-y: auto;
-`,f=e.div`
+`,f=n.div`
   display: flex;
   gap: 16px;
   margin-bottom: 24px;
   padding-bottom: 24px;
   border-bottom: 1px solid #eee;
-`,p=e.img`
+`,p=n.img`
   width: 90px;
   height: 90px;
   object-fit: cover;
   border-radius: 12px;
-`,m=e.div`
+`,m=n.div`
   padding: 24px;
   border-top: 1px solid #eee;
-`,h=e.div`
+`,h=n.div`
   display: flex;
   justify-content: space-between;
   font-size: 1.4rem;
   font-weight: 700;
   margin-bottom: 20px;
-`,g=e.button`
+`,g=n.button`
   width: 100%;
   background: black;
   color: white;

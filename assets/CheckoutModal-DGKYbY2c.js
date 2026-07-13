@@ -1,4 +1,4 @@
-import{a as e,i as t,n,o as r,s as i,t as a}from"./index-Bba8bTFN.js";var o=t(`message-circle`,[[`path`,{d:`M2.992 16.342a2 2 0 0 1 .094 1.167l-1.065 3.29a1 1 0 0 0 1.236 1.168l3.413-.998a2 2 0 0 1 1.099.092 10 10 0 1 0-4.777-4.719`,key:`1sd12s`}]]),s=i(r(),1),c=a(),l=e.div`
+import{a as e,c as t,n,o as r,s as i,t as a}from"./index-gG7mlA69.js";var o=e(`message-circle`,[[`path`,{d:`M2.992 16.342a2 2 0 0 1 .094 1.167l-1.065 3.29a1 1 0 0 0 1.236 1.168l3.413-.998a2 2 0 0 1 1.099.092 10 10 0 1 0-4.777-4.719`,key:`1sd12s`}]]),s=t(i(),1),c=a(),l=r.div`
   position: fixed;
   inset: 0;
   background: rgba(0,0,0,0.7);
@@ -6,7 +6,7 @@ import{a as e,i as t,n,o as r,s as i,t as a}from"./index-Bba8bTFN.js";var o=t(`m
   align-items: center;
   justify-content: center;
   z-index: 200;
-`,u=e.div`
+`,u=r.div`
   background: white;
   width: 100%;
   max-width: 480px;
@@ -14,12 +14,12 @@ import{a as e,i as t,n,o as r,s as i,t as a}from"./index-Bba8bTFN.js";var o=t(`m
   padding: 32px;
   max-height: 90vh;
   overflow-y: auto;
-`,d=e.div`
+`,d=r.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 24px
-`,f=e.button`
+`,f=r.button`
   width: 100%;
   background: #25D366;
   color: white;
@@ -37,7 +37,7 @@ import{a as e,i as t,n,o as r,s as i,t as a}from"./index-Bba8bTFN.js";var o=t(`m
   &:hover {
     background: #20ba5c;
   }
-`,p=e.div`
+`,p=r.div`
   background: #f8f9fa;
   padding: 20px;
   border-radius: 12px;
