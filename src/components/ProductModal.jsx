@@ -190,7 +190,7 @@ const ProductModal = memo(({
       ...product,
       selectedSize: selectedSize || (product.sizes && product.sizes[0]) || "M"
     };
-    addToCart(itemToAdd);
+    addToCart(itemToAdd, selectedSize);
   };
 
   const openFullScreen = () => {

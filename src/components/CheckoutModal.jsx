@@ -62,18 +62,18 @@ const CheckoutModal = memo(({ isOpen, onClose, totalPrice, cart }) => {
   const phoneNumber = "+2348060230990"
 
   const createWhatsAppMessage = () => {
-  let message = `*New Order from WunmzyCo Website*\n\n`;
-  
-  cart.forEach((item, index) => {
-    const sizeInfo = item.selectedSize ? ` - Size: ${item.selectedSize}` : '';
-    message += `${index + 1}. ${item.name}${sizeInfo} × ${item.quantity} - *₦${(item.price * item.quantity).toLocaleString()}*\n`;
-  });
+    let message = `*New Order from WunmzyCo Website*\n\n`;
+    
+    cart.forEach((item, index) => {
+      const sizeInfo = item.selectedSize ? ` - Size: ${item.selectedSize}` : '';
+      message += `${index + 1}. ${item.name}${sizeInfo} × ${item.quantity} - *₦${(item.price * item.quantity).toLocaleString()}*\n`;
+    });
 
-  message += `\n*Total Amount: ₦${totalPrice.toLocaleString()}*\n\n`;
-  message += `Please confirm my order. Thank you! 🙏`;
-  
-  return encodeURIComponent(message);
-};
+    message += `\n*Total Amount: ₦${totalPrice.toLocaleString()}*\n\n`;
+    message += `Please confirm my order. Thank you! 🙏`;
+    
+    return encodeURIComponent(message);
+  };
 
   const handleSendToWhatsApp = () => {
     const message = createWhatsAppMessage();
@@ -99,7 +99,7 @@ const CheckoutModal = memo(({ isOpen, onClose, totalPrice, cart }) => {
         <OrderSummary>
           <h4 style={{ marginBottom: '16px' }}>Order Summary ({cart.length} items)</h4>
           {cart.map((item, i) => (
-            <div key={i} style={{
+            <div key={item.cartKey} style={{
               display: 'flex',
               justifyContent: 'space-between',
               padding: '10px 0',
@@ -109,7 +109,7 @@ const CheckoutModal = memo(({ isOpen, onClose, totalPrice, cart }) => {
                 {item.name}
                 {item.selectedSize && <span style={{ color: "#666" }}> (Size: {item.selectedSize})</span>}
               </span>
-              <span style={{ fontWeight: '600' }}>₦{item.price.toLocaleString()}</span>
+              <span style={{ fontWeight: '600' }}>₦{(item.price * item.quantity).toLocaleString()}</span>
             </div>
           ))}
           

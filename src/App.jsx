@@ -270,6 +270,8 @@ function App() {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const [activeCategory, setActiveCategory] = useState("all");
+  const [priceRange, setPriceRange] = useState("all");
+  const [sortBy, setSortBy] = useState("default");
   const [wishlist, setWishlist] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -296,43 +298,65 @@ function App() {
       ? products
       : products.filter((p) => p.category === activeCategory);
 
+    if (priceRange === "under5k") {
+      result = result.filter((p) => p.price < 5000);
+    }
+
     if (searchTerm.trim() !== "") {
       result = result.filter((product) =>
         product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         product.color.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
-    return result;
-  }, [activeCategory, searchTerm]);
 
-  const addToCart = (product) => {
+    return result;
+  }, [activeCategory, priceRange, searchTerm]);
+
+  const addToCart = (product, selectedSize = null) => {
+    const cartKey = `${product.id}-${selectedSize || 'default'}`;
+
     setCart((prev) => {
-      const existingProduct = prev.find((item) => item.id === product.id);
-      if (existingProduct) {
-        return prev.map((item) =>
-          item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
+      const existingItem = prev.find(item => 
+        item.cartKey === cartKey
+      );
+
+      if (existingItem) {
+        return prev.map(item =>
+          item.cartKey === cartKey 
+            ? { ...item, quantity: item.quantity + 1 } 
+            : item
         );
+      } else {
+        return [...prev, { 
+          ...product, 
+          selectedSize: selectedSize || product.sizes?.[0] || "M",
+          cartKey,
+          quantity: 1 
+        }];
       }
-      return [...prev, { ...product, quantity: 1 }];
     });
   };
 
-  const increaseQuantity = (id) => {
+  const increaseQuantity = (cartKey) => {
     setCart((prev) =>
-      prev.map((item) => item.id === id ? { ...item, quantity: item.quantity + 1 } : item)
+      prev.map((item) =>
+        item.cartKey === cartKey ? { ...item, quantity: item.quantity + 1 } : item
+      )
     );
   };
 
-  const decreaseQuantity = (id) => {
+  const decreaseQuantity = (cartKey) => {
     setCart((prev) =>
       prev
-        .map((item) => item.id === id ? { ...item, quantity: item.quantity - 1 } : item)
+        .map((item) =>
+          item.cartKey === cartKey ? { ...item, quantity: item.quantity - 1 } : item
+        )
         .filter((item) => item.quantity > 0)
     );
   };
 
-  const removeFromCart = (id) =>
-    setCart((prev) => prev.filter((item) => item.id !== id));
+  const removeFromCart = (cartKey) =>
+    setCart((prev) => prev.filter((item) => item.cartKey !== cartKey));
 
   const toggleWishlist = (id) => {
     setWishlist((prev) =>
@@ -371,10 +395,12 @@ function App() {
 
           <NavLinks>
             <NavLink $active={activeCategory === "all"} onClick={() => setActiveCategory("all")}>All</NavLink>
-            <NavLink $active={activeCategory === "palazzos"} onClick={() => setActiveCategory("palazzos")}>Palazzos</NavLink>
             <NavLink $active={activeCategory === "tops"} onClick={() => setActiveCategory("tops")}>Tops</NavLink>
-            <NavLink $active={activeCategory === "joggers"} onClick={() => setActiveCategory("joggers")}>Joggers</NavLink>
-            <NavLink $active={activeCategory === "shoes"} onClick={() => setActiveCategory("shoes")}>Shoes</NavLink>
+            <NavLink $active={activeCategory === "gowns"} onClick={() => setActiveCategory("gowns")}>Gowns</NavLink>
+            <NavLink $active={activeCategory === "skirts"} onClick={() => setActiveCategory("skirts")}>Skirts</NavLink>
+            <NavLink $active={activeCategory === "bubu"} onClick={() => setActiveCategory("bubu")}>Bubu</NavLink>
+            <NavLink $active={activeCategory === "baggy"} onClick={() => setActiveCategory("baggy")}>Baggy Tops</NavLink>
+            <NavLink $active={activeCategory === "under5k"} onClick={() => setActiveCategory("under5k")}>Under ₦5k</NavLink>
           </NavLinks>
 
           <Hamburger onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
@@ -409,10 +435,12 @@ function App() {
 
         <MobileMenu open={isMobileMenuOpen}>
           <NavLink $active={activeCategory === "all"} onClick={() => { setActiveCategory("all"); setIsMobileMenuOpen(false); }}>All</NavLink>
-          <NavLink $active={activeCategory === "palazzos"} onClick={() => { setActiveCategory("palazzos"); setIsMobileMenuOpen(false); }}>Palazzos</NavLink>
           <NavLink $active={activeCategory === "tops"} onClick={() => { setActiveCategory("tops"); setIsMobileMenuOpen(false); }}>Tops</NavLink>
-          <NavLink $active={activeCategory === "joggers"} onClick={() => { setActiveCategory("joggers"); setIsMobileMenuOpen(false); }}>Joggers</NavLink>
-          <NavLink $active={activeCategory === "shoes"} onClick={() => { setActiveCategory("shoes"); setIsMobileMenuOpen(false); }}>Shoes</NavLink>
+          <NavLink $active={activeCategory === "gowns"} onClick={() => { setActiveCategory("gowns"); setIsMobileMenuOpen(false); }}>Gowns</NavLink>
+          <NavLink $active={activeCategory === "skirts"} onClick={() => { setActiveCategory("skirts"); setIsMobileMenuOpen(false); }}>Skirts</NavLink>
+          <NavLink $active={activeCategory === "bubu"} onClick={() => { setActiveCategory("bubu"); setIsMobileMenuOpen(false); }}>Bubu</NavLink>
+          <NavLink $active={activeCategory === "baggy"} onClick={() => { setActiveCategory("baggy"); setIsMobileMenuOpen(false); }}>Baggy Tops</NavLink>
+          <NavLink $active={activeCategory === "under5k"} onClick={() => { setActiveCategory("under5k"); setIsMobileMenuOpen(false); }}>Under ₦5k</NavLink>
         </MobileMenu>
       </Navbar>
 
@@ -439,28 +467,11 @@ function App() {
         </Suspense>
       </ProductsWrapper>
 
-      {/* Footer Restored */}
       <footer style={{ background: "#111", color: "#aaa", textAlign: "center", padding: "60px 20px" }}>
         <h2 style={{ color: "white", marginBottom: "8px" }}>WUNMZYCo</h2>
         <p>© 2026 WunmzyCo. All rights reserved.</p>
-        
-        <div style={{ marginTop: "20px" }}>
-          <p style={{ marginBottom: "12px", color: "#ccc" }}>Follow us</p>
-          <div style={{ display: "flex", justifyContent: "center", gap: "20px" }}>
-            <a href="https://facebook.com/wunmzyco" target="_blank" rel="noopener noreferrer" style={{ color: "#aaa", fontSize: "1.5rem" }}>
-              Facebook
-            </a>
-            <a href="https://tiktok.com/@wunmzy.co1" target="_blank" rel="noopener noreferrer" style={{ color: "#aaa", fontSize: "1.5rem" }}>
-              TikTok
-            </a>
-            <a href="https://wa.me/2348060230990" target="_blank" rel="noopener noreferrer" style={{ color: "#aaa", fontSize: "1.5rem" }}>
-              WhatsApp
-            </a>
-          </div>
-        </div>
       </footer>
 
-      {/* Bottom Navigation */}
       <BottomNav>
         <NavItem onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
           <Search size={24} />
@@ -511,44 +522,44 @@ function App() {
         />
       </Suspense>
 
-     <WhatsAppButton 
-  href="https://wa.me/2348060230990" 
-  target="_blank" 
-  rel="noopener noreferrer"
-  cartOpen={isCartOpen}
-  style={{
-    bottom: `${whatsappPosition.bottom}px`,
-    right: `${whatsappPosition.right}px`,
-  }}
-  onMouseDown={(e) => {
-    const startX = e.clientX;
-    const startY = e.clientY;
-    const startBottom = whatsappPosition.bottom;
-    const startRight = whatsappPosition.right;
+      <WhatsAppButton 
+        href="https://wa.me/2348060230990" 
+        target="_blank" 
+        rel="noopener noreferrer"
+        cartOpen={isCartOpen}
+        style={{
+          bottom: `${whatsappPosition.bottom}px`,
+          right: `${whatsappPosition.right}px`,
+        }}
+        onMouseDown={(e) => {
+          const startX = e.clientX;
+          const startY = e.clientY;
+          const startBottom = whatsappPosition.bottom;
+          const startRight = whatsappPosition.right;
 
-    const handleMouseMove = (moveEvent) => {
-      const deltaX = moveEvent.clientX - startX;
-      const deltaY = moveEvent.clientY - startY;
+          const handleMouseMove = (moveEvent) => {
+            const deltaX = moveEvent.clientX - startX;
+            const deltaY = moveEvent.clientY - startY;
 
-      setWhatsappPosition({
-        bottom: Math.max(20, startBottom - deltaY),
-        right: Math.max(20, startRight - deltaX)
-      });
-    };
+            setWhatsappPosition({
+              bottom: Math.max(20, startBottom - deltaY),
+              right: Math.max(20, startRight - deltaX)
+            });
+          };
 
-    const handleMouseUp = () => {
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
-    };
+          const handleMouseUp = () => {
+            document.removeEventListener('mousemove', handleMouseMove);
+            document.removeEventListener('mouseup', handleMouseUp);
+          };
 
-    document.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseup', handleMouseUp);
-  }}
->
-  <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="currentColor" viewBox="0 0 24 24">
-    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.198.297-.767.966-.94 1.164-.173.198-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.485-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.917-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.569-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" />
-  </svg>
-</WhatsAppButton>
+          document.addEventListener('mousemove', handleMouseMove);
+          document.addEventListener('mouseup', handleMouseUp);
+        }}
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.198.297-.767.966-.94 1.164-.173.198-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.485-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.917-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.569-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" />
+        </svg>
+      </WhatsAppButton>
     </Container>
   );
 }

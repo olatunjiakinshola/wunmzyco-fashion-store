@@ -1,6 +1,6 @@
 import { memo } from "react";
 import styled from "styled-components";
-import { X } from "lucide-react";
+import { X, Plus, Minus, Trash2 } from "lucide-react";
 
 const Overlay = styled.div`
   position: fixed;
@@ -58,131 +58,107 @@ const ItemImage = styled.img`
   border-radius: 12px;
 `;
 
+const ItemInfo = styled.div`
+  flex: 1;
+`;
+
+const QuantityControl = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 12px;
+`;
+
 const Footer = styled.div`
   padding: 24px;
   border-top: 1px solid #eee;
+  background: white;
 `;
 
-const Total = styled.div`
-  display: flex;
-  justify-content: space-between;
-  font-size: 1.4rem;
-  font-weight: 700;
-  margin-bottom: 20px;
-`;
+const CartDrawer = memo(({
+  isOpen,
+  onClose,
+  cart,
+  removeFromCart,
+  increaseQuantity,
+  decreaseQuantity,
+  totalPrice,
+  onCheckout
+}) => {
+  if (!isOpen) return null;
 
-const CheckoutButton = styled.button`
-  width: 100%;
-  background: black;
-  color: white;
-  border: none;
-  padding: 18px;
-  font-size: 1.1rem;
-  font-weight: 600;
-  border-radius: 12px;
-  cursor: pointer;
-  &:hover {
-    background: #222;
-  }
-`;
+  return (
+    <>
+      <Overlay onClick={onClose} />
+      <Drawer>
+        <Header>
+          <h2>Your Cart ({cart.length})</h2>
+          <CloseButton onClick={onClose}>
+            <X size={28} />
+          </CloseButton>
+        </Header>
 
-const CartDrawer = memo(
-  ({
-    isOpen,
-    onClose,
-    cart,
-    removeFromCart,
-    increaseQuantity,
-    decreaseQuantity,
-    totalPrice,
-    onCheckout,
-  }) => {
-    if (!isOpen) return null;
+        <Content>
+          {cart.length === 0 ? (
+            <p style={{ textAlign: "center", marginTop: "80px", color: "#888" }}>
+              Your cart is empty
+            </p>
+          ) : (
+            cart.map((item) => (
+              <Item key={item.cartKey}>
+                <ItemImage src={item.image} alt={item.name} />
+                <ItemInfo>
+                  <h4>{item.name}</h4>
+                  {item.selectedSize && <p>Size: {item.selectedSize}</p>}
+                  <p style={{ fontWeight: "bold", margin: "8px 0" }}>
+                    ₦{(item.price * item.quantity).toLocaleString()}
+                  </p>
 
-    return (
-      <>
-        <Overlay onClick={onClose} />
-        <Drawer>
-          <Header>
-            <h2>Your Cart ({cart.length})</h2>
-            <CloseButton onClick={onClose}>
-              <X size={28} />
-            </CloseButton>
-          </Header>
-
-          <Content>
-            {cart.length === 0 ? (
-              <p
-                style={{
-                  textAlign: "center",
-                  marginTop: "80px",
-                  color: "#888",
-                }}
-              >
-                Your cart is empty
-              </p>
-            ) : (
-              cart.map((item) => (
-                <Item key={item.id}>
-                  <ItemImage src={item.image} alt={item.name} />
-                  <div style={{ flex: 1 }}>
-                    <h4>{item.name}</h4>
-                    {item.selectedSize && (
-                      <p
-                        style={{
-                          margin: "4px 0",
-                          color: "#666",
-                          fontSize: "0.95rem",
-                        }}
-                      >
-                        Size: {item.selectedSize}
-                      </p>
-                    )}
-                    <p style={{ fontWeight: "bold", margin: "8px 0" }}>
-                      ₦{(item.price * item.quantity).toLocaleString()}
-                    </p>
-
-                    <div>
-                      <button onClick={() => decreaseQuantity(item.id)}>
-                        -
-                      </button>
-                      <span style={{ margin: "0 12px" }}>{item.quantity}</span>
-                      <button onClick={() => increaseQuantity(item.id)}>
-                        +
-                      </button>
-                    </div>
-
-                    <button
-                      onClick={() => removeFromCart(item.id)}
-                      style={{
-                        color: "#ef4444",
-                        fontSize: "0.95rem",
-                        marginTop: "8px",
-                      }}
+                  <QuantityControl>
+                    <button onClick={() => decreaseQuantity(item.cartKey)} style={{ width: "32px", height: "32px" }}>-</button>
+                    <span style={{ minWidth: "30px", textAlign: "center" }}>{item.quantity}</span>
+                    <button onClick={() => increaseQuantity(item.cartKey)} style={{ width: "32px", height: "32px" }}>+</button>
+                    
+                    <button 
+                      onClick={() => removeFromCart(item.cartKey)}
+                      style={{ marginLeft: "auto", color: "#ef4444", background: "none", border: "none" }}
                     >
-                      Remove
+                      <Trash2 size={20} />
                     </button>
-                  </div>
-                </Item>
-              ))
-            )}
-          </Content>
-
-          {cart.length > 0 && (
-            <Footer>
-              <Total>
-                <span>Total</span>
-                <span>₦{totalPrice}</span>
-              </Total>
-              <CheckoutButton onClick={onCheckout}>
-                Proceed to Checkout
-              </CheckoutButton>
-            </Footer>
+                  </QuantityControl>
+                </ItemInfo>
+              </Item>
+            ))
           )}
-        </Drawer>
-      </>
-    );
-  },
-);
+        </Content>
+
+        {cart.length > 0 && (
+          <Footer>
+            <div style={{ display: "flex", justifyContent: "space-between", fontSize: "1.3rem", fontWeight: "700", marginBottom: "20px" }}>
+              <span>Total</span>
+              <span>₦{totalPrice.toLocaleString()}</span>
+            </div>
+            <button 
+              onClick={onCheckout}
+              style={{ 
+                width: "100%", 
+                padding: "18px", 
+                background: "black", 
+                color: "white", 
+                border: "none", 
+                borderRadius: "12px",
+                fontSize: "1.1rem",
+                fontWeight: "600",
+                cursor: "pointer"
+              }}
+            >
+              Proceed to Checkout
+            </button>
+          </Footer>
+        )}
+      </Drawer>
+    </>
+  );
+});
 
 export default CartDrawer;
