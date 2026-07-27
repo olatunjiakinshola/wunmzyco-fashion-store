@@ -8,6 +8,7 @@ const CartDrawer = lazy(() => import("./components/CartDrawer"));
 const CheckoutModal = lazy(() => import("./components/CheckoutModal"));
 const ProductModal = lazy(() => import("./components/ProductModal"));
 const WishlistDrawer = lazy(() => import("./components/WishlistDrawer"));
+const Toast = lazy(() => import("./components/Toast"));
 
 // === STYLED COMPONENTS ===
 const Container = styled.div`
@@ -74,7 +75,7 @@ const SearchInput = styled.input`
   transition: all 0.3s;
   &:focus {
     border-color: #000;
-    box-shadow: 0 0 0 3px rgba(0,0,0,0.1);
+    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1);
   }
 `;
 
@@ -103,11 +104,11 @@ const MobileMenu = styled.div`
   width: 100%;
   height: 100vh;
   background: white;
-  transform: translateX(${props => props.open ? '0' : '-100%'});
+  transform: translateX(${(props) => (props.open ? "0" : "-100%")});
   transition: transform 0.3s ease;
   z-index: 70;
   padding: 80px 20px 20px;
-  box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
   overflow-y: auto;
 `;
 
@@ -203,7 +204,7 @@ const BottomNav = styled.div`
   border-top: 1px solid #eee;
   z-index: 90;
   padding: 8px 0;
-  box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
 
   @media (max-width: 768px) {
     display: flex;
@@ -231,7 +232,7 @@ const NavItem = styled.button`
 // Floating WhatsApp Button
 const WhatsAppButton = styled.a`
   position: fixed;
-  bottom: ${props => props.cartOpen ? "120px" : "25px"};
+  bottom: ${(props) => (props.cartOpen ? "120px" : "25px")};
   right: 25px;
   background: #25d366;
   color: white;
@@ -256,7 +257,7 @@ const WhatsAppButton = styled.a`
   @media (max-width: 480px) {
     width: 55px;
     height: 55px;
-    bottom: ${props => props.cartOpen ? "110px" : "20px"};
+    bottom: ${(props) => (props.cartOpen ? "110px" : "20px")};
     right: 20px;
   }
 `;
@@ -278,7 +279,11 @@ function App() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [isWishlistOpen, setIsWishlistOpen] = useState(false);
-  const [whatsappPosition, setWhatsappPosition] = useState({ bottom: 25, right: 25 });
+  const [whatsappPosition, setWhatsappPosition] = useState({
+    bottom: 25,
+    right: 25,
+  });
+  const [toasts, setToasts] = useState([]);
 
   useEffect(() => {
     localStorage.setItem("cart", JSON.stringify(cart));
@@ -294,18 +299,20 @@ function App() {
   }, [wishlist]);
 
   const filteredProducts = useMemo(() => {
-    let result = activeCategory === "all"
-      ? products
-      : products.filter((p) => p.category === activeCategory);
+    let result =
+      activeCategory === "all"
+        ? products
+        : products.filter((p) => p.category === activeCategory);
 
     if (priceRange === "under5k") {
       result = result.filter((p) => p.price < 5000);
     }
 
     if (searchTerm.trim() !== "") {
-      result = result.filter((product) =>
-        product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        product.color.toLowerCase().includes(searchTerm.toLowerCase())
+      result = result.filter(
+        (product) =>
+          product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          product.color.toLowerCase().includes(searchTerm.toLowerCase()),
       );
     }
 
@@ -313,35 +320,42 @@ function App() {
   }, [activeCategory, priceRange, searchTerm]);
 
   const addToCart = (product, selectedSize = null) => {
-    const cartKey = `${product.id}-${selectedSize || 'default'}`;
+    const size =
+      selectedSize || product.selectedSize || product.sizes?.[0] || "M";
+    const cartKey = `${product.id}-${size}`;
 
     setCart((prev) => {
-      const existingItem = prev.find(item => 
-        item.cartKey === cartKey
-      );
+      const existingItem = prev.find((item) => item.cartKey === cartKey);
 
       if (existingItem) {
-        return prev.map(item =>
-          item.cartKey === cartKey 
-            ? { ...item, quantity: item.quantity + 1 } 
-            : item
+        return prev.map((item) =>
+          item.cartKey === cartKey
+            ? { ...item, quantity: item.quantity + 1 }
+            : item,
         );
       } else {
-        return [...prev, { 
-          ...product, 
-          selectedSize: selectedSize || product.sizes?.[0] || "M",
-          cartKey,
-          quantity: 1 
-        }];
+        return [
+          ...prev,
+          {
+            ...product,
+            selectedSize: size,
+            cartKey,
+            quantity: 1,
+          },
+        ];
       }
     });
+
+    showToast(`${product.name} (Size: ${size}) added to cart`);
   };
 
   const increaseQuantity = (cartKey) => {
     setCart((prev) =>
       prev.map((item) =>
-        item.cartKey === cartKey ? { ...item, quantity: item.quantity + 1 } : item
-      )
+        item.cartKey === cartKey
+          ? { ...item, quantity: item.quantity + 1 }
+          : item,
+      ),
     );
   };
 
@@ -349,9 +363,11 @@ function App() {
     setCart((prev) =>
       prev
         .map((item) =>
-          item.cartKey === cartKey ? { ...item, quantity: item.quantity - 1 } : item
+          item.cartKey === cartKey
+            ? { ...item, quantity: item.quantity - 1 }
+            : item,
         )
-        .filter((item) => item.quantity > 0)
+        .filter((item) => item.quantity > 0),
     );
   };
 
@@ -359,9 +375,18 @@ function App() {
     setCart((prev) => prev.filter((item) => item.cartKey !== cartKey));
 
   const toggleWishlist = (id) => {
-    setWishlist((prev) =>
-      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
-    );
+    setWishlist((prev) => {
+      const isAlreadyWishlisted = prev.includes(id);
+      const product = products.find((p) => p.id === id);
+
+      if (isAlreadyWishlisted) {
+        showToast(`${product?.name || "Item"} removed from wishlist`);
+        return prev.filter((item) => item !== id);
+      } else {
+        showToast(`${product?.name || "Item"} added to wishlist`);
+        return [...prev, id];
+      }
+    });
   };
 
   const openProductModal = (product) => {
@@ -369,9 +394,37 @@ function App() {
     setIsModalOpen(true);
   };
 
-  const wishlistItems = products.filter(product => wishlist.includes(product.id));
+  const wishlistItems = products.filter((product) =>
+    wishlist.includes(product.id),
+  );
 
-  const totalPrice = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const totalPrice = cart.reduce(
+    (sum, item) => sum + item.price * item.quantity,
+    0,
+  );
+  const showToast = (message) => {
+    const id = Date.now();
+    setToasts((prev) => [...prev, { id, message, closing: false }]);
+
+    // Toast
+    setTimeout(() => {
+      setToasts((prev) =>
+        prev.map((t) => (t.id === id ? { ...t, closing: true } : t)),
+      );
+      setTimeout(() => {
+        setToasts((prev) => prev.filter((t) => t.id !== id));
+      }, 300);
+    }, 3000);
+  };
+
+  const removeToast = (id) => {
+    setToasts((prev) =>
+      prev.map((t) => (t.id === id ? { ...t, closing: true } : t)),
+    );
+    setTimeout(() => {
+      setToasts((prev) => prev.filter((t) => t.id !== id));
+    }, 300);
+  };
 
   return (
     <Container>
@@ -394,13 +447,48 @@ function App() {
           </SearchContainer>
 
           <NavLinks>
-            <NavLink $active={activeCategory === "all"} onClick={() => setActiveCategory("all")}>All</NavLink>
-            <NavLink $active={activeCategory === "tops"} onClick={() => setActiveCategory("tops")}>Tops</NavLink>
-            <NavLink $active={activeCategory === "gowns"} onClick={() => setActiveCategory("gowns")}>Gowns</NavLink>
-            <NavLink $active={activeCategory === "skirts"} onClick={() => setActiveCategory("skirts")}>Skirts</NavLink>
-            <NavLink $active={activeCategory === "bubu"} onClick={() => setActiveCategory("bubu")}>Bubu</NavLink>
-            <NavLink $active={activeCategory === "baggy"} onClick={() => setActiveCategory("baggy")}>Baggy Tops</NavLink>
-            <NavLink $active={activeCategory === "under5k"} onClick={() => setActiveCategory("under5k")}>Under ₦5k</NavLink>
+            <NavLink
+              $active={activeCategory === "all"}
+              onClick={() => setActiveCategory("all")}
+            >
+              All
+            </NavLink>
+            <NavLink
+              $active={activeCategory === "tops"}
+              onClick={() => setActiveCategory("tops")}
+            >
+              Tops
+            </NavLink>
+            <NavLink
+              $active={activeCategory === "gowns"}
+              onClick={() => setActiveCategory("gowns")}
+            >
+              Gowns
+            </NavLink>
+            <NavLink
+              $active={activeCategory === "skirts"}
+              onClick={() => setActiveCategory("skirts")}
+            >
+              Skirts
+            </NavLink>
+            <NavLink
+              $active={activeCategory === "bubu"}
+              onClick={() => setActiveCategory("bubu")}
+            >
+              Bubu
+            </NavLink>
+            <NavLink
+              $active={activeCategory === "baggy"}
+              onClick={() => setActiveCategory("baggy")}
+            >
+              Baggy Tops
+            </NavLink>
+            <NavLink
+              $active={activeCategory === "under5k"}
+              onClick={() => setActiveCategory("under5k")}
+            >
+              Under ₦5k
+            </NavLink>
           </NavLinks>
 
           <Hamburger onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
@@ -409,24 +497,68 @@ function App() {
 
           <button
             onClick={() => setIsWishlistOpen(true)}
-            style={{ position: "relative", background: "none", border: "none", cursor: "pointer", marginRight: "12px" }}
+            style={{
+              position: "relative",
+              background: "none",
+              border: "none",
+              cursor: "pointer",
+              marginRight: "12px",
+            }}
           >
-            <Heart 
-              size={26} 
-              fill={wishlist.length > 0 ? "#ef4444" : "none"} 
-              color={wishlist.length > 0 ? "#ef4444" : "#333"} 
+            <Heart
+              size={26}
+              fill={wishlist.length > 0 ? "#ef4444" : "none"}
+              color={wishlist.length > 0 ? "#ef4444" : "#333"}
             />
             {wishlist.length > 0 && (
-              <span style={{ position: "absolute", top: "-6px", right: "-6px", background: "red", color: "white", fontSize: "10px", width: "18px", height: "18px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <span
+                style={{
+                  position: "absolute",
+                  top: "-6px",
+                  right: "-6px",
+                  background: "red",
+                  color: "white",
+                  fontSize: "10px",
+                  width: "18px",
+                  height: "18px",
+                  borderRadius: "50%",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
                 {wishlist.length}
               </span>
             )}
           </button>
 
-          <button onClick={() => setIsCartOpen(true)} style={{ position: "relative", background: "none", border: "none", cursor: "pointer" }}>
+          <button
+            onClick={() => setIsCartOpen(true)}
+            style={{
+              position: "relative",
+              background: "none",
+              border: "none",
+              cursor: "pointer",
+            }}
+          >
             <ShoppingCart size={26} />
             {cart.length > 0 && (
-              <span style={{ position: "absolute", top: "-6px", right: "-6px", background: "black", color: "white", fontSize: "12px", width: "20px", height: "20px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <span
+                style={{
+                  position: "absolute",
+                  top: "-6px",
+                  right: "-6px",
+                  background: "black",
+                  color: "white",
+                  fontSize: "12px",
+                  width: "20px",
+                  height: "20px",
+                  borderRadius: "50%",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
                 {cart.length}
               </span>
             )}
@@ -434,26 +566,98 @@ function App() {
         </NavContent>
 
         <MobileMenu open={isMobileMenuOpen}>
-          <NavLink $active={activeCategory === "all"} onClick={() => { setActiveCategory("all"); setIsMobileMenuOpen(false); }}>All</NavLink>
-          <NavLink $active={activeCategory === "tops"} onClick={() => { setActiveCategory("tops"); setIsMobileMenuOpen(false); }}>Tops</NavLink>
-          <NavLink $active={activeCategory === "gowns"} onClick={() => { setActiveCategory("gowns"); setIsMobileMenuOpen(false); }}>Gowns</NavLink>
-          <NavLink $active={activeCategory === "skirts"} onClick={() => { setActiveCategory("skirts"); setIsMobileMenuOpen(false); }}>Skirts</NavLink>
-          <NavLink $active={activeCategory === "bubu"} onClick={() => { setActiveCategory("bubu"); setIsMobileMenuOpen(false); }}>Bubu</NavLink>
-          <NavLink $active={activeCategory === "baggy"} onClick={() => { setActiveCategory("baggy"); setIsMobileMenuOpen(false); }}>Baggy Tops</NavLink>
-          <NavLink $active={activeCategory === "under5k"} onClick={() => { setActiveCategory("under5k"); setIsMobileMenuOpen(false); }}>Under ₦5k</NavLink>
+          <NavLink
+            $active={activeCategory === "all"}
+            onClick={() => {
+              setActiveCategory("all");
+              setIsMobileMenuOpen(false);
+            }}
+          >
+            All
+          </NavLink>
+          <NavLink
+            $active={activeCategory === "tops"}
+            onClick={() => {
+              setActiveCategory("tops");
+              setIsMobileMenuOpen(false);
+            }}
+          >
+            Tops
+          </NavLink>
+          <NavLink
+            $active={activeCategory === "gowns"}
+            onClick={() => {
+              setActiveCategory("gowns");
+              setIsMobileMenuOpen(false);
+            }}
+          >
+            Gowns
+          </NavLink>
+          <NavLink
+            $active={activeCategory === "skirts"}
+            onClick={() => {
+              setActiveCategory("skirts");
+              setIsMobileMenuOpen(false);
+            }}
+          >
+            Skirts
+          </NavLink>
+          <NavLink
+            $active={activeCategory === "bubu"}
+            onClick={() => {
+              setActiveCategory("bubu");
+              setIsMobileMenuOpen(false);
+            }}
+          >
+            Bubu
+          </NavLink>
+          <NavLink
+            $active={activeCategory === "baggy"}
+            onClick={() => {
+              setActiveCategory("baggy");
+              setIsMobileMenuOpen(false);
+            }}
+          >
+            Baggy Tops
+          </NavLink>
+          <NavLink
+            $active={activeCategory === "under5k"}
+            onClick={() => {
+              setActiveCategory("under5k");
+              setIsMobileMenuOpen(false);
+            }}
+          >
+            Under ₦5k
+          </NavLink>
         </MobileMenu>
       </Navbar>
 
       <Hero>
         <div>
-          <p style={{ textTransform: "uppercase", letterSpacing: "3px", marginBottom: "12px" }}>NEW SEASON 2026</p>
-          <HeroTitle>Timeless.<br />Effortless.<br />WunmzyCo.</HeroTitle>
+          <p
+            style={{
+              textTransform: "uppercase",
+              letterSpacing: "3px",
+              marginBottom: "12px",
+            }}
+          >
+            NEW SEASON 2026
+          </p>
+          <HeroTitle>
+            Timeless.
+            <br />
+            Effortless.
+            <br />
+            WunmzyCo.
+          </HeroTitle>
         </div>
       </Hero>
 
       <ProductsWrapper>
         <SectionHeader>
-          <h2 style={{ fontSize: "2.4rem", fontWeight: "700" }}>Our Collection</h2>
+          <h2 style={{ fontSize: "2.4rem", fontWeight: "700" }}>
+            Our Collection
+          </h2>
           <p>{filteredProducts.length} products</p>
         </SectionHeader>
         <Suspense fallback={<p>Loading products...</p>}>
@@ -467,13 +671,22 @@ function App() {
         </Suspense>
       </ProductsWrapper>
 
-      <footer style={{ background: "#111", color: "#aaa", textAlign: "center", padding: "60px 20px" }}>
+      <footer
+        style={{
+          background: "#111",
+          color: "#aaa",
+          textAlign: "center",
+          padding: "60px 20px",
+        }}
+      >
         <h2 style={{ color: "white", marginBottom: "8px" }}>WUNMZYCo</h2>
         <p>© 2026 WunmzyCo. All rights reserved.</p>
       </footer>
 
       <BottomNav>
-        <NavItem onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
+        <NavItem
+          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+        >
           <Search size={24} />
           Shop
         </NavItem>
@@ -496,7 +709,10 @@ function App() {
           increaseQuantity={increaseQuantity}
           decreaseQuantity={decreaseQuantity}
           totalPrice={totalPrice}
-          onCheckout={() => { setIsCartOpen(false); setIsCheckoutOpen(true); }}
+          onCheckout={() => {
+            setIsCartOpen(false);
+            setIsCheckoutOpen(true);
+          }}
         />
         <CheckoutModal
           isOpen={isCheckoutOpen}
@@ -506,7 +722,10 @@ function App() {
         />
         <ProductModal
           isOpen={isModalOpen}
-          onClose={() => { setIsModalOpen(false); setSelectedProduct(null); }}
+          onClose={() => {
+            setIsModalOpen(false);
+            setSelectedProduct(null);
+          }}
           product={selectedProduct}
           addToCart={addToCart}
           toggleWishlist={toggleWishlist}
@@ -522,9 +741,9 @@ function App() {
         />
       </Suspense>
 
-      <WhatsAppButton 
-        href="https://wa.me/2348060230990" 
-        target="_blank" 
+      <WhatsAppButton
+        href="https://wa.me/2348060230990"
+        target="_blank"
         rel="noopener noreferrer"
         cartOpen={isCartOpen}
         style={{
@@ -543,23 +762,32 @@ function App() {
 
             setWhatsappPosition({
               bottom: Math.max(20, startBottom - deltaY),
-              right: Math.max(20, startRight - deltaX)
+              right: Math.max(20, startRight - deltaX),
             });
           };
 
           const handleMouseUp = () => {
-            document.removeEventListener('mousemove', handleMouseMove);
-            document.removeEventListener('mouseup', handleMouseUp);
+            document.removeEventListener("mousemove", handleMouseMove);
+            document.removeEventListener("mouseup", handleMouseUp);
           };
 
-          document.addEventListener('mousemove', handleMouseMove);
-          document.addEventListener('mouseup', handleMouseUp);
+          document.addEventListener("mousemove", handleMouseMove);
+          document.addEventListener("mouseup", handleMouseUp);
         }}
       >
-        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="currentColor" viewBox="0 0 24 24">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="28"
+          height="28"
+          fill="currentColor"
+          viewBox="0 0 24 24"
+        >
           <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.198.297-.767.966-.94 1.164-.173.198-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.485-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.917-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.569-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" />
         </svg>
       </WhatsAppButton>
+      <Suspense fallback={null}>
+        <Toast toasts={toasts} removeToast={removeToast} />
+      </Suspense>
     </Container>
   );
 }
