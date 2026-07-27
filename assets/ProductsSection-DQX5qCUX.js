@@ -1,4 +1,4 @@
-import{c as e,i as t,o as n,r,s as i,t as a}from"./index-WArhPWB7.js";var o=e(i(),1),s=a(),c=n.div`
+import{c as e,i as t,l as n,r,s as i,t as a}from"./index-C-emEzOD.js";var o=n(e(),1),s=a(),c=i.div`
   background: white;
   border-radius: 20px;
   overflow: hidden;
@@ -8,7 +8,7 @@ import{c as e,i as t,o as n,r,s as i,t as a}from"./index-WArhPWB7.js";var o=e(i(
     transform: translateY(-10px);
     box-shadow: 0 20px 35px rgba(0,0,0,0.12);
   }
-`,l=n.div`
+`,l=i.div`
   position: relative;
   height: 320px;
   overflow: hidden;
@@ -16,7 +16,7 @@ import{c as e,i as t,o as n,r,s as i,t as a}from"./index-WArhPWB7.js";var o=e(i(
   @media (max-width: 480px) {
     height: 280px;
   }
-`,u=n.img`
+`,u=i.img`
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -24,7 +24,7 @@ import{c as e,i as t,o as n,r,s as i,t as a}from"./index-WArhPWB7.js";var o=e(i(
   ${c}:hover & {
     transform: scale(1.1);
   }
-`,d=n.button`
+`,d=i.button`
   position: absolute;
   top: 14px;
   right: 14px;
@@ -39,7 +39,7 @@ import{c as e,i as t,o as n,r,s as i,t as a}from"./index-WArhPWB7.js";var o=e(i(
   cursor: pointer;
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
   z-index: 3;
-`,f=n.div`
+`,f=i.div`
   position: absolute;
   inset: 0;
   background: rgba(0,0,0,0.45);
@@ -52,7 +52,7 @@ import{c as e,i as t,o as n,r,s as i,t as a}from"./index-WArhPWB7.js";var o=e(i(
   ${c}:hover & {
     opacity: 1;
   }
-`,p=n.button`
+`,p=i.button`
   background: white;
   color: black;
   border: none;
@@ -64,16 +64,16 @@ import{c as e,i as t,o as n,r,s as i,t as a}from"./index-WArhPWB7.js";var o=e(i(
   gap: 8px;
   cursor: pointer;
   z-index: 3;
-`,m=n.div`
+`,m=i.div`
   padding: 20px;
-`,h=n.h3`
+`,h=i.h3`
   font-size: 1.15rem;
   font-weight: 600;
   margin-bottom: 4px;
-`,g=n.p`
+`,g=i.p`
   font-size: 1.4rem;
   font-weight: 700;
-`,_=(0,o.memo)(({product:e,addToCart:n,toggleWishlist:i,wishlist:a,onOpenModal:o})=>(0,s.jsxs)(c,{children:[(0,s.jsxs)(l,{onClick:t=>{t.stopPropagation(),o(e)},children:[(0,s.jsx)(u,{src:e.image,alt:e.name}),(0,s.jsx)(d,{onClick:t=>{t.stopPropagation(),i(e.id)},children:(0,s.jsx)(t,{size:20,fill:a.includes(e.id)?`#ef4444`:`none`,color:a.includes(e.id)?`#ef4444`:`#333`})}),(0,s.jsx)(f,{children:(0,s.jsxs)(p,{onClick:t=>{t.stopPropagation(),n(e)},children:[(0,s.jsx)(r,{size:18}),`Add to Cart`]})})]}),(0,s.jsxs)(m,{children:[(0,s.jsx)(h,{children:e.name}),(0,s.jsx)(`p`,{style:{color:`#666`,marginBottom:`8px`},children:e.color}),(0,s.jsxs)(g,{children:[`₦`,e.price.toLocaleString()]})]})]})),v=n.div`
+`,_=(0,o.memo)(({product:e,addToCart:n,toggleWishlist:i,wishlist:a,onOpenModal:o})=>(0,s.jsxs)(c,{children:[(0,s.jsxs)(l,{onClick:t=>{t.stopPropagation(),o(e)},children:[(0,s.jsx)(u,{src:e.image,alt:e.name}),(0,s.jsx)(d,{onClick:t=>{t.stopPropagation(),i(e.id)},children:(0,s.jsx)(t,{size:20,fill:a.includes(e.id)?`#ef4444`:`none`,color:a.includes(e.id)?`#ef4444`:`#333`})}),(0,s.jsx)(f,{children:(0,s.jsxs)(p,{onClick:t=>{t.stopPropagation(),n(e)},children:[(0,s.jsx)(r,{size:18}),`Add to Cart`]})})]}),(0,s.jsxs)(m,{children:[(0,s.jsx)(h,{children:e.name}),(0,s.jsx)(`p`,{style:{color:`#666`,marginBottom:`8px`},children:e.color}),(0,s.jsxs)(g,{children:[`₦`,e.price.toLocaleString()]})]})]})),v=i.div`
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 28px;
