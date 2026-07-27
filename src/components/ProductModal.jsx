@@ -1,6 +1,6 @@
-import { memo, useState } from 'react';
+import { memo, useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { X, ShoppingCart, Heart, ZoomIn } from 'lucide-react';
+import { X, ShoppingCart, Heart, ZoomIn, Minus, Plus } from 'lucide-react';
 
 const ModalOverlay = styled.div`
   position: fixed;
@@ -150,6 +150,51 @@ const SizeButton = styled.button`
   }
 `;
 
+const QuantityContainer = styled.div`
+  margin: 24px 0;
+`;
+
+const QuantityLabel = styled.p`
+  font-weight: 600;
+  margin-bottom: 12px;
+`;
+
+const QuantityControl = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 16px;
+`;
+
+const QuantityButton = styled.button`
+  width: 40px;
+  height: 40px;
+  border: 2px solid #ddd;
+  background: white;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    border-color: #000;
+    background: #f5f5f5;
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+`;
+
+const QuantityValue = styled.span`
+  font-size: 1.2rem;
+  font-weight: 600;
+  min-width: 30px;
+  text-align: center;
+`;
+
 const AddToCartButton = styled.button`
   width: 100%;
   background: black;
@@ -179,26 +224,36 @@ const ProductModal = memo(({
   wishlist
 }) => {
   const [selectedSize, setSelectedSize] = useState(null);
+  const [quantity, setQuantity] = useState(1);
   const [isFullScreen, setIsFullScreen] = useState(false);
+
+  // Reset quantity and size when modal opens with a new product
+  useEffect(() => {
+    if (isOpen && product) {
+      setSelectedSize(null);
+      setQuantity(1);
+    }
+  }, [isOpen, product]);
 
   if (!isOpen || !product) return null;
 
   const isWishlisted = wishlist.includes(product.id);
 
   const handleAddToCart = () => {
-    const itemToAdd = {
-      ...product,
-      selectedSize: selectedSize || (product.sizes && product.sizes[0]) || "M"
-    };
-    addToCart(itemToAdd, selectedSize);
+    const selected = selectedSize || (product.sizes && product.sizes[0]) || "M";
+    
+    // Add the product multiple times based on quantity
+    for (let i = 0; i < quantity; i++) {
+      addToCart(product, selected);
+    }
   };
 
-  const openFullScreen = () => {
-    setIsFullScreen(true);
+  const increaseQty = () => {
+    setQuantity((prev) => Math.min(prev + 1, 10)); // Max 10
   };
 
-  const closeFullScreen = () => {
-    setIsFullScreen(false);
+  const decreaseQty = () => {
+    setQuantity((prev) => Math.max(prev - 1, 1)); // Min 1
   };
 
   return (
@@ -213,7 +268,7 @@ const ProductModal = memo(({
           </ModalHeader>
 
           <ModalBody>
-            <ImageSection onClick={openFullScreen}>
+            <ImageSection onClick={() => setIsFullScreen(true)}>
               <ProductImage 
                 src={product.image} 
                 alt={product.name}
@@ -237,6 +292,7 @@ const ProductModal = memo(({
                 <Description>No description available for this product.</Description>
               )}
 
+              {/* Size Selection */}
               {product.sizes && product.sizes.length > 0 && (
                 <SizeContainer>
                   <SizeLabel>Select Size</SizeLabel>
@@ -254,9 +310,23 @@ const ProductModal = memo(({
                 </SizeContainer>
               )}
 
+              {/* Quantity Selector */}
+              <QuantityContainer>
+                <QuantityLabel>Quantity</QuantityLabel>
+                <QuantityControl>
+                  <QuantityButton onClick={decreaseQty} disabled={quantity <= 1}>
+                    <Minus size={18} />
+                  </QuantityButton>
+                  <QuantityValue>{quantity}</QuantityValue>
+                  <QuantityButton onClick={increaseQty} disabled={quantity >= 10}>
+                    <Plus size={18} />
+                  </QuantityButton>
+                </QuantityControl>
+              </QuantityContainer>
+
               <AddToCartButton onClick={handleAddToCart}>
                 <ShoppingCart size={20} />
-                Add to Cart
+                Add to Cart {quantity > 1 ? `(${quantity})` : ""}
               </AddToCartButton>
 
               <button
@@ -299,14 +369,14 @@ const ProductModal = memo(({
           alignItems: "center",
           justifyContent: "center",
           padding: "20px"
-        }} onClick={closeFullScreen}>
+        }} onClick={() => setIsFullScreen(false)}>
           <img 
             src={product.image} 
             alt={product.name}
             style={{ maxWidth: "100%", maxHeight: "100%", objectFit: "contain" }}
           />
           <button 
-            onClick={closeFullScreen}
+            onClick={() => setIsFullScreen(false)}
             style={{
               position: "absolute",
               top: "30px",
