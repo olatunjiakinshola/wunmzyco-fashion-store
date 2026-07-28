@@ -1,9 +1,9 @@
 {
-  "name": "luxe-fashion-store",
+  "name": "wunmzyco-fashion-store",
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "homepage": "https://olatunjiakinshola.github.io/luxe-fashion-store",
+  "homepage": "https://olatunjiakinshola.github.io/wunmzyco-fashion-store",
   "scripts": {
     "tailwind:init": ".\\node_modules\\.bin\\tailwindcss init -p",
     "dev": "vite",
