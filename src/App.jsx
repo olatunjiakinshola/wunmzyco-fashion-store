@@ -97,25 +97,40 @@ const Hamburger = styled.button`
   }
 `;
 
+const MobileOverlay = styled.div`
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 65;
+  opacity: ${(props) => (props.open ? 1 : 0)};
+  visibility: ${(props) => (props.open ? "visible" : "hidden")};
+  transition: all 0.3s ease;
+`;
+
 const MobileMenu = styled.div`
   position: fixed;
   top: 0;
-  left: 0;
-  width: 100%;
+  right: 0;
+  width: 80%;
+  max-width: 320px;
   height: 100vh;
   background: white;
-  transform: translateX(${(props) => (props.open ? "0" : "-100%")});
+  transform: translateX(${(props) => (props.open ? "0" : "100%")});
   transition: transform 0.3s ease;
   z-index: 70;
-  padding: 80px 20px 20px;
-  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+  padding: 80px 24px 30px;
+  box-shadow: -4px 0 25px rgba(0, 0, 0, 0.12);
   overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 `;
 
 const NavLinks = styled.div`
   display: flex;
-  gap: 20px;
+  gap: 12px;
   font-weight: 500;
+  flex-wrap: wrap;
   @media (max-width: 768px) {
     display: none;
   }
@@ -126,9 +141,9 @@ const NavLink = styled.button.withConfig({
 })`
   background: none;
   border: none;
-  font-size: 1.05rem;
+  font-size: 1rem;
   cursor: pointer;
-  padding: 8px 16px;
+  padding: 8px 14px;
   border-radius: 50px;
   transition: all 0.3s ease;
   color: ${(props) => (props.$active ? "#000" : "#666")};
@@ -137,7 +152,6 @@ const NavLink = styled.button.withConfig({
   &:hover {
     color: #000;
     background-color: #f1f1f1;
-    transform: translateY(-2px);
   }
   &::after {
     content: "";
@@ -150,9 +164,6 @@ const NavLink = styled.button.withConfig({
     background: black;
     border-radius: 10px;
     transition: all 0.3s ease;
-  }
-  &:hover::after {
-    width: 60%;
   }
 `;
 
@@ -229,7 +240,6 @@ const NavItem = styled.button`
   }
 `;
 
-// Floating WhatsApp Button
 const WhatsAppButton = styled.a`
   position: fixed;
   bottom: ${(props) => (props.cartOpen ? "120px" : "25px")};
@@ -271,24 +281,21 @@ function App() {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const [activeCategory, setActiveCategory] = useState("all");
-  const [priceRange, setPriceRange] = useState("all");
-  const [sortBy, setSortBy] = useState("default");
   const [wishlist, setWishlist] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [isWishlistOpen, setIsWishlistOpen] = useState(false);
-  const [whatsappPosition, setWhatsappPosition] = useState({
-    bottom: 25,
-    right: 25,
-  });
   const [toasts, setToasts] = useState([]);
+  const [whatsappPosition, setWhatsappPosition] = useState({ bottom: 25, right: 25 });
 
+  // Persist cart
   useEffect(() => {
     localStorage.setItem("cart", JSON.stringify(cart));
   }, [cart]);
 
+  // Persist wishlist
   useEffect(() => {
     const savedWishlist = localStorage.getItem("wishlist");
     if (savedWishlist) setWishlist(JSON.parse(savedWishlist));
@@ -298,52 +305,76 @@ function App() {
     localStorage.setItem("wishlist", JSON.stringify(wishlist));
   }, [wishlist]);
 
+  // Filtering Logic
   const filteredProducts = useMemo(() => {
-    let result =
-      activeCategory === "all"
-        ? products
-        : products.filter((p) => p.category === activeCategory);
+    let result = [...products];
 
-    if (priceRange === "under5k") {
-      result = result.filter((p) => p.price < 5000);
+    if (activeCategory !== "all") {
+      if (activeCategory === "under5k") {
+        result = result.filter((p) => p.price < 5000);
+      } else {
+        result = result.filter((p) => p.category === activeCategory);
+      }
     }
 
     if (searchTerm.trim() !== "") {
+      const term = searchTerm.toLowerCase();
       result = result.filter(
         (product) =>
-          product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          product.color.toLowerCase().includes(searchTerm.toLowerCase()),
+          product.name.toLowerCase().includes(term) ||
+          product.color.toLowerCase().includes(term)
       );
     }
 
     return result;
-  }, [activeCategory, priceRange, searchTerm]);
+  }, [activeCategory, searchTerm]);
 
+  // Toast helpers
+  const showToast = (message) => {
+    const id = Date.now();
+    setToasts((prev) => [...prev, { id, message, closing: false }]);
+    setTimeout(() => {
+      setToasts((prev) =>
+        prev.map((t) => (t.id === id ? { ...t, closing: true } : t))
+      );
+      setTimeout(() => {
+        setToasts((prev) => prev.filter((t) => t.id !== id));
+      }, 300);
+    }, 3000);
+  };
+
+  const removeToast = (id) => {
+    setToasts((prev) =>
+      prev.map((t) => (t.id === id ? { ...t, closing: true } : t))
+    );
+    setTimeout(() => {
+      setToasts((prev) => prev.filter((t) => t.id !== id));
+    }, 300);
+  };
+
+  // Cart functions
   const addToCart = (product, selectedSize = null) => {
-    const size =
-      selectedSize || product.selectedSize || product.sizes?.[0] || "M";
+    const size = selectedSize || product.selectedSize || product.sizes?.[0] || "M";
     const cartKey = `${product.id}-${size}`;
 
     setCart((prev) => {
       const existingItem = prev.find((item) => item.cartKey === cartKey);
-
       if (existingItem) {
         return prev.map((item) =>
           item.cartKey === cartKey
             ? { ...item, quantity: item.quantity + 1 }
-            : item,
+            : item
         );
-      } else {
-        return [
-          ...prev,
-          {
-            ...product,
-            selectedSize: size,
-            cartKey,
-            quantity: 1,
-          },
-        ];
       }
+      return [
+        ...prev,
+        {
+          ...product,
+          selectedSize: size,
+          cartKey,
+          quantity: 1,
+        },
+      ];
     });
 
     showToast(`${product.name} (Size: ${size}) added to cart`);
@@ -354,8 +385,8 @@ function App() {
       prev.map((item) =>
         item.cartKey === cartKey
           ? { ...item, quantity: item.quantity + 1 }
-          : item,
-      ),
+          : item
+      )
     );
   };
 
@@ -365,21 +396,27 @@ function App() {
         .map((item) =>
           item.cartKey === cartKey
             ? { ...item, quantity: item.quantity - 1 }
-            : item,
+            : item
         )
-        .filter((item) => item.quantity > 0),
+        .filter((item) => item.quantity > 0)
     );
   };
 
-  const removeFromCart = (cartKey) =>
+  const removeFromCart = (cartKey) => {
     setCart((prev) => prev.filter((item) => item.cartKey !== cartKey));
+  };
+
+  const clearCart = () => {
+    setCart([]);
+    showToast("Cart cleared successfully");
+  };
 
   const toggleWishlist = (id) => {
     setWishlist((prev) => {
-      const isAlreadyWishlisted = prev.includes(id);
+      const isAlready = prev.includes(id);
       const product = products.find((p) => p.id === id);
 
-      if (isAlreadyWishlisted) {
+      if (isAlready) {
         showToast(`${product?.name || "Item"} removed from wishlist`);
         return prev.filter((item) => item !== id);
       } else {
@@ -395,36 +432,23 @@ function App() {
   };
 
   const wishlistItems = products.filter((product) =>
-    wishlist.includes(product.id),
+    wishlist.includes(product.id)
   );
 
   const totalPrice = cart.reduce(
     (sum, item) => sum + item.price * item.quantity,
-    0,
+    0
   );
-  const showToast = (message) => {
-    const id = Date.now();
-    setToasts((prev) => [...prev, { id, message, closing: false }]);
 
-    // Toast
-    setTimeout(() => {
-      setToasts((prev) =>
-        prev.map((t) => (t.id === id ? { ...t, closing: true } : t)),
-      );
-      setTimeout(() => {
-        setToasts((prev) => prev.filter((t) => t.id !== id));
-      }, 300);
-    }, 3000);
-  };
-
-  const removeToast = (id) => {
-    setToasts((prev) =>
-      prev.map((t) => (t.id === id ? { ...t, closing: true } : t)),
-    );
-    setTimeout(() => {
-      setToasts((prev) => prev.filter((t) => t.id !== id));
-    }, 300);
-  };
+  const categories = [
+    { key: "all", label: "All" },
+    { key: "tops", label: "Tops" },
+    { key: "gowns", label: "Gowns" },
+    { key: "skirts", label: "Skirts" },
+    { key: "bubu", label: "Bubu" },
+    { key: "baggy", label: "Baggy Tops" },
+    { key: "under5k", label: "Under ₦5k" },
+  ];
 
   return (
     <Container>
@@ -434,6 +458,7 @@ function App() {
             <BrandDot>W</BrandDot>
             WunmzyCo
           </Logo>
+
           <SearchContainer>
             <SearchIcon>
               <Search size={20} />
@@ -446,55 +471,24 @@ function App() {
             />
           </SearchContainer>
 
+          {/* Desktop Categories */}
           <NavLinks>
-            <NavLink
-              $active={activeCategory === "all"}
-              onClick={() => setActiveCategory("all")}
-            >
-              All
-            </NavLink>
-            <NavLink
-              $active={activeCategory === "tops"}
-              onClick={() => setActiveCategory("tops")}
-            >
-              Tops
-            </NavLink>
-            <NavLink
-              $active={activeCategory === "gowns"}
-              onClick={() => setActiveCategory("gowns")}
-            >
-              Gowns
-            </NavLink>
-            <NavLink
-              $active={activeCategory === "skirts"}
-              onClick={() => setActiveCategory("skirts")}
-            >
-              Skirts
-            </NavLink>
-            <NavLink
-              $active={activeCategory === "bubu"}
-              onClick={() => setActiveCategory("bubu")}
-            >
-              Bubu
-            </NavLink>
-            <NavLink
-              $active={activeCategory === "baggy"}
-              onClick={() => setActiveCategory("baggy")}
-            >
-              Baggy Tops
-            </NavLink>
-            <NavLink
-              $active={activeCategory === "under5k"}
-              onClick={() => setActiveCategory("under5k")}
-            >
-              Under ₦5k
-            </NavLink>
+            {categories.map((cat) => (
+              <NavLink
+                key={cat.key}
+                $active={activeCategory === cat.key}
+                onClick={() => setActiveCategory(cat.key)}
+              >
+                {cat.label}
+              </NavLink>
+            ))}
           </NavLinks>
 
           <Hamburger onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
             {isMobileMenuOpen ? <X size={28} /> : <Menu size={28} />}
           </Hamburger>
 
+          {/* Wishlist Button */}
           <button
             onClick={() => setIsWishlistOpen(true)}
             style={{
@@ -532,6 +526,7 @@ function App() {
             )}
           </button>
 
+          {/* Cart Button */}
           <button
             onClick={() => setIsCartOpen(true)}
             style={{
@@ -564,73 +559,50 @@ function App() {
             )}
           </button>
         </NavContent>
-
-        <MobileMenu open={isMobileMenuOpen}>
-          <NavLink
-            $active={activeCategory === "all"}
-            onClick={() => {
-              setActiveCategory("all");
-              setIsMobileMenuOpen(false);
-            }}
-          >
-            All
-          </NavLink>
-          <NavLink
-            $active={activeCategory === "tops"}
-            onClick={() => {
-              setActiveCategory("tops");
-              setIsMobileMenuOpen(false);
-            }}
-          >
-            Tops
-          </NavLink>
-          <NavLink
-            $active={activeCategory === "gowns"}
-            onClick={() => {
-              setActiveCategory("gowns");
-              setIsMobileMenuOpen(false);
-            }}
-          >
-            Gowns
-          </NavLink>
-          <NavLink
-            $active={activeCategory === "skirts"}
-            onClick={() => {
-              setActiveCategory("skirts");
-              setIsMobileMenuOpen(false);
-            }}
-          >
-            Skirts
-          </NavLink>
-          <NavLink
-            $active={activeCategory === "bubu"}
-            onClick={() => {
-              setActiveCategory("bubu");
-              setIsMobileMenuOpen(false);
-            }}
-          >
-            Bubu
-          </NavLink>
-          <NavLink
-            $active={activeCategory === "baggy"}
-            onClick={() => {
-              setActiveCategory("baggy");
-              setIsMobileMenuOpen(false);
-            }}
-          >
-            Baggy Tops
-          </NavLink>
-          <NavLink
-            $active={activeCategory === "under5k"}
-            onClick={() => {
-              setActiveCategory("under5k");
-              setIsMobileMenuOpen(false);
-            }}
-          >
-            Under ₦5k
-          </NavLink>
-        </MobileMenu>
       </Navbar>
+
+      {/* Mobile Overlay + Menu */}
+      <MobileOverlay
+        open={isMobileMenuOpen}
+        onClick={() => setIsMobileMenuOpen(false)}
+      />
+      <MobileMenu open={isMobileMenuOpen}>
+        <h3
+          style={{
+            marginBottom: "24px",
+            fontSize: "1.4rem",
+            fontWeight: "700",
+            color: "#111",
+          }}
+        >
+          Categories
+        </h3>
+
+        {categories.map((cat) => (
+          <button
+            key={cat.key}
+            onClick={() => {
+              setActiveCategory(cat.key);
+              setIsMobileMenuOpen(false);
+            }}
+            style={{
+              width: "100%",
+              textAlign: "left",
+              padding: "14px 16px",
+              borderRadius: "10px",
+              border: "none",
+              background: activeCategory === cat.key ? "#111" : "transparent",
+              color: activeCategory === cat.key ? "white" : "#333",
+              fontSize: "1.05rem",
+              fontWeight: activeCategory === cat.key ? "600" : "500",
+              cursor: "pointer",
+              transition: "all 0.2s",
+            }}
+          >
+            {cat.label}
+          </button>
+        ))}
+      </MobileMenu>
 
       <Hero>
         <div>
@@ -660,6 +632,7 @@ function App() {
           </h2>
           <p>{filteredProducts.length} products</p>
         </SectionHeader>
+
         <Suspense fallback={<p>Loading products...</p>}>
           <ProductsSection
             products={filteredProducts}
@@ -683,6 +656,7 @@ function App() {
         <p>© 2026 WunmzyCo. All rights reserved.</p>
       </footer>
 
+      {/* Bottom Navigation (Mobile) */}
       <BottomNav>
         <NavItem
           onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
@@ -691,7 +665,10 @@ function App() {
           Shop
         </NavItem>
         <NavItem onClick={() => setIsWishlistOpen(true)}>
-          <Heart size={24} fill={wishlist.length > 0 ? "#ef4444" : "none"} />
+          <Heart
+            size={24}
+            fill={wishlist.length > 0 ? "#ef4444" : "none"}
+          />
           Wishlist
         </NavItem>
         <NavItem onClick={() => setIsCartOpen(true)}>
@@ -713,13 +690,16 @@ function App() {
             setIsCartOpen(false);
             setIsCheckoutOpen(true);
           }}
+          clearCart={clearCart}
         />
+
         <CheckoutModal
           isOpen={isCheckoutOpen}
           onClose={() => setIsCheckoutOpen(false)}
           totalPrice={totalPrice}
           cart={cart}
         />
+
         <ProductModal
           isOpen={isModalOpen}
           onClose={() => {
@@ -739,8 +719,11 @@ function App() {
           addToCart={addToCart}
           toggleWishlist={toggleWishlist}
         />
+
+        <Toast toasts={toasts} removeToast={removeToast} />
       </Suspense>
 
+      {/* Draggable WhatsApp Button */}
       <WhatsAppButton
         href="https://wa.me/2348060230990"
         target="_blank"
@@ -785,9 +768,6 @@ function App() {
           <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.198.297-.767.966-.94 1.164-.173.198-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.485-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.917-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.569-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" />
         </svg>
       </WhatsAppButton>
-      <Suspense fallback={null}>
-        <Toast toasts={toasts} removeToast={removeToast} />
-      </Suspense>
     </Container>
   );
 }
