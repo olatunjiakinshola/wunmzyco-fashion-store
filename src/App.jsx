@@ -1,7 +1,7 @@
 import { useState, lazy, Suspense, useMemo, useEffect } from "react";
 import styled from "styled-components";
 import { ShoppingCart, Search, Menu, X, Heart } from "lucide-react";
-import products from "./data/Products";
+import products from "./data/products.js";
 
 const ProductsSection = lazy(() => import("./components/ProductsSection"));
 const CartDrawer = lazy(() => import("./components/CartDrawer"));
