@@ -1,4 +1,4 @@
-import { useState, lazy, Suspense, useMemo, useEffect } from "react";
+import { useState, lazy, Suspense, useMemo, useEffect, useRef } from "react";
 import styled from "styled-components";
 import { ShoppingCart, Search, Menu, X, Heart } from "lucide-react";
 import products from "./data/products";
@@ -256,7 +256,7 @@ const WhatsAppButton = styled.a`
   user-select: none;
   touch-action: none;
   text-decoration: none;
-  transition: transform 0.15s ease;
+  will-change: transform, left, top;
 
   &:active {
     cursor: grabbing;
@@ -286,6 +286,12 @@ function App() {
   const [isWishlistOpen, setIsWishlistOpen] = useState(false);
   const [toasts, setToasts] = useState([]);
   const [whatsappPos, setWhatsappPos] = useState({ x: null, y: null });
+
+  // Performance refs for drag
+  const isDragging = useRef(false);
+  const dragOffset = useRef({ x: 0, y: 0 });
+  const buttonRef = useRef(null);
+  const rafId = useRef(null);
 
   // Persist cart
   useEffect(() => {
@@ -448,21 +454,30 @@ function App() {
     { key: "under5k", label: "Under ₦5k" },
   ];
 
-  // Smooth drag for WhatsApp button (mouse + touch)
+  // High-performance drag logic
   const handleDragStart = (e) => {
     e.preventDefault();
+    isDragging.current = true;
 
     const isTouch = e.type.includes("touch");
     const clientX = isTouch ? e.touches[0].clientX : e.clientX;
     const clientY = isTouch ? e.touches[0].clientY : e.clientY;
 
-    const button = e.currentTarget;
-    const rect = button.getBoundingClientRect();
+    const button = buttonRef.current;
+    if (!button) return;
 
-    const offsetX = clientX - rect.left;
-    const offsetY = clientY - rect.top;
+    const rect = button.getBoundingClientRect();
+    dragOffset.current = {
+      x: clientX - rect.left,
+      y: clientY - rect.top,
+    };
+
+    // Disable transition while dragging
+    button.style.transition = "none";
 
     const handleMove = (moveEvent) => {
+      if (!isDragging.current) return;
+
       const moveIsTouch = moveEvent.type.includes("touch");
       const moveX = moveIsTouch
         ? moveEvent.touches[0].clientX
@@ -471,19 +486,44 @@ function App() {
         ? moveEvent.touches[0].clientY
         : moveEvent.clientY;
 
-      const newX = moveX - offsetX;
-      const newY = moveY - offsetY;
+      if (rafId.current) cancelAnimationFrame(rafId.current);
 
-      const maxX = window.innerWidth - button.offsetWidth;
-      const maxY = window.innerHeight - button.offsetHeight;
+      rafId.current = requestAnimationFrame(() => {
+        const newX = moveX - dragOffset.current.x;
+        const newY = moveY - dragOffset.current.y;
 
-      setWhatsappPos({
-        x: Math.max(0, Math.min(newX, maxX)),
-        y: Math.max(0, Math.min(newY, maxY)),
+        const maxX = window.innerWidth - button.offsetWidth;
+        const maxY = window.innerHeight - button.offsetHeight;
+
+        const clampedX = Math.max(0, Math.min(newX, maxX));
+        const clampedY = Math.max(0, Math.min(newY, maxY));
+
+        // Direct DOM update (no React re-render during drag)
+        button.style.left = `${clampedX}px`;
+        button.style.top = `${clampedY}px`;
+        button.style.right = "auto";
+        button.style.bottom = "auto";
       });
     };
 
     const handleEnd = () => {
+      isDragging.current = false;
+
+      if (rafId.current) {
+        cancelAnimationFrame(rafId.current);
+        rafId.current = null;
+      }
+
+      const button = buttonRef.current;
+      if (button) {
+        button.style.transition = "transform 0.15s ease";
+
+        const finalX = parseFloat(button.style.left) || 0;
+        const finalY = parseFloat(button.style.top) || 0;
+
+        setWhatsappPos({ x: finalX, y: finalY });
+      }
+
       document.removeEventListener("mousemove", handleMove);
       document.removeEventListener("mouseup", handleEnd);
       document.removeEventListener("touchmove", handleMove);
@@ -769,8 +809,9 @@ function App() {
         <Toast toasts={toasts} removeToast={removeToast} />
       </Suspense>
 
-      {/* Improved Draggable WhatsApp Button */}
+      {/* High-performance Draggable WhatsApp Button */}
       <WhatsAppButton
+        ref={buttonRef}
         href="https://wa.me/2348060230990"
         target="_blank"
         rel="noopener noreferrer"
