@@ -325,7 +325,7 @@ function App() {
       result = result.filter(
         (product) =>
           product.name.toLowerCase().includes(term) ||
-          product.color.toLowerCase().includes(term)
+          product.color.toLowerCase().includes(term),
       );
     }
 
@@ -338,7 +338,7 @@ function App() {
     setToasts((prev) => [...prev, { id, message, closing: false }]);
     setTimeout(() => {
       setToasts((prev) =>
-        prev.map((t) => (t.id === id ? { ...t, closing: true } : t))
+        prev.map((t) => (t.id === id ? { ...t, closing: true } : t)),
       );
       setTimeout(() => {
         setToasts((prev) => prev.filter((t) => t.id !== id));
@@ -348,7 +348,7 @@ function App() {
 
   const removeToast = (id) => {
     setToasts((prev) =>
-      prev.map((t) => (t.id === id ? { ...t, closing: true } : t))
+      prev.map((t) => (t.id === id ? { ...t, closing: true } : t)),
     );
     setTimeout(() => {
       setToasts((prev) => prev.filter((t) => t.id !== id));
@@ -367,7 +367,7 @@ function App() {
         return prev.map((item) =>
           item.cartKey === cartKey
             ? { ...item, quantity: item.quantity + 1 }
-            : item
+            : item,
         );
       }
       return [
@@ -389,8 +389,8 @@ function App() {
       prev.map((item) =>
         item.cartKey === cartKey
           ? { ...item, quantity: item.quantity + 1 }
-          : item
-      )
+          : item,
+      ),
     );
   };
 
@@ -400,9 +400,9 @@ function App() {
         .map((item) =>
           item.cartKey === cartKey
             ? { ...item, quantity: item.quantity - 1 }
-            : item
+            : item,
         )
-        .filter((item) => item.quantity > 0)
+        .filter((item) => item.quantity > 0),
     );
   };
 
@@ -436,12 +436,12 @@ function App() {
   };
 
   const wishlistItems = products.filter((product) =>
-    wishlist.includes(product.id)
+    wishlist.includes(product.id),
   );
 
   const totalPrice = cart.reduce(
     (sum, item) => sum + item.price * item.quantity,
-    0
+    0,
   );
 
   const categories = [
@@ -451,6 +451,11 @@ function App() {
     { key: "skirts", label: "Skirts" },
     { key: "bubu", label: "Bubu" },
     { key: "baggy", label: "Baggy Tops" },
+    { key: "twopiece", label: "Two Piece" },
+    { key: "slippers", label: "Slippers" },
+    { key: "shoes", label: "Shoes" },
+    { key: "joggers", label: "Joggers" },
+    { key: "palazzos", label: "Palazzos" },
     { key: "under5k", label: "Under ₦5k" },
   ];
 
@@ -702,11 +707,11 @@ function App() {
             NEW SEASON 2026
           </p>
           <HeroTitle>
-            Timeless.
+            BE BOLD.
             <br />
-            Effortless.
+            BE CONFIDENT.
             <br />
-            WunmzyCo.
+            BE YOU.
           </HeroTitle>
         </div>
       </Hero>
@@ -735,13 +740,77 @@ function App() {
           background: "#111",
           color: "#aaa",
           textAlign: "center",
-          padding: "60px 20px",
+          padding: "60px 20px 40px",
         }}
       >
-        <h2 style={{ color: "white", marginBottom: "8px" }}>WUNMZYCo</h2>
-        <p>© 2026 WunmzyCo. All rights reserved.</p>
-      </footer>
+        <h2 style={{ color: "white", marginBottom: "12px" }}>WUNMZYCo</h2>
+        <p style={{ marginBottom: "20px" }}>
+          Premium affordable fashion for everyday elegance.
+        </p>
 
+        {/* Social Links */}
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            gap: "20px",
+            marginBottom: "24px",
+          }}
+        >
+          <a
+            href="https://facebook.com/yourpage"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              color: "#aaa",
+              textDecoration: "none",
+              fontSize: "0.95rem",
+            }}
+          >
+            Facebook
+          </a>
+          <a
+            href="https://tiktok.com/@yourpage"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              color: "#aaa",
+              textDecoration: "none",
+              fontSize: "0.95rem",
+            }}
+          >
+            TikTok
+          </a>
+          <a
+            href="https://instagram.com/yourpage"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              color: "#aaa",
+              textDecoration: "none",
+              fontSize: "0.95rem",
+            }}
+          >
+            Instagram
+          </a>
+          <a
+            href="https://wa.me/2348060230990"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              color: "#aaa",
+              textDecoration: "none",
+              fontSize: "0.95rem",
+            }}
+          >
+            WhatsApp
+          </a>
+        </div>
+
+        <p style={{ fontSize: "0.9rem" }}>
+          © 2026 WunmzyCo. All rights reserved.
+        </p>
+      </footer>
       {/* Bottom Navigation (Mobile) */}
       <BottomNav>
         <NavItem
@@ -751,10 +820,7 @@ function App() {
           Shop
         </NavItem>
         <NavItem onClick={() => setIsWishlistOpen(true)}>
-          <Heart
-            size={24}
-            fill={wishlist.length > 0 ? "#ef4444" : "none"}
-          />
+          <Heart size={24} fill={wishlist.length > 0 ? "#ef4444" : "none"} />
           Wishlist
         </NavItem>
         <NavItem onClick={() => setIsCartOpen(true)}>

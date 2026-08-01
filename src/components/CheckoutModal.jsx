@@ -51,6 +51,23 @@ const Input = styled.input`
   }
 `;
 
+const TextArea = styled.textarea`
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  margin-bottom: 12px;
+  font-size: 1rem;
+  outline: none;
+  min-height: 80px;
+  resize: vertical;
+  font-family: inherit;
+
+  &:focus {
+    border-color: #000;
+  }
+`;
+
 const WhatsAppButton = styled.button`
   width: 100%;
   background: #25d366;
@@ -104,6 +121,9 @@ const CheckoutModal = memo(
       name: "",
       email: "",
       phone: "",
+      address: "",
+      city: "",
+      notes: "",
     });
 
     if (!isOpen) return null;
@@ -117,7 +137,6 @@ const CheckoutModal = memo(
       });
     };
 
-    // Verify payment with Netlify function
     const verifyPayment = async (reference) => {
       try {
         const res = await fetch("/.netlify/functions/verify-payment", {
@@ -134,7 +153,7 @@ const CheckoutModal = memo(
           alert(
             `Payment successful!\n\nReference: ${result.data.reference}\nAmount: ₦${Number(
               result.data.amount
-            ).toLocaleString()}`
+            ).toLocaleString()}\n\nWe will contact you shortly regarding delivery.`
           );
 
           if (clearCart) clearCart();
@@ -151,10 +170,15 @@ const CheckoutModal = memo(
       }
     };
 
-    // Paystack payment
     const handlePaystackPayment = () => {
-      if (!formData.name || !formData.email || !formData.phone) {
-        alert("Please fill in your name, email and phone number.");
+      if (
+        !formData.name ||
+        !formData.email ||
+        !formData.phone ||
+        !formData.address ||
+        !formData.city
+      ) {
+        alert("Please fill in your name, email, phone, address and city.");
         return;
       }
 
@@ -196,6 +220,21 @@ const CheckoutModal = memo(
               value: formData.phone,
             },
             {
+              display_name: "Delivery Address",
+              variable_name: "delivery_address",
+              value: formData.address,
+            },
+            {
+              display_name: "City / State",
+              variable_name: "city_state",
+              value: formData.city,
+            },
+            {
+              display_name: "Order Notes",
+              variable_name: "order_notes",
+              value: formData.notes || "None",
+            },
+            {
               display_name: "Cart Items",
               variable_name: "cart_items",
               value: cart
@@ -220,14 +259,18 @@ const CheckoutModal = memo(
       handler.openIframe();
     };
 
-    // WhatsApp order
     const createWhatsAppMessage = () => {
       let message = `*New Order from WunmzyCo Website*\n\n`;
       message += `*Customer Details*\n`;
-      message += `Name: ${formData.name || "Not provided"}\n`;
-      message += `Email: ${formData.email || "Not provided"}\n`;
-      message += `Phone: ${formData.phone || "Not provided"}\n\n`;
-      message += `*Order Items*\n`;
+      message += `Name: ${formData.name}\n`;
+      message += `Email: ${formData.email}\n`;
+      message += `Phone: ${formData.phone}\n`;
+      message += `Address: ${formData.address}\n`;
+      message += `City/State: ${formData.city}\n`;
+      if (formData.notes) {
+        message += `Notes: ${formData.notes}\n`;
+      }
+      message += `\n*Order Items*\n`;
 
       cart.forEach((item, index) => {
         const sizeInfo = item.selectedSize
@@ -245,8 +288,8 @@ const CheckoutModal = memo(
     };
 
     const handleSendToWhatsApp = () => {
-      if (!formData.name || !formData.phone) {
-        alert("Please enter your name and phone number for WhatsApp order.");
+      if (!formData.name || !formData.phone || !formData.address || !formData.city) {
+        alert("Please enter your name, phone, address and city for WhatsApp order.");
         return;
       }
 
@@ -276,28 +319,48 @@ const CheckoutModal = memo(
             </button>
           </ModalHeader>
 
-          {/* Customer Details */}
+          {/* Customer + Delivery Details */}
           <div style={{ marginBottom: "16px" }}>
             <h4 style={{ marginBottom: "12px" }}>Your Details</h4>
             <Input
               type="text"
               name="name"
-              placeholder="Full Name"
+              placeholder="Full Name *"
               value={formData.name}
               onChange={handleChange}
             />
             <Input
               type="email"
               name="email"
-              placeholder="Email Address"
+              placeholder="Email Address *"
               value={formData.email}
               onChange={handleChange}
             />
             <Input
               type="tel"
               name="phone"
-              placeholder="Phone Number"
+              placeholder="Phone Number *"
               value={formData.phone}
+              onChange={handleChange}
+            />
+            <Input
+              type="text"
+              name="address"
+              placeholder="Delivery Address *"
+              value={formData.address}
+              onChange={handleChange}
+            />
+            <Input
+              type="text"
+              name="city"
+              placeholder="City / State *"
+              value={formData.city}
+              onChange={handleChange}
+            />
+            <TextArea
+              name="notes"
+              placeholder="Order Notes (optional)"
+              value={formData.notes}
               onChange={handleChange}
             />
           </div>
