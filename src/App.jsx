@@ -1,7 +1,7 @@
 import { useState, lazy, Suspense, useMemo, useEffect } from "react";
 import styled from "styled-components";
 import { ShoppingCart, Search, Menu, X, Heart } from "lucide-react";
-import products from "./data/products"
+import products from "./data/products";
 
 const ProductsSection = lazy(() => import("./components/ProductsSection"));
 const CartDrawer = lazy(() => import("./components/CartDrawer"));
@@ -242,8 +242,6 @@ const NavItem = styled.button`
 
 const WhatsAppButton = styled.a`
   position: fixed;
-  bottom: ${(props) => (props.cartOpen ? "120px" : "25px")};
-  right: 25px;
   background: #25d366;
   color: white;
   width: 60px;
@@ -252,12 +250,13 @@ const WhatsAppButton = styled.a`
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 15px rgba(37, 211, 102, 0.4);
+  box-shadow: 0 4px 15px rgba(37, 211, 102, 0.45);
   z-index: 1000;
   cursor: grab;
-  transition: all 0.2s ease;
   user-select: none;
+  touch-action: none;
   text-decoration: none;
+  transition: transform 0.15s ease;
 
   &:active {
     cursor: grabbing;
@@ -267,8 +266,6 @@ const WhatsAppButton = styled.a`
   @media (max-width: 480px) {
     width: 55px;
     height: 55px;
-    bottom: ${(props) => (props.cartOpen ? "110px" : "20px")};
-    right: 20px;
   }
 `;
 
@@ -288,7 +285,7 @@ function App() {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [isWishlistOpen, setIsWishlistOpen] = useState(false);
   const [toasts, setToasts] = useState([]);
-  const [whatsappPosition, setWhatsappPosition] = useState({ bottom: 25, right: 25 });
+  const [whatsappPos, setWhatsappPos] = useState({ x: null, y: null });
 
   // Persist cart
   useEffect(() => {
@@ -354,7 +351,8 @@ function App() {
 
   // Cart functions
   const addToCart = (product, selectedSize = null) => {
-    const size = selectedSize || product.selectedSize || product.sizes?.[0] || "M";
+    const size =
+      selectedSize || product.selectedSize || product.sizes?.[0] || "M";
     const cartKey = `${product.id}-${size}`;
 
     setCart((prev) => {
@@ -449,6 +447,54 @@ function App() {
     { key: "baggy", label: "Baggy Tops" },
     { key: "under5k", label: "Under ₦5k" },
   ];
+
+  // Smooth drag for WhatsApp button (mouse + touch)
+  const handleDragStart = (e) => {
+    e.preventDefault();
+
+    const isTouch = e.type.includes("touch");
+    const clientX = isTouch ? e.touches[0].clientX : e.clientX;
+    const clientY = isTouch ? e.touches[0].clientY : e.clientY;
+
+    const button = e.currentTarget;
+    const rect = button.getBoundingClientRect();
+
+    const offsetX = clientX - rect.left;
+    const offsetY = clientY - rect.top;
+
+    const handleMove = (moveEvent) => {
+      const moveIsTouch = moveEvent.type.includes("touch");
+      const moveX = moveIsTouch
+        ? moveEvent.touches[0].clientX
+        : moveEvent.clientX;
+      const moveY = moveIsTouch
+        ? moveEvent.touches[0].clientY
+        : moveEvent.clientY;
+
+      const newX = moveX - offsetX;
+      const newY = moveY - offsetY;
+
+      const maxX = window.innerWidth - button.offsetWidth;
+      const maxY = window.innerHeight - button.offsetHeight;
+
+      setWhatsappPos({
+        x: Math.max(0, Math.min(newX, maxX)),
+        y: Math.max(0, Math.min(newY, maxY)),
+      });
+    };
+
+    const handleEnd = () => {
+      document.removeEventListener("mousemove", handleMove);
+      document.removeEventListener("mouseup", handleEnd);
+      document.removeEventListener("touchmove", handleMove);
+      document.removeEventListener("touchend", handleEnd);
+    };
+
+    document.addEventListener("mousemove", handleMove);
+    document.addEventListener("mouseup", handleEnd);
+    document.addEventListener("touchmove", handleMove, { passive: false });
+    document.addEventListener("touchend", handleEnd);
+  };
 
   return (
     <Container>
@@ -723,39 +769,18 @@ function App() {
         <Toast toasts={toasts} removeToast={removeToast} />
       </Suspense>
 
-      {/* Draggable WhatsApp Button */}
+      {/* Improved Draggable WhatsApp Button */}
       <WhatsAppButton
         href="https://wa.me/2348060230990"
         target="_blank"
         rel="noopener noreferrer"
-        cartOpen={isCartOpen}
+        onMouseDown={handleDragStart}
+        onTouchStart={handleDragStart}
         style={{
-          bottom: `${whatsappPosition.bottom}px`,
-          right: `${whatsappPosition.right}px`,
-        }}
-        onMouseDown={(e) => {
-          const startX = e.clientX;
-          const startY = e.clientY;
-          const startBottom = whatsappPosition.bottom;
-          const startRight = whatsappPosition.right;
-
-          const handleMouseMove = (moveEvent) => {
-            const deltaX = moveEvent.clientX - startX;
-            const deltaY = moveEvent.clientY - startY;
-
-            setWhatsappPosition({
-              bottom: Math.max(20, startBottom - deltaY),
-              right: Math.max(20, startRight - deltaX),
-            });
-          };
-
-          const handleMouseUp = () => {
-            document.removeEventListener("mousemove", handleMouseMove);
-            document.removeEventListener("mouseup", handleMouseUp);
-          };
-
-          document.addEventListener("mousemove", handleMouseMove);
-          document.addEventListener("mouseup", handleMouseUp);
+          left: whatsappPos.x !== null ? `${whatsappPos.x}px` : "auto",
+          top: whatsappPos.y !== null ? `${whatsappPos.y}px` : "auto",
+          right: whatsappPos.x !== null ? "auto" : "25px",
+          bottom: whatsappPos.y !== null ? "auto" : "25px",
         }}
       >
         <svg
