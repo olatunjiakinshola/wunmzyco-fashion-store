@@ -117,7 +117,41 @@ const CheckoutModal = memo(
       });
     };
 
-    // ========== PAYSTACK PAYMENT + VERIFICATION ==========
+    // Verify payment with Netlify function
+    const verifyPayment = async (reference) => {
+      try {
+        const res = await fetch("/.netlify/functions/verify-payment", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ reference }),
+        });
+
+        const result = await res.json();
+
+        if (result.success) {
+          alert(
+            `Payment successful!\n\nReference: ${result.data.reference}\nAmount: ₦${Number(
+              result.data.amount
+            ).toLocaleString()}`
+          );
+
+          if (clearCart) clearCart();
+          onClose();
+        } else {
+          alert("Payment could not be verified. Please contact support.");
+          console.error(result);
+        }
+      } catch (error) {
+        console.error("Verification error:", error);
+        alert("Could not verify payment. Please contact support.");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    // Paystack payment
     const handlePaystackPayment = () => {
       if (!formData.name || !formData.email || !formData.phone) {
         alert("Please fill in your name, email and phone number.");
@@ -129,12 +163,24 @@ const CheckoutModal = memo(
         return;
       }
 
+      if (!window.PaystackPop) {
+        alert("Paystack failed to load. Please refresh the page.");
+        return;
+      }
+
+      const publicKey = import.meta.env.VITE_PAYSTACK_PUBLIC_KEY;
+
+      if (!publicKey) {
+        alert("Paystack public key is missing. Check your .env file.");
+        return;
+      }
+
       setIsLoading(true);
 
       const handler = window.PaystackPop.setup({
-        key: import.meta.env.VITE_PAYSTACK_PUBLIC_KEY,
+        key: publicKey,
         email: formData.email,
-        amount: Math.round(totalPrice * 100), // Amount in kobo
+        amount: Math.round(totalPrice * 100),
         currency: "NGN",
         ref: "WUNMZY_" + Date.now(),
         metadata: {
@@ -163,48 +209,8 @@ const CheckoutModal = memo(
             },
           ],
         },
-        callback: async function (response) {
-          try {
-            // Verify payment on the server
-            const res = await fetch("/.netlify/functions/verify-payment", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                reference: response.reference,
-              }),
-            });
-
-            const result = await res.json();
-
-            if (result.success) {
-              alert(
-                `Payment successful!\n\nReference: ${result.data.reference}\nAmount: ₦${Number(
-                  result.data.amount
-                ).toLocaleString()}\n\nWe will process your order shortly.`
-              );
-
-              // Clear cart only after successful verification
-              if (clearCart) {
-                clearCart();
-              }
-
-              onClose();
-            } else {
-              alert(
-                "Payment could not be verified. Please contact support with your payment reference."
-              );
-              console.error("Verification failed:", result);
-            }
-          } catch (error) {
-            console.error("Verification error:", error);
-            alert(
-              "Could not verify payment. Please contact support with your reference number."
-            );
-          } finally {
-            setIsLoading(false);
-          }
+        callback: function (response) {
+          verifyPayment(response.reference);
         },
         onClose: function () {
           setIsLoading(false);
@@ -214,7 +220,7 @@ const CheckoutModal = memo(
       handler.openIframe();
     };
 
-    // ========== WHATSAPP ORDER ==========
+    // WhatsApp order
     const createWhatsAppMessage = () => {
       let message = `*New Order from WunmzyCo Website*\n\n`;
       message += `*Customer Details*\n`;
