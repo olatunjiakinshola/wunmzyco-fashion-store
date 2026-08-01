@@ -1,6 +1,6 @@
-import { memo, useState, useEffect } from 'react';
-import styled from 'styled-components';
-import { X, ShoppingCart, Heart, ZoomIn, Minus, Plus } from 'lucide-react';
+import { memo, useState, useEffect } from "react";
+import styled from "styled-components";
+import { X, ShoppingCart, Heart, ZoomIn, Minus, Plus } from "lucide-react";
 
 const ModalOverlay = styled.div`
   position: fixed;
@@ -10,7 +10,7 @@ const ModalOverlay = styled.div`
   align-items: center;
   justify-content: center;
   z-index: 200;
-  padding: 20px;
+  padding: 16px;
 `;
 
 const ModalContent = styled.div`
@@ -25,7 +25,7 @@ const ModalContent = styled.div`
 `;
 
 const ModalHeader = styled.div`
-  padding: 20px 24px;
+  padding: 16px 20px;
   border-bottom: 1px solid #eee;
   display: flex;
   justify-content: space-between;
@@ -44,7 +44,7 @@ const CloseButton = styled.button`
 `;
 
 const ModalBody = styled.div`
-  padding: 0 24px 32px;
+  padding: 0 20px 24px;
 `;
 
 const ImageSection = styled.div`
@@ -53,347 +53,330 @@ const ImageSection = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 30px 20px;
+  padding: 24px 16px;
   border-radius: 16px;
-  margin-bottom: 24px;
+  margin: 16px 0 20px;
   position: relative;
   cursor: pointer;
 `;
 
 const ProductImage = styled.img`
   max-width: 100%;
-  max-height: 420px;
+  max-height: 380px;
   object-fit: contain;
   border-radius: 12px;
 `;
 
-const ImageOverlay = styled.div`
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0;
-  transition: opacity 0.2s;
-  background: rgba(0,0,0,0.3);
-  border-radius: 16px;
-
-  ${ImageSection}:hover & {
-    opacity: 1;
-  }
-`;
-
-const FullScreenButton = styled.div`
-  background: white;
-  color: black;
-  padding: 8px 16px;
-  border-radius: 30px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 0.95rem;
-  font-weight: 600;
-`;
-
-const DetailsSection = styled.div``;
-
-const ProductName = styled.h2`
-  font-size: 1.85rem;
-  font-weight: 700;
-  margin-bottom: 8px;
-`;
-
-const Price = styled.p`
-  font-size: 2.1rem;
-  font-weight: 700;
-  color: #000;
-  margin: 12px 0 20px;
-`;
-
-const Description = styled.p`
-  color: #555;
-  line-height: 1.7;
-  margin-bottom: 24px;
-  font-size: 1.05rem;
-`;
-
-const SizeContainer = styled.div`
-  margin: 24px 0;
-`;
-
-const SizeLabel = styled.p`
-  font-weight: 600;
-  margin-bottom: 12px;
-`;
-
-const SizeButtons = styled.div`
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
+const DetailsSection = styled.div`
+  padding-bottom: 20px;
 `;
 
 const SizeButton = styled.button`
-  padding: 10px 18px;
-  border: 2px solid #ddd;
-  background: white;
-  border-radius: 12px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s;
-  &:hover {
-    border-color: #000;
-  }
-  &.selected {
-    border-color: #000;
-    background: #000;
-    color: white;
-  }
-`;
-
-const QuantityContainer = styled.div`
-  margin: 24px 0;
-`;
-
-const QuantityLabel = styled.p`
+  min-width: 48px;
+  height: 42px;
+  border-radius: 10px;
+  border: 1.5px solid ${(props) => (props.$active ? "#000" : "#ddd")};
+  background: ${(props) => (props.$active ? "#000" : "white")};
+  color: ${(props) => (props.$active ? "white" : "#333")};
   font-weight: 600;
-  margin-bottom: 12px;
+  cursor: pointer;
+  margin-right: 8px;
+  margin-bottom: 8px;
 `;
 
 const QuantityControl = styled.div`
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 14px;
+  margin: 16px 0 20px;
 `;
 
-const QuantityButton = styled.button`
-  width: 40px;
-  height: 40px;
-  border: 2px solid #ddd;
-  background: white;
+const QtyBtn = styled.button`
+  width: 38px;
+  height: 38px;
   border-radius: 10px;
+  border: 1px solid #ddd;
+  background: white;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.2s;
-
-  &:hover {
-    border-color: #000;
-    background: #f5f5f5;
-  }
-
-  &:disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
-  }
 `;
 
-const QuantityValue = styled.span`
-  font-size: 1.2rem;
-  font-weight: 600;
-  min-width: 30px;
-  text-align: center;
-`;
-
-const AddToCartButton = styled.button`
+const ActionButton = styled.button`
   width: 100%;
-  background: black;
-  color: white;
-  border: none;
-  padding: 18px;
-  font-size: 1.1rem;
-  font-weight: 600;
+  padding: 14px 16px;
   border-radius: 12px;
+  border: none;
+  font-weight: 600;
+  font-size: 1rem;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
-  margin-top: 20px;
-  &:hover {
-    background: #222;
+  gap: 8px;
+  margin-bottom: 10px;
+`;
+
+const MobileActionBar = styled.div`
+  display: none;
+
+  @media (max-width: 768px) {
+    display: flex;
+    position: sticky;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: white;
+    padding: 12px 16px;
+    border-top: 1px solid #eee;
+    gap: 10px;
+    z-index: 20;
   }
 `;
 
-const ProductModal = memo(({
-  isOpen,
-  onClose,
-  product,
-  addToCart,
-  toggleWishlist,
-  wishlist
-}) => {
-  const [selectedSize, setSelectedSize] = useState(null);
-  const [quantity, setQuantity] = useState(1);
-  const [isFullScreen, setIsFullScreen] = useState(false);
+const ProductModal = memo(
+  ({
+    isOpen,
+    onClose,
+    product,
+    addToCart,
+    toggleWishlist,
+    wishlist,
+  }) => {
+    const [selectedSize, setSelectedSize] = useState(null);
+    const [quantity, setQuantity] = useState(1);
+    const [isFullScreen, setIsFullScreen] = useState(false);
 
-  // Reset quantity and size when modal opens with a new product
-  useEffect(() => {
-    if (isOpen && product) {
-      setSelectedSize(null);
-      setQuantity(1);
-    }
-  }, [isOpen, product]);
+    useEffect(() => {
+      if (product) {
+        setSelectedSize(product.sizes?.[0] || null);
+        setQuantity(1);
+      }
+    }, [product]);
 
-  if (!isOpen || !product) return null;
+    if (!isOpen || !product) return null;
 
-  const isWishlisted = wishlist.includes(product.id);
+    const isWishlisted = wishlist?.includes(product.id);
 
-  const handleAddToCart = () => {
-    const selected = selectedSize || (product.sizes && product.sizes[0]) || "M";
-    
-    // Add the product multiple times based on quantity
-    for (let i = 0; i < quantity; i++) {
-      addToCart(product, selected);
-    }
-  };
+    const handleAddToCart = () => {
+      const size = selectedSize || product.sizes?.[0] || "M";
 
-  const increaseQty = () => {
-    setQuantity((prev) => Math.min(prev + 1, 10)); // Max 10
-  };
+      for (let i = 0; i < quantity; i++) {
+        addToCart(product, size);
+      }
+    };
 
-  const decreaseQty = () => {
-    setQuantity((prev) => Math.max(prev - 1, 1)); // Min 1
-  };
+    return (
+      <>
+        <ModalOverlay onClick={onClose}>
+          <ModalContent onClick={(e) => e.stopPropagation()}>
+            <ModalHeader>
+              <h2 style={{ fontSize: "1.3rem", fontWeight: "700", margin: 0 }}>
+                {product.name}
+              </h2>
+              <CloseButton onClick={onClose}>
+                <X size={26} />
+              </CloseButton>
+            </ModalHeader>
 
-  return (
-    <>
-      <ModalOverlay onClick={onClose}>
-        <ModalContent onClick={e => e.stopPropagation()}>
-          <ModalHeader>
-            <h3>Product Details</h3>
-            <CloseButton onClick={onClose}>
-              <X size={28} />
-            </CloseButton>
-          </ModalHeader>
+            <ModalBody>
+              <ImageSection onClick={() => setIsFullScreen(true)}>
+                <ProductImage
+                  src={product.image}
+                  alt={product.name}
+                  loading="lazy"
+                  decoding="async"
+                />
+                <div
+                  style={{
+                    position: "absolute",
+                    bottom: "12px",
+                    right: "12px",
+                    background: "white",
+                    borderRadius: "50%",
+                    padding: "8px",
+                    boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
+                  }}
+                >
+                  <ZoomIn size={18} />
+                </div>
+              </ImageSection>
 
-          <ModalBody>
-            <ImageSection onClick={() => setIsFullScreen(true)}>
-              <ProductImage 
-                src={product.image} 
-                alt={product.name}
-              />
-              <ImageOverlay>
-                <FullScreenButton>
-                  <ZoomIn size={20} />
-                  View Full Image
-                </FullScreenButton>
-              </ImageOverlay>
-            </ImageSection>
+              <DetailsSection>
+                <p
+                  style={{
+                    fontSize: "1.5rem",
+                    fontWeight: "700",
+                    marginBottom: "8px",
+                  }}
+                >
+                  ₦{product.price.toLocaleString()}
+                </p>
 
-            <DetailsSection>
-              <ProductName>{product.name}</ProductName>
-              <p style={{ color: "#666", marginBottom: "8px" }}>{product.color}</p>
-              <Price>₦{product.price.toLocaleString()}</Price>
+                <p style={{ color: "#666", marginBottom: "16px" }}>
+                  {product.description}
+                </p>
 
-              {product.description ? (
-                <Description>{product.description}</Description>
-              ) : (
-                <Description>No description available for this product.</Description>
-              )}
+                <p style={{ marginBottom: "8px", fontWeight: "600" }}>
+                  Color: {product.color}
+                </p>
 
-              {/* Size Selection */}
-              {product.sizes && product.sizes.length > 0 && (
-                <SizeContainer>
-                  <SizeLabel>Select Size</SizeLabel>
-                  <SizeButtons>
-                    {product.sizes.map(size => (
-                      <SizeButton 
-                        key={size} 
-                        className={selectedSize === size ? "selected" : ""}
-                        onClick={() => setSelectedSize(size)}
-                      >
-                        {size}
-                      </SizeButton>
-                    ))}
-                  </SizeButtons>
-                </SizeContainer>
-              )}
+                {product.sizes && product.sizes.length > 0 && (
+                  <div style={{ marginBottom: "8px" }}>
+                    <p style={{ marginBottom: "10px", fontWeight: "600" }}>
+                      Select Size
+                    </p>
+                    <div>
+                      {product.sizes.map((size) => (
+                        <SizeButton
+                          key={size}
+                          $active={selectedSize === size}
+                          onClick={() => setSelectedSize(size)}
+                        >
+                          {size}
+                        </SizeButton>
+                      ))}
+                    </div>
+                  </div>
+                )}
 
-              {/* Quantity Selector */}
-              <QuantityContainer>
-                <QuantityLabel>Quantity</QuantityLabel>
+                <p style={{ marginBottom: "8px", fontWeight: "600" }}>
+                  Quantity
+                </p>
                 <QuantityControl>
-                  <QuantityButton onClick={decreaseQty} disabled={quantity <= 1}>
-                    <Minus size={18} />
-                  </QuantityButton>
-                  <QuantityValue>{quantity}</QuantityValue>
-                  <QuantityButton onClick={increaseQty} disabled={quantity >= 10}>
-                    <Plus size={18} />
-                  </QuantityButton>
+                  <QtyBtn
+                    onClick={() =>
+                      setQuantity((prev) => Math.max(1, prev - 1))
+                    }
+                  >
+                    <Minus size={16} />
+                  </QtyBtn>
+                  <span style={{ minWidth: "24px", textAlign: "center" }}>
+                    {quantity}
+                  </span>
+                  <QtyBtn
+                    onClick={() =>
+                      setQuantity((prev) => Math.min(10, prev + 1))
+                    }
+                  >
+                    <Plus size={16} />
+                  </QtyBtn>
                 </QuantityControl>
-              </QuantityContainer>
 
-              <AddToCartButton onClick={handleAddToCart}>
-                <ShoppingCart size={20} />
-                Add to Cart {quantity > 1 ? `(${quantity})` : ""}
-              </AddToCartButton>
+                {/* Desktop buttons */}
+                <div className="desktop-actions">
+                  <ActionButton
+                    onClick={handleAddToCart}
+                    style={{ background: "black", color: "white" }}
+                  >
+                    <ShoppingCart size={18} />
+                    Add to Cart
+                  </ActionButton>
 
+                  <ActionButton
+                    onClick={() => toggleWishlist(product.id)}
+                    style={{
+                      background: "white",
+                      color: "#333",
+                      border: "1.5px solid #ddd",
+                    }}
+                  >
+                    <Heart
+                      size={18}
+                      fill={isWishlisted ? "#ef4444" : "none"}
+                      color={isWishlisted ? "#ef4444" : "#333"}
+                    />
+                    {isWishlisted ? "Remove from Wishlist" : "Add to Wishlist"}
+                  </ActionButton>
+                </div>
+              </DetailsSection>
+            </ModalBody>
+
+            {/* Mobile sticky action bar */}
+            <MobileActionBar>
               <button
                 onClick={() => toggleWishlist(product.id)}
                 style={{
-                  width: "100%",
-                  padding: "14px",
-                  marginTop: "12px",
-                  background: "none",
-                  border: "2px solid #ddd",
+                  width: "48px",
+                  height: "48px",
                   borderRadius: "12px",
-                  cursor: "pointer",
+                  border: "1.5px solid #ddd",
+                  background: "white",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  gap: "8px",
-                  fontSize: "1rem"
                 }}
               >
-                <Heart 
-                  size={20} 
-                  fill={isWishlisted ? "#ef4444" : "none"} 
-                  color={isWishlisted ? "#ef4444" : "#333"} 
+                <Heart
+                  size={20}
+                  fill={isWishlisted ? "#ef4444" : "none"}
+                  color={isWishlisted ? "#ef4444" : "#333"}
                 />
-                {isWishlisted ? "Remove from Wishlist" : "Add to Wishlist"}
               </button>
-            </DetailsSection>
-          </ModalBody>
-        </ModalContent>
-      </ModalOverlay>
 
-      {/* Full Screen Image Viewer */}
-      {isFullScreen && (
-        <div style={{
-          position: "fixed",
-          inset: 0,
-          background: "rgba(0,0,0,0.95)",
-          zIndex: 300,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          padding: "20px"
-        }} onClick={() => setIsFullScreen(false)}>
-          <img 
-            src={product.image} 
-            alt={product.name}
-            style={{ maxWidth: "100%", maxHeight: "100%", objectFit: "contain" }}
-          />
-          <button 
-            onClick={() => setIsFullScreen(false)}
+              <button
+                onClick={handleAddToCart}
+                style={{
+                  flex: 1,
+                  background: "black",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "12px",
+                  fontWeight: "600",
+                  fontSize: "1rem",
+                }}
+              >
+                Add to Cart
+              </button>
+            </MobileActionBar>
+          </ModalContent>
+        </ModalOverlay>
+
+        {/* Full screen image viewer */}
+        {isFullScreen && (
+          <div
             style={{
-              position: "absolute",
-              top: "30px",
-              right: "30px",
-              background: "white",
-              border: "none",
-              padding: "12px",
-              borderRadius: "50%",
-              cursor: "pointer"
+              position: "fixed",
+              inset: 0,
+              background: "rgba(0,0,0,0.95)",
+              zIndex: 300,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              padding: "20px",
             }}
+            onClick={() => setIsFullScreen(false)}
           >
-            <X size={28} />
-          </button>
-        </div>
-      )}
-    </>
-  );
-});
+            <img
+              src={product.image}
+              alt={product.name}
+              style={{
+                maxWidth: "100%",
+                maxHeight: "100%",
+                objectFit: "contain",
+              }}
+            />
+            <button
+              onClick={() => setIsFullScreen(false)}
+              style={{
+                position: "absolute",
+                top: "24px",
+                right: "24px",
+                background: "white",
+                border: "none",
+                padding: "10px",
+                borderRadius: "50%",
+                cursor: "pointer",
+              }}
+            >
+              <X size={24} />
+            </button>
+          </div>
+        )}
+      </>
+    );
+  }
+);
 
 export default ProductModal;

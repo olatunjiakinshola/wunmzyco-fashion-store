@@ -4,150 +4,134 @@ import { Heart, ShoppingCart } from "lucide-react";
 
 const Card = styled.div`
   background: white;
-  border-radius: 20px;
+  border-radius: 16px;
   overflow: hidden;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.06);
-  transition: all 0.3s ease;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: pointer;
+
   &:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 20px 35px rgba(0,0,0,0.12);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
   }
 `;
 
-const ImageContainer = styled.div`
+const ImageWrapper = styled.div`
   position: relative;
-  height: 320px;
+  width: 100%;
+  height: 280px;
+  background: #f5f5f5;
   overflow: hidden;
-  cursor: pointer;
-  @media (max-width: 480px) {
-    height: 280px;
-  }
 `;
 
 const ProductImage = styled.img`
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.5s ease;
-  ${Card}:hover & {
-    transform: scale(1.1);
-  }
+  display: block;
 `;
 
-const WishlistButton = styled.button`
+const WishlistBtn = styled.button`
   position: absolute;
-  top: 14px;
-  right: 14px;
+  top: 12px;
+  right: 12px;
   background: white;
-  width: 44px;
-  height: 44px;
+  border: none;
+  width: 38px;
+  height: 38px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: none;
   cursor: pointer;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  z-index: 3;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 `;
 
-const HoverOverlay = styled.div`
-  position: absolute;
-  inset: 0;
-  background: rgba(0,0,0,0.45);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0;
-  transition: opacity 0.3s;
-  z-index: 2;
-  ${Card}:hover & {
-    opacity: 1;
-  }
+const Info = styled.div`
+  padding: 16px;
 `;
 
-const AddButton = styled.button`
-  background: white;
-  color: black;
-  border: none;
-  padding: 12px 24px;
-  border-radius: 50px;
+const Name = styled.h3`
+  font-size: 1.05rem;
   font-weight: 600;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  cursor: pointer;
-  z-index: 3;
-`;
-
-const ProductInfo = styled.div`
-  padding: 20px;
-`;
-
-const ProductName = styled.h3`
-  font-size: 1.15rem;
-  font-weight: 600;
-  margin-bottom: 4px;
+  margin-bottom: 6px;
+  color: #111;
 `;
 
 const Price = styled.p`
-  font-size: 1.4rem;
+  font-size: 1.1rem;
   font-weight: 700;
+  margin-bottom: 12px;
+`;
+
+const Actions = styled.div`
+  display: flex;
+  gap: 10px;
+`;
+
+const CartButton = styled.button`
+  flex: 1;
+  background: black;
+  color: white;
+  border: none;
+  padding: 10px 12px;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 0.9rem;
+
+  &:hover {
+    background: #222;
+  }
 `;
 
 const ProductCard = memo(
-  ({ 
-    product, 
-    addToCart, 
-    toggleWishlist, 
-    wishlist,
-    onOpenModal 
-  }) => {
-    const handleImageClick = (e) => {
-      e.stopPropagation();
-      onOpenModal(product);
-    };
+  ({ product, addToCart, toggleWishlist, wishlist, onOpenModal }) => {
+    const isWishlisted = wishlist?.includes(product.id);
 
     return (
       <Card>
-        <ImageContainer onClick={handleImageClick}>
-          <ProductImage 
+        <ImageWrapper onClick={() => onOpenModal(product)}>
+          <ProductImage
             src={product.image}
             alt={product.name}
+            loading="lazy"
+            decoding="async"
           />
-          <WishlistButton 
+          <WishlistBtn
             onClick={(e) => {
               e.stopPropagation();
               toggleWishlist(product.id);
             }}
           >
             <Heart
-              size={20}
-              fill={wishlist.includes(product.id) ? "#ef4444" : "none"}
-              color={wishlist.includes(product.id) ? "#ef4444" : "#333"}
+              size={18}
+              fill={isWishlisted ? "#ef4444" : "none"}
+              color={isWishlisted ? "#ef4444" : "#333"}
             />
-          </WishlistButton>
+          </WishlistBtn>
+        </ImageWrapper>
 
-          <HoverOverlay>
-            <AddButton 
+        <Info>
+          <Name onClick={() => onOpenModal(product)}>{product.name}</Name>
+          <Price>₦{product.price.toLocaleString()}</Price>
+
+          <Actions>
+            <CartButton
               onClick={(e) => {
                 e.stopPropagation();
                 addToCart(product);
               }}
             >
-              <ShoppingCart size={18} />
+              <ShoppingCart size={16} />
               Add to Cart
-            </AddButton>
-          </HoverOverlay>
-        </ImageContainer>
-
-        <ProductInfo>
-          <ProductName>{product.name}</ProductName>
-          <p style={{ color: "#666", marginBottom: "8px" }}>
-            {product.color}
-          </p>
-          <Price>₦{product.price.toLocaleString()}</Price>
-        </ProductInfo>
+            </CartButton>
+          </Actions>
+        </Info>
       </Card>
     );
   }

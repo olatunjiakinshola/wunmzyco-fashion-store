@@ -286,12 +286,17 @@ function App() {
   const [isWishlistOpen, setIsWishlistOpen] = useState(false);
   const [toasts, setToasts] = useState([]);
   const [whatsappPos, setWhatsappPos] = useState({ x: null, y: null });
+  const [visibleCount, setVisibleCount] = useState(12);
 
   // Performance refs for drag
   const isDragging = useRef(false);
   const dragOffset = useRef({ x: 0, y: 0 });
   const buttonRef = useRef(null);
   const rafId = useRef(null);
+
+  useEffect(() => {
+    setVisibleCount(12);
+  }, [activeCategory, searchTerm]);
 
   // Persist cart
   useEffect(() => {
@@ -331,6 +336,8 @@ function App() {
 
     return result;
   }, [activeCategory, searchTerm]);
+  
+  const visibleProducts = filteredProducts.slice(0, visibleCount);
 
   // Toast helpers
   const showToast = (message) => {
@@ -726,14 +733,90 @@ function App() {
 
         <Suspense fallback={<p>Loading products...</p>}>
           <ProductsSection
-            products={filteredProducts}
+            products={visibleProducts}
             addToCart={addToCart}
             toggleWishlist={toggleWishlist}
             wishlist={wishlist}
             onOpenModal={openProductModal}
           />
         </Suspense>
+
+        {visibleCount < filteredProducts.length && (
+          <div style={{ textAlign: "center", marginTop: "40px" }}>
+            <button
+              onClick={() => setVisibleCount((prev) => prev + 12)}
+              style={{
+                background: "black",
+                color: "white",
+                border: "none",
+                padding: "14px 28px",
+                borderRadius: "50px",
+                fontSize: "1rem",
+                fontWeight: "600",
+                cursor: "pointer",
+              }}
+            >
+              Load More Products
+            </button>
+          </div>
+        )}
       </ProductsWrapper>
+
+      {/* Trust Section */}
+      <section
+        style={{
+          background: "white",
+          padding: "50px 20px",
+          borderTop: "1px solid #eee",
+        }}
+      >
+        <div
+          style={{
+            maxWidth: "1100px",
+            margin: "0 auto",
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+            gap: "24px",
+            textAlign: "center",
+          }}
+        >
+          <div>
+            <h3 style={{ marginBottom: "8px", fontSize: "1.1rem" }}>
+              🚚 Fast Delivery
+            </h3>
+            <p style={{ color: "#666", fontSize: "0.95rem" }}>
+              Delivery available across Nigeria
+            </p>
+          </div>
+
+          <div>
+            <h3 style={{ marginBottom: "8px", fontSize: "1.1rem" }}>
+              🔒 Secure Payment
+            </h3>
+            <p style={{ color: "#666", fontSize: "0.95rem" }}>
+              Pay safely with Paystack or order via WhatsApp
+            </p>
+          </div>
+
+          <div>
+            <h3 style={{ marginBottom: "8px", fontSize: "1.1rem" }}>
+              💬 Easy Support
+            </h3>
+            <p style={{ color: "#666", fontSize: "0.95rem" }}>
+              Chat with us instantly on WhatsApp
+            </p>
+          </div>
+
+          <div>
+            <h3 style={{ marginBottom: "8px", fontSize: "1.1rem" }}>
+              ✨ Quality Fashion
+            </h3>
+            <p style={{ color: "#666", fontSize: "0.95rem" }}>
+              Affordable and stylish pieces for everyday wear
+            </p>
+          </div>
+        </div>
+      </section>
 
       <footer
         style={{

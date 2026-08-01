@@ -4,22 +4,31 @@ import ProductCard from "./ProductCard";
 
 const Grid = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   gap: 28px;
+
   @media (max-width: 640px) {
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 16px;
   }
 `;
 
 const ProductsSection = memo(
-  ({ 
-    products, 
-    addToCart, 
-    toggleWishlist, 
-    wishlist,
-    onOpenModal   
-  }) => {
+  ({ products, addToCart, toggleWishlist, wishlist, onOpenModal }) => {
+    if (!products || products.length === 0) {
+      return (
+        <p
+          style={{
+            textAlign: "center",
+            padding: "60px 0",
+            color: "#888",
+          }}
+        >
+          No products found in this category.
+        </p>
+      );
+    }
+
     return (
       <Grid>
         {products.map((product) => (
@@ -29,7 +38,7 @@ const ProductsSection = memo(
             addToCart={addToCart}
             toggleWishlist={toggleWishlist}
             wishlist={wishlist}
-            onOpenModal={onOpenModal}     
+            onOpenModal={onOpenModal}
           />
         ))}
       </Grid>
