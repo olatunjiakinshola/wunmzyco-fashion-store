@@ -32,9 +32,23 @@ const ModalHeader = styled.div`
 
 const OrderSummary = styled.div`
   background: #f8f9fa;
-  padding: 18px;
+  padding: 16px;
   border-radius: 14px;
-  margin: 18px 0 24px;
+  margin-bottom: 20px;
+`;
+
+const Input = styled.input`
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  margin-bottom: 12px;
+  font-size: 1rem;
+  outline: none;
+
+  &:focus {
+    border-color: #000;
+  }
 `;
 
 const WhatsAppButton = styled.button`
@@ -42,7 +56,7 @@ const WhatsAppButton = styled.button`
   background: #25d366;
   color: white;
   border: none;
-  padding: 16px 20px;
+  padding: 15px 20px;
   font-size: 1.05rem;
   font-weight: 600;
   border-radius: 12px;
@@ -52,7 +66,6 @@ const WhatsAppButton = styled.button`
   justify-content: center;
   gap: 10px;
   margin-bottom: 12px;
-  transition: background 0.2s;
 
   &:hover {
     background: #20ba5c;
@@ -64,7 +77,7 @@ const PaystackButtonStyled = styled.button`
   background: #0ba4db;
   color: white;
   border: none;
-  padding: 16px 20px;
+  padding: 15px 20px;
   font-size: 1.05rem;
   font-weight: 600;
   border-radius: 12px;
@@ -73,7 +86,6 @@ const PaystackButtonStyled = styled.button`
   align-items: center;
   justify-content: center;
   gap: 10px;
-  transition: background 0.2s;
 
   &:hover {
     background: #0990c0;
@@ -85,187 +97,285 @@ const PaystackButtonStyled = styled.button`
   }
 `;
 
-const CheckoutModal = memo(({ isOpen, onClose, totalPrice, cart }) => {
-  const [isLoading, setIsLoading] = useState(false);
-
-  if (!isOpen) return null;
-
-  const phoneNumber = "2348060230990";
-
-  // ========== PAYSTACK PAYMENT ==========
-  const handlePaystackPayment = () => {
-    if (!cart || cart.length === 0) {
-      alert("Your cart is empty.");
-      return;
-    }
-
-    setIsLoading(true);
-
-    const handler = window.PaystackPop.setup({
-      key: import.meta.env.VITE_PAYSTACK_PUBLIC_KEY, // Your Public Key
-      email: "customer@example.com", // You can collect this later
-      amount: Math.round(totalPrice * 100), // Amount in kobo
-      currency: "NGN",
-      ref: "WUNMZY_" + Date.now(),
-      metadata: {
-        custom_fields: [
-          {
-            display_name: "Cart Items",
-            variable_name: "cart_items",
-            value: cart
-              .map(
-                (item) =>
-                  `${item.name}${
-                    item.selectedSize ? ` (${item.selectedSize})` : ""
-                  } x${item.quantity}`
-              )
-              .join(", "),
-          },
-        ],
-      },
-      callback: function (response) {
-        setIsLoading(false);
-        alert("Payment successful! Reference: " + response.reference);
-        console.log("Paystack success:", response);
-        onClose();
-        // Optional: clear cart here later
-      },
-      onClose: function () {
-        setIsLoading(false);
-        console.log("Payment popup closed");
-      },
+const CheckoutModal = memo(
+  ({ isOpen, onClose, totalPrice, cart, clearCart }) => {
+    const [isLoading, setIsLoading] = useState(false);
+    const [formData, setFormData] = useState({
+      name: "",
+      email: "",
+      phone: "",
     });
 
-    handler.openIframe();
-  };
+    if (!isOpen) return null;
 
-  // ========== WHATSAPP ==========
-  const createWhatsAppMessage = () => {
-    let message = `*New Order from WunmzyCo Website*\n\n`;
+    const phoneNumber = "2348060230990";
 
-    cart.forEach((item, index) => {
-      const sizeInfo = item.selectedSize
-        ? ` - Size: ${item.selectedSize}`
-        : "";
-      message += `${index + 1}. ${item.name}${sizeInfo} × ${item.quantity} - *₦${(
-        item.price * item.quantity
-      ).toLocaleString()}*\n`;
-    });
+    const handleChange = (e) => {
+      setFormData({
+        ...formData,
+        [e.target.name]: e.target.value,
+      });
+    };
 
-    message += `\n*Total Amount: ₦${totalPrice.toLocaleString()}*\n\n`;
-    message += `Please confirm my order. Thank you! 🙏`;
+    // ========== PAYSTACK PAYMENT + VERIFICATION ==========
+    const handlePaystackPayment = () => {
+      if (!formData.name || !formData.email || !formData.phone) {
+        alert("Please fill in your name, email and phone number.");
+        return;
+      }
 
-    return encodeURIComponent(message);
-  };
+      if (!cart || cart.length === 0) {
+        alert("Your cart is empty.");
+        return;
+      }
 
-  const handleSendToWhatsApp = () => {
-    const message = createWhatsAppMessage();
-    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${message}`;
-    window.open(whatsappUrl, "_blank");
-    onClose();
-  };
+      setIsLoading(true);
 
-  return (
-    <ModalOverlay onClick={onClose}>
-      <ModalContent onClick={(e) => e.stopPropagation()}>
-        <ModalHeader>
-          <h2 style={{ fontSize: "1.6rem", fontWeight: "700", margin: 0 }}>
-            Complete Your Order
-          </h2>
-          <button
-            onClick={onClose}
-            style={{
-              background: "none",
-              border: "none",
-              cursor: "pointer",
-              padding: "4px",
-            }}
-          >
-            <X size={26} />
-          </button>
-        </ModalHeader>
+      const handler = window.PaystackPop.setup({
+        key: import.meta.env.VITE_PAYSTACK_PUBLIC_KEY,
+        email: formData.email,
+        amount: Math.round(totalPrice * 100), // Amount in kobo
+        currency: "NGN",
+        ref: "WUNMZY_" + Date.now(),
+        metadata: {
+          custom_fields: [
+            {
+              display_name: "Customer Name",
+              variable_name: "customer_name",
+              value: formData.name,
+            },
+            {
+              display_name: "Phone Number",
+              variable_name: "phone_number",
+              value: formData.phone,
+            },
+            {
+              display_name: "Cart Items",
+              variable_name: "cart_items",
+              value: cart
+                .map(
+                  (item) =>
+                    `${item.name}${
+                      item.selectedSize ? ` (${item.selectedSize})` : ""
+                    } x${item.quantity}`
+                )
+                .join(", "),
+            },
+          ],
+        },
+        callback: async function (response) {
+          try {
+            // Verify payment on the server
+            const res = await fetch("/.netlify/functions/verify-payment", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                reference: response.reference,
+              }),
+            });
 
-        <p style={{ color: "#555", marginBottom: "8px", fontSize: "0.95rem" }}>
-          Choose how you want to complete your order
-        </p>
+            const result = await res.json();
 
-        <OrderSummary>
-          <h4 style={{ marginBottom: "14px", fontSize: "1rem" }}>
-            Order Summary ({cart.length} item{cart.length !== 1 ? "s" : ""})
-          </h4>
+            if (result.success) {
+              alert(
+                `Payment successful!\n\nReference: ${result.data.reference}\nAmount: ₦${Number(
+                  result.data.amount
+                ).toLocaleString()}\n\nWe will process your order shortly.`
+              );
 
-          {cart.map((item, i) => (
+              // Clear cart only after successful verification
+              if (clearCart) {
+                clearCart();
+              }
+
+              onClose();
+            } else {
+              alert(
+                "Payment could not be verified. Please contact support with your payment reference."
+              );
+              console.error("Verification failed:", result);
+            }
+          } catch (error) {
+            console.error("Verification error:", error);
+            alert(
+              "Could not verify payment. Please contact support with your reference number."
+            );
+          } finally {
+            setIsLoading(false);
+          }
+        },
+        onClose: function () {
+          setIsLoading(false);
+        },
+      });
+
+      handler.openIframe();
+    };
+
+    // ========== WHATSAPP ORDER ==========
+    const createWhatsAppMessage = () => {
+      let message = `*New Order from WunmzyCo Website*\n\n`;
+      message += `*Customer Details*\n`;
+      message += `Name: ${formData.name || "Not provided"}\n`;
+      message += `Email: ${formData.email || "Not provided"}\n`;
+      message += `Phone: ${formData.phone || "Not provided"}\n\n`;
+      message += `*Order Items*\n`;
+
+      cart.forEach((item, index) => {
+        const sizeInfo = item.selectedSize
+          ? ` - Size: ${item.selectedSize}`
+          : "";
+        message += `${index + 1}. ${item.name}${sizeInfo} × ${
+          item.quantity
+        } - *₦${(item.price * item.quantity).toLocaleString()}*\n`;
+      });
+
+      message += `\n*Total Amount: ₦${totalPrice.toLocaleString()}*\n\n`;
+      message += `Please confirm my order. Thank you! 🙏`;
+
+      return encodeURIComponent(message);
+    };
+
+    const handleSendToWhatsApp = () => {
+      if (!formData.name || !formData.phone) {
+        alert("Please enter your name and phone number for WhatsApp order.");
+        return;
+      }
+
+      const message = createWhatsAppMessage();
+      const whatsappUrl = `https://wa.me/${phoneNumber}?text=${message}`;
+      window.open(whatsappUrl, "_blank");
+      onClose();
+    };
+
+    return (
+      <ModalOverlay onClick={onClose}>
+        <ModalContent onClick={(e) => e.stopPropagation()}>
+          <ModalHeader>
+            <h2 style={{ fontSize: "1.6rem", fontWeight: "700", margin: 0 }}>
+              Complete Your Order
+            </h2>
+            <button
+              onClick={onClose}
+              style={{
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+                padding: "4px",
+              }}
+            >
+              <X size={26} />
+            </button>
+          </ModalHeader>
+
+          {/* Customer Details */}
+          <div style={{ marginBottom: "16px" }}>
+            <h4 style={{ marginBottom: "12px" }}>Your Details</h4>
+            <Input
+              type="text"
+              name="name"
+              placeholder="Full Name"
+              value={formData.name}
+              onChange={handleChange}
+            />
+            <Input
+              type="email"
+              name="email"
+              placeholder="Email Address"
+              value={formData.email}
+              onChange={handleChange}
+            />
+            <Input
+              type="tel"
+              name="phone"
+              placeholder="Phone Number"
+              value={formData.phone}
+              onChange={handleChange}
+            />
+          </div>
+
+          {/* Order Summary */}
+          <OrderSummary>
+            <h4 style={{ marginBottom: "12px", fontSize: "1rem" }}>
+              Order Summary ({cart.length} item
+              {cart.length !== 1 ? "s" : ""})
+            </h4>
+
+            {cart.map((item, i) => (
+              <div
+                key={item.cartKey || i}
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  padding: "8px 0",
+                  borderBottom:
+                    i !== cart.length - 1 ? "1px solid #ddd" : "none",
+                  fontSize: "0.95rem",
+                }}
+              >
+                <span>
+                  {item.name}
+                  {item.selectedSize && (
+                    <span style={{ color: "#666" }}>
+                      {" "}
+                      (Size: {item.selectedSize})
+                    </span>
+                  )}
+                  <span style={{ color: "#888" }}> × {item.quantity}</span>
+                </span>
+                <span style={{ fontWeight: "600" }}>
+                  ₦{(item.price * item.quantity).toLocaleString()}
+                </span>
+              </div>
+            ))}
+
             <div
-              key={item.cartKey || i}
               style={{
                 display: "flex",
                 justifyContent: "space-between",
-                padding: "10px 0",
-                borderBottom:
-                  i !== cart.length - 1 ? "1px solid #ddd" : "none",
-                fontSize: "0.95rem",
+                marginTop: "14px",
+                fontSize: "1.2rem",
+                fontWeight: "700",
               }}
             >
-              <span>
-                {item.name}
-                {item.selectedSize && (
-                  <span style={{ color: "#666" }}>
-                    {" "}
-                    (Size: {item.selectedSize})
-                  </span>
-                )}
-                <span style={{ color: "#888" }}> × {item.quantity}</span>
-              </span>
-              <span style={{ fontWeight: "600" }}>
-                ₦{(item.price * item.quantity).toLocaleString()}
-              </span>
+              <span>Total</span>
+              <span>₦{totalPrice.toLocaleString()}</span>
             </div>
-          ))}
+          </OrderSummary>
 
-          <div
+          {/* WhatsApp Button */}
+          <WhatsAppButton onClick={handleSendToWhatsApp}>
+            <MessageCircle size={22} />
+            Order via WhatsApp
+          </WhatsAppButton>
+
+          {/* Paystack Button */}
+          <PaystackButtonStyled
+            onClick={handlePaystackPayment}
+            disabled={isLoading}
+          >
+            <CreditCard size={22} />
+            {isLoading ? "Processing..." : "Pay with Card / Transfer"}
+          </PaystackButtonStyled>
+
+          <p
             style={{
-              display: "flex",
-              justifyContent: "space-between",
-              marginTop: "18px",
-              fontSize: "1.25rem",
-              fontWeight: "700",
+              textAlign: "center",
+              marginTop: "16px",
+              fontSize: "0.85rem",
+              color: "#777",
             }}
           >
-            <span>Total</span>
-            <span>₦{totalPrice.toLocaleString()}</span>
-          </div>
-        </OrderSummary>
-
-        {/* WhatsApp Option */}
-        <WhatsAppButton onClick={handleSendToWhatsApp}>
-          <MessageCircle size={22} />
-          Order via WhatsApp
-        </WhatsAppButton>
-
-        {/* Paystack Option */}
-        <PaystackButtonStyled
-          onClick={handlePaystackPayment}
-          disabled={isLoading}
-        >
-          <CreditCard size={22} />
-          {isLoading ? "Opening Paystack..." : "Pay with Card / Transfer"}
-        </PaystackButtonStyled>
-
-        <p
-          style={{
-            textAlign: "center",
-            marginTop: "18px",
-            fontSize: "0.85rem",
-            color: "#777",
-          }}
-        >
-          WhatsApp orders are confirmed manually by the seller.
-          <br />
-          Card & bank transfer payments are processed securely by Paystack.
-        </p>
-      </ModalContent>
-    </ModalOverlay>
-  );
-});
+            WhatsApp orders are confirmed manually.
+            <br />
+            Card & bank transfer payments are verified securely with Paystack.
+          </p>
+        </ModalContent>
+      </ModalOverlay>
+    );
+  }
+);
 
 export default CheckoutModal;

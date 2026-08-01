@@ -784,6 +784,7 @@ function App() {
           onClose={() => setIsCheckoutOpen(false)}
           totalPrice={totalPrice}
           cart={cart}
+          clearCart={clearCart}
         />
 
         <ProductModal
