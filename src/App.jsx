@@ -426,19 +426,17 @@ function App() {
   };
 
   const toggleWishlist = (id) => {
-    setWishlist((prev) => {
-      const isAlready = prev.includes(id);
-      const product = products.find((p) => p.id === id);
+  const product = products.find((p) => p.id === id);
+  const isAlready = wishlist.includes(id);
 
-      if (isAlready) {
-        showToast(`${product?.name || "Item"} removed from wishlist`);
-        return prev.filter((item) => item !== id);
-      } else {
-        showToast(`${product?.name || "Item"} added to wishlist`);
-        return [...prev, id];
-      }
-    });
-  };
+  if (isAlready) {
+    setWishlist((prev) => prev.filter((item) => item !== id));
+    showToast(`${product?.name || "Item"} removed from wishlist`);
+  } else {
+    setWishlist((prev) => [...prev, id]);
+    showToast(`${product?.name || "Item"} added to wishlist`);
+  }
+};
 
   const openProductModal = (product) => {
     setSelectedProduct(product);
