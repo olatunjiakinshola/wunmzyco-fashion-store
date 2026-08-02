@@ -278,7 +278,15 @@ function App() {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const [activeCategory, setActiveCategory] = useState("all");
-  const [wishlist, setWishlist] = useState([]);
+  const [wishlist, setWishlist] = useState(() => {
+  try {
+    const savedWishlist = localStorage.getItem("wishlist");
+    return savedWishlist ? JSON.parse(savedWishlist) : [];
+  } catch (error) {
+    console.error("Failed to load wishlist:", error);
+    return [];
+  }
+});
   const [searchTerm, setSearchTerm] = useState("");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -304,14 +312,9 @@ function App() {
   }, [cart]);
 
   // Persist wishlist
-  useEffect(() => {
-    const savedWishlist = localStorage.getItem("wishlist");
-    if (savedWishlist) setWishlist(JSON.parse(savedWishlist));
-  }, []);
-
-  useEffect(() => {
-    localStorage.setItem("wishlist", JSON.stringify(wishlist));
-  }, [wishlist]);
+ useEffect(() => {
+  localStorage.setItem("wishlist", JSON.stringify(wishlist));
+}, [wishlist]);
 
   // Filtering Logic
   const filteredProducts = useMemo(() => {
