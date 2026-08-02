@@ -1,16 +1,85 @@
-# React + Vite
+# WunmzyCo Fashion Store
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern, mobile-friendly e-commerce website for **WunmzyCo**, a Nigerian fashion brand selling affordable clothing, footwear, and accessories.
 
-Currently, two official plugins are available:
+Built with **React + Vite**, styled with **styled-components**, and deployed on **Netlify**.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+---
 
-## React Compiler
+## ✨ Features
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- Product catalog with multiple categories
+- Search and category filtering
+- Product detail modal with size & quantity selection
+- Shopping cart with size-based item separation
+- Wishlist with localStorage persistence
+- WhatsApp checkout
+- Paystack payment integration (Card, Bank Transfer, USSD)
+- Mobile bottom navigation
+- Responsive hamburger menu
+- Draggable WhatsApp floating button
+- Toast notifications
+- Load More products for better performance
+- Trust badges and social links in footer
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## 🛍️ Categories
+
+- All
+- Tops
+- Gowns
+- Skirts
+- Bubu
+- Baggy Tops
+- Two Piece
+- Slippers
+- Shoes
+- Joggers
+- Palazzos
+- Under ₦5k
+
+---
+
+## 🛠️ Tech Stack
+
+| Tool | Purpose |
+|------|---------|
+| React 19 | UI library |
+| Vite | Build tool |
+| styled-components | Styling |
+| Lucide React | Icons |
+| Paystack | Online payments |
+| Netlify | Hosting + serverless functions |
+| localStorage | Cart & wishlist persistence |
+
+---
+
+## 📁 Project Structure
+
+```text
+wunmzyco-fashion-store/
+├── public/
+├── src/
+│   ├── assets/
+│   │   └── products/
+│   ├── components/
+│   │   ├── CartDrawer.jsx
+│   │   ├── CheckoutModal.jsx
+│   │   ├── ProductCard.jsx
+│   │   ├── ProductModal.jsx
+│   │   ├── ProductsSection.jsx
+│   │   ├── Toast.jsx
+│   │   └── WishlistDrawer.jsx
+│   ├── data/
+│   │   └── products.js
+│   ├── App.jsx
+│   ├── main.jsx
+│   └── index.css
+├── netlify/
+│   └── functions/
+│       └── verify-payment.js
+├── .env
+├── index.html
+├── package.json
+└── vite.config.js
