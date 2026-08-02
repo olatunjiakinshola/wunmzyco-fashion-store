@@ -9,10 +9,14 @@ const Card = styled.div`
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   cursor: pointer;
+  opacity: ${(props) => (props.$outOfStock ? 0.75 : 1)};
 
   &:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    transform: ${(props) => (props.$outOfStock ? "none" : "translateY(-4px)")};
+    box-shadow: ${(props) =>
+      props.$outOfStock
+        ? "0 2px 10px rgba(0, 0, 0, 0.06)"
+        : "0 8px 20px rgba(0, 0, 0, 0.1)"};
   }
 `;
 
@@ -29,6 +33,18 @@ const ProductImage = styled.img`
   height: 100%;
   object-fit: cover;
   display: block;
+`;
+
+const Badge = styled.span`
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: ${(props) => (props.$outOfStock ? "#ef4444" : "#111")};
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 6px 10px;
+  border-radius: 999px;
 `;
 
 const WishlistBtn = styled.button`
@@ -71,13 +87,13 @@ const Actions = styled.div`
 
 const CartButton = styled.button`
   flex: 1;
-  background: black;
+  background: ${(props) => (props.disabled ? "#999" : "black")};
   color: white;
   border: none;
   padding: 10px 12px;
   border-radius: 10px;
   font-weight: 600;
-  cursor: pointer;
+  cursor: ${(props) => (props.disabled ? "not-allowed" : "pointer")};
   display: flex;
   align-items: center;
   justify-content: center;
@@ -85,16 +101,17 @@ const CartButton = styled.button`
   font-size: 0.9rem;
 
   &:hover {
-    background: #222;
+    background: ${(props) => (props.disabled ? "#999" : "#222")};
   }
 `;
 
 const ProductCard = memo(
   ({ product, addToCart, toggleWishlist, wishlist, onOpenModal }) => {
     const isWishlisted = wishlist?.includes(product.id);
+    const outOfStock = !product.stock || product.stock <= 0;
 
     return (
-      <Card>
+      <Card $outOfStock={outOfStock}>
         <ImageWrapper onClick={() => onOpenModal(product)}>
           <ProductImage
             src={product.image}
@@ -102,6 +119,9 @@ const ProductCard = memo(
             loading="lazy"
             decoding="async"
           />
+
+          {outOfStock && <Badge $outOfStock>Out of Stock</Badge>}
+
           <WishlistBtn
             onClick={(e) => {
               e.stopPropagation();
@@ -122,13 +142,14 @@ const ProductCard = memo(
 
           <Actions>
             <CartButton
+              disabled={outOfStock}
               onClick={(e) => {
                 e.stopPropagation();
-                addToCart(product);
+                if (!outOfStock) addToCart(product);
               }}
             >
               <ShoppingCart size={16} />
-              Add to Cart
+              {outOfStock ? "Out of Stock" : "Add to Cart"}
             </CartButton>
           </Actions>
         </Info>

@@ -101,6 +101,11 @@ const QtyBtn = styled.button`
   align-items: center;
   justify-content: center;
   cursor: pointer;
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
 `;
 
 const ActionButton = styled.button`
@@ -116,6 +121,10 @@ const ActionButton = styled.button`
   justify-content: center;
   gap: 8px;
   margin-bottom: 10px;
+
+  &:disabled {
+    cursor: not-allowed;
+  }
 `;
 
 const MobileActionBar = styled.div`
@@ -136,14 +145,7 @@ const MobileActionBar = styled.div`
 `;
 
 const ProductModal = memo(
-  ({
-    isOpen,
-    onClose,
-    product,
-    addToCart,
-    toggleWishlist,
-    wishlist,
-  }) => {
+  ({ isOpen, onClose, product, addToCart, toggleWishlist, wishlist }) => {
     const [selectedSize, setSelectedSize] = useState(null);
     const [quantity, setQuantity] = useState(1);
     const [isFullScreen, setIsFullScreen] = useState(false);
@@ -158,8 +160,14 @@ const ProductModal = memo(
     if (!isOpen || !product) return null;
 
     const isWishlisted = wishlist?.includes(product.id);
+    const outOfStock = !product.stock || product.stock <= 0;
 
     const handleAddToCart = () => {
+      if (outOfStock) {
+        alert("This product is currently out of stock.");
+        return;
+      }
+
       const size = selectedSize || product.sizes?.[0] || "M";
 
       for (let i = 0; i < quantity; i++) {
@@ -201,6 +209,24 @@ const ProductModal = memo(
                 >
                   <ZoomIn size={18} />
                 </div>
+
+                {outOfStock && (
+                  <div
+                    style={{
+                      position: "absolute",
+                      top: "12px",
+                      left: "12px",
+                      background: "#ef4444",
+                      color: "white",
+                      fontSize: "0.8rem",
+                      fontWeight: "600",
+                      padding: "6px 10px",
+                      borderRadius: "999px",
+                    }}
+                  >
+                    Out of Stock
+                  </div>
+                )}
               </ImageSection>
 
               <DetailsSection>
@@ -212,6 +238,18 @@ const ProductModal = memo(
                   }}
                 >
                   ₦{product.price.toLocaleString()}
+                </p>
+
+                <p
+                  style={{
+                    marginBottom: "12px",
+                    color: outOfStock ? "#ef4444" : "#16a34a",
+                    fontWeight: "600",
+                  }}
+                >
+                  {outOfStock
+                    ? "Out of Stock"
+                    : `In Stock (${product.stock} left)`}
                 </p>
 
                 <p style={{ color: "#666", marginBottom: "16px" }}>
@@ -233,6 +271,11 @@ const ProductModal = memo(
                           key={size}
                           $active={selectedSize === size}
                           onClick={() => setSelectedSize(size)}
+                          disabled={outOfStock}
+                          style={{
+                            opacity: outOfStock ? 0.5 : 1,
+                            cursor: outOfStock ? "not-allowed" : "pointer",
+                          }}
                         >
                           {size}
                         </SizeButton>
@@ -246,9 +289,8 @@ const ProductModal = memo(
                 </p>
                 <QuantityControl>
                   <QtyBtn
-                    onClick={() =>
-                      setQuantity((prev) => Math.max(1, prev - 1))
-                    }
+                    onClick={() => setQuantity((prev) => Math.max(1, prev - 1))}
+                    disabled={outOfStock}
                   >
                     <Minus size={16} />
                   </QtyBtn>
@@ -259,6 +301,7 @@ const ProductModal = memo(
                     onClick={() =>
                       setQuantity((prev) => Math.min(10, prev + 1))
                     }
+                    disabled={outOfStock}
                   >
                     <Plus size={16} />
                   </QtyBtn>
@@ -268,10 +311,14 @@ const ProductModal = memo(
                 <div className="desktop-actions">
                   <ActionButton
                     onClick={handleAddToCart}
-                    style={{ background: "black", color: "white" }}
+                    disabled={outOfStock}
+                    style={{
+                      background: outOfStock ? "#999" : "black",
+                      color: "white",
+                    }}
                   >
                     <ShoppingCart size={18} />
-                    Add to Cart
+                    {outOfStock ? "Out of Stock" : "Add to Cart"}
                   </ActionButton>
 
                   <ActionButton
@@ -317,17 +364,19 @@ const ProductModal = memo(
 
               <button
                 onClick={handleAddToCart}
+                disabled={outOfStock}
                 style={{
                   flex: 1,
-                  background: "black",
+                  background: outOfStock ? "#999" : "black",
                   color: "white",
                   border: "none",
                   borderRadius: "12px",
                   fontWeight: "600",
                   fontSize: "1rem",
+                  cursor: outOfStock ? "not-allowed" : "pointer",
                 }}
               >
-                Add to Cart
+                {outOfStock ? "Out of Stock" : "Add to Cart"}
               </button>
             </MobileActionBar>
           </ModalContent>
