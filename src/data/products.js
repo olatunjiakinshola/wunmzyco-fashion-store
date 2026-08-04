@@ -3,13 +3,18 @@ import BlackGown from "../assets/products/BlackGown.JPG";
 import BlueGown from "../assets/products/BlueGown.JPG";
 import BlackGownn from "../assets/products/BlackGownn.JPG";
 import BlueGownn from "../assets/products/BlueGownn.JPG";
+import btBlack1 from "../assets/products/btBlack1.jpeg";
+import btBrown from "../assets/products/btBrown.jpeg";
+import btBlack2 from "../assets/products/btBlack2.jpeg";
+import btAsh from "../assets/products/btAsh.jpeg";
+
 
 const products = [
   // ===== TOPS (11) =====
-  { id: 1, name: "Brown Oversized Hoodie", price: 35000, category: "tops", image: BrownHoodie, color: "Brown", sizes: ["M", "L", "XL"], description: "Premium oversized hoodie.", stock: 15, featured: true },
-  { id: 2, name: "Black Casual Top", price: 12000, category: "tops", image: BlackGown, color: "Black", sizes: ["S", "M", "L"], description: "Stylish black top.", stock: 25, featured: false },
-  { id: 3, name: "Blue Soft Top", price: 15000, category: "tops", image: BlueGown, color: "Blue", sizes: ["M", "L"], description: "Comfortable blue top.", stock: 20, featured: true },
-  { id: 4, name: "Dark Black Top", price: 18000, category: "tops", image: BlackGownn, color: "Black", sizes: ["S", "M", "L", "XL"], description: "Premium black top.", stock: 18, featured: false },
+  { id: 1, name: "Black Basic Top", price: 5000, category: "tops", image: btBlack1, color: "Black", sizes: ["M", "L", "XL"], description: "Premium Black Top.", stock: 15, featured: true },
+  { id: 2, name: "Brown Basic Top", price: 7000, category: "tops", image: btBrown, color: "Brown", sizes: ["S", "M", "L"], description: "Stylish brown top.", stock: 25, featured: false },
+  { id: 3, name: "Black Basic Top", price: 5000, category: "tops", image: btBlack2, color: "Black", sizes: ["M", "L"], description: "Comfortable black top.", stock: 20, featured: true },
+  { id: 4, name: "Basic Ash Top", price: 8000, category: "tops", image: btAsh, color: "Ash", sizes: ["S", "M", "L", "XL"], description: "Premium ash top.", stock: 18, featured: false },
   { id: 5, name: "Light Blue Top", price: 16000, category: "tops", image: BlueGownn, color: "Blue", sizes: ["M", "L", "XL"], description: "Elegant light blue top.", stock: 22, featured: true },
   { id: 6, name: "Brown Classic Hoodie", price: 32000, category: "tops", image: BrownHoodie, color: "Brown", sizes: ["L", "XL"], description: "Warm classic hoodie.", stock: 14, featured: false },
   { id: 7, name: "Black Slim Top", price: 11000, category: "tops", image: BlackGown, color: "Black", sizes: ["S", "M"], description: "Slim fit black top.", stock: 30, featured: true },
