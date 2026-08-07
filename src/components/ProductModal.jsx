@@ -1,6 +1,14 @@
 import { memo, useState, useEffect } from "react";
 import styled from "styled-components";
-import { X, ShoppingCart, Heart, ZoomIn, Minus, Plus } from "lucide-react";
+import {
+  X,
+  ShoppingCart,
+  Heart,
+  ZoomIn,
+  Minus,
+  Plus,
+  Share2,
+} from "lucide-react";
 
 const ModalOverlay = styled.div`
   position: fixed;
@@ -145,7 +153,15 @@ const MobileActionBar = styled.div`
 `;
 
 const ProductModal = memo(
-  ({ isOpen, onClose, product, addToCart, toggleWishlist, wishlist }) => {
+  ({
+    isOpen,
+    onClose,
+    product,
+    addToCart,
+    toggleWishlist,
+    wishlist,
+    showToast,
+  }) => {
     const [selectedSize, setSelectedSize] = useState(null);
     const [quantity, setQuantity] = useState(1);
     const [isFullScreen, setIsFullScreen] = useState(false);
@@ -175,6 +191,28 @@ const ProductModal = memo(
       }
     };
 
+    const handleShare = async () => {
+      const shareData = {
+        title: product.name,
+        text: `Check out ${product.name} for ₦${product.price.toLocaleString()} on WunmzyCo`,
+        url: window.location.href,
+      };
+
+      try {
+        if (navigator.share) {
+          await navigator.share(shareData);
+        } else {
+          await navigator.clipboard.writeText(
+            `${shareData.text}\n${shareData.url}`
+          );
+          if (showToast) showToast("Product link copied");
+          else alert("Product link copied");
+        }
+      } catch (err) {
+        // User cancelled share sheet
+      }
+    };
+
     return (
       <>
         <ModalOverlay onClick={onClose}>
@@ -183,7 +221,7 @@ const ProductModal = memo(
               <h2 style={{ fontSize: "1.3rem", fontWeight: "700", margin: 0 }}>
                 {product.name}
               </h2>
-              <CloseButton onClick={onClose}>
+              <CloseButton onClick={onClose} aria-label="Close product details">
                 <X size={26} />
               </CloseButton>
             </ModalHeader>
@@ -291,6 +329,7 @@ const ProductModal = memo(
                   <QtyBtn
                     onClick={() => setQuantity((prev) => Math.max(1, prev - 1))}
                     disabled={outOfStock}
+                    aria-label="Decrease quantity"
                   >
                     <Minus size={16} />
                   </QtyBtn>
@@ -302,12 +341,13 @@ const ProductModal = memo(
                       setQuantity((prev) => Math.min(10, prev + 1))
                     }
                     disabled={outOfStock}
+                    aria-label="Increase quantity"
                   >
                     <Plus size={16} />
                   </QtyBtn>
                 </QuantityControl>
 
-                {/* Desktop buttons */}
+                {/* Desktop / main actions */}
                 <div className="desktop-actions">
                   <ActionButton
                     onClick={handleAddToCart}
@@ -336,6 +376,18 @@ const ProductModal = memo(
                     />
                     {isWishlisted ? "Remove from Wishlist" : "Add to Wishlist"}
                   </ActionButton>
+
+                  <ActionButton
+                    onClick={handleShare}
+                    style={{
+                      background: "white",
+                      color: "#333",
+                      border: "1.5px solid #ddd",
+                    }}
+                  >
+                    <Share2 size={18} />
+                    Share Product
+                  </ActionButton>
                 </div>
               </DetailsSection>
             </ModalBody>
@@ -344,6 +396,9 @@ const ProductModal = memo(
             <MobileActionBar>
               <button
                 onClick={() => toggleWishlist(product.id)}
+                aria-label={
+                  isWishlisted ? "Remove from wishlist" : "Add to wishlist"
+                }
                 style={{
                   width: "48px",
                   height: "48px",
@@ -360,6 +415,23 @@ const ProductModal = memo(
                   fill={isWishlisted ? "#ef4444" : "none"}
                   color={isWishlisted ? "#ef4444" : "#333"}
                 />
+              </button>
+
+              <button
+                onClick={handleShare}
+                aria-label="Share product"
+                style={{
+                  width: "48px",
+                  height: "48px",
+                  borderRadius: "12px",
+                  border: "1.5px solid #ddd",
+                  background: "white",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <Share2 size={20} />
               </button>
 
               <button
@@ -400,6 +472,8 @@ const ProductModal = memo(
             <img
               src={product.image}
               alt={product.name}
+              loading="lazy"
+              decoding="async"
               style={{
                 maxWidth: "100%",
                 maxHeight: "100%",
@@ -408,6 +482,7 @@ const ProductModal = memo(
             />
             <button
               onClick={() => setIsFullScreen(false)}
+              aria-label="Close full screen image"
               style={{
                 position: "absolute",
                 top: "24px",

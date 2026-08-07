@@ -1,7 +1,11 @@
 import { useState, lazy, Suspense, useMemo, useEffect, useRef } from "react";
 import styled from "styled-components";
-import { ShoppingCart, Search, Menu, X, Heart } from "lucide-react";
+import { ShoppingCart, Search, Menu, X, Heart, ArrowUp } from "lucide-react";
 import products from "./data/products";
+import useCart from "./hooks/useCart";
+import useWishlist from "./hooks/useWishlist";
+import ProductSkeleton from "./components/ui/ProductSkeleton";
+import EmptyState from "./components/ui/EmptyState";
 
 const ProductsSection = lazy(() => import("./components/ProductsSection"));
 const CartDrawer = lazy(() => import("./components/CartDrawer"));
@@ -10,7 +14,6 @@ const ProductModal = lazy(() => import("./components/ProductModal"));
 const WishlistDrawer = lazy(() => import("./components/WishlistDrawer"));
 const Toast = lazy(() => import("./components/Toast"));
 
-// === STYLED COMPONENTS ===
 const Container = styled.div`
   min-height: 100vh;
   background-color: #f8f9fa;
@@ -118,7 +121,7 @@ const MobileMenu = styled.div`
   transform: translateX(${(props) => (props.open ? "0" : "100%")});
   transition: transform 0.3s ease;
   z-index: 70;
-  padding: 80px 24px 30px;
+  padding: 80px 24px 120px;
   box-shadow: -4px 0 25px rgba(0, 0, 0, 0.12);
   overflow-y: auto;
   display: flex;
@@ -190,9 +193,9 @@ const HeroTitle = styled.h1`
 const ProductsWrapper = styled.section`
   max-width: 1280px;
   margin: 0 auto;
-  padding: 60px 20px;
+  padding: 60px 20px 100px;
   @media (max-width: 768px) {
-    padding: 40px 16px;
+    padding: 40px 16px 110px;
   }
 `;
 
@@ -200,9 +203,23 @@ const SectionHeader = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 40px;
+  margin-bottom: 24px;
   flex-wrap: wrap;
   gap: 12px;
+`;
+
+const SortSelect = styled.select`
+  padding: 10px 14px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  background: white;
+  font-size: 0.95rem;
+  outline: none;
+  cursor: pointer;
+
+  &:focus {
+    border-color: #000;
+  }
 `;
 
 const BottomNav = styled.div`
@@ -269,25 +286,35 @@ const WhatsAppButton = styled.a`
   }
 `;
 
-// === MAIN APP ===
+const ScrollTopButton = styled.button`
+  position: fixed;
+  right: 25px;
+  bottom: 100px;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: none;
+  background: #111;
+  color: white;
+  display: ${(props) => (props.$show ? "flex" : "none")};
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 900;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+
+  @media (max-width: 768px) {
+    bottom: 90px;
+    right: 18px;
+  }
+`;
+
 function App() {
-  const [cart, setCart] = useState(() => {
-    const savedCart = localStorage.getItem("cart");
-    return savedCart ? JSON.parse(savedCart) : [];
-  });
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const [activeCategory, setActiveCategory] = useState("all");
-  const [wishlist, setWishlist] = useState(() => {
-  try {
-    const savedWishlist = localStorage.getItem("wishlist");
-    return savedWishlist ? JSON.parse(savedWishlist) : [];
-  } catch (error) {
-    console.error("Failed to load wishlist:", error);
-    return [];
-  }
-});
   const [searchTerm, setSearchTerm] = useState("");
+  const [sortBy, setSortBy] = useState("default");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
@@ -295,28 +322,103 @@ function App() {
   const [toasts, setToasts] = useState([]);
   const [whatsappPos, setWhatsappPos] = useState({ x: null, y: null });
   const [visibleCount, setVisibleCount] = useState(12);
+  const [isProductsLoading, setIsProductsLoading] = useState(true);
+  const [showScrollTop, setShowScrollTop] = useState(false);
 
-  // Performance refs for drag
   const isDragging = useRef(false);
   const dragOffset = useRef({ x: 0, y: 0 });
   const buttonRef = useRef(null);
   const rafId = useRef(null);
 
+  const showToast = (message) => {
+    const id = Date.now();
+    setToasts((prev) => [...prev, { id, message, closing: false }]);
+    setTimeout(() => {
+      setToasts((prev) =>
+        prev.map((t) => (t.id === id ? { ...t, closing: true } : t))
+      );
+      setTimeout(() => {
+        setToasts((prev) => prev.filter((t) => t.id !== id));
+      }, 300);
+    }, 3000);
+  };
+
+  const removeToast = (id) => {
+    setToasts((prev) =>
+      prev.map((t) => (t.id === id ? { ...t, closing: true } : t))
+    );
+    setTimeout(() => {
+      setToasts((prev) => prev.filter((t) => t.id !== id));
+    }, 300);
+  };
+
+  const {
+    cart,
+    addToCart,
+    increaseQuantity,
+    decreaseQuantity,
+    removeFromCart,
+    clearCart,
+    totalPrice,
+  } = useCart(showToast);
+
+  const { wishlist, wishlistItems, toggleWishlist } = useWishlist(showToast);
+
   useEffect(() => {
     setVisibleCount(12);
-  }, [activeCategory, searchTerm]);
+  }, [activeCategory, searchTerm, sortBy]);
 
-  // Persist cart
   useEffect(() => {
-    localStorage.setItem("cart", JSON.stringify(cart));
-  }, [cart]);
+    setIsProductsLoading(true);
+    const timer = setTimeout(() => setIsProductsLoading(false), 500);
+    return () => clearTimeout(timer);
+  }, [activeCategory, searchTerm, sortBy]);
 
-  // Persist wishlist
- useEffect(() => {
-  localStorage.setItem("wishlist", JSON.stringify(wishlist));
-}, [wishlist]);
+  useEffect(() => {
+    const onScroll = () => {
+      setShowScrollTop(window.scrollY > 400);
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
-  // Filtering Logic
+  const anyOverlayOpen =
+    isCartOpen ||
+    isCheckoutOpen ||
+    isModalOpen ||
+    isWishlistOpen ||
+    isMobileMenuOpen;
+
+  useEffect(() => {
+    document.body.style.overflow = anyOverlayOpen ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [anyOverlayOpen]);
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key !== "Escape") return;
+
+      if (isCheckoutOpen) setIsCheckoutOpen(false);
+      else if (isModalOpen) {
+        setIsModalOpen(false);
+        setSelectedProduct(null);
+      } else if (isCartOpen) setIsCartOpen(false);
+      else if (isWishlistOpen) setIsWishlistOpen(false);
+      else if (isMobileMenuOpen) setIsMobileMenuOpen(false);
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [
+    isCheckoutOpen,
+    isModalOpen,
+    isCartOpen,
+    isWishlistOpen,
+    isMobileMenuOpen,
+  ]);
+
   const filteredProducts = useMemo(() => {
     let result = [...products];
 
@@ -333,124 +435,36 @@ function App() {
       result = result.filter(
         (product) =>
           product.name.toLowerCase().includes(term) ||
-          product.color.toLowerCase().includes(term),
+          product.color.toLowerCase().includes(term)
       );
     }
 
+    switch (sortBy) {
+      case "price-asc":
+        result.sort((a, b) => a.price - b.price);
+        break;
+      case "price-desc":
+        result.sort((a, b) => b.price - a.price);
+        break;
+      case "name-asc":
+        result.sort((a, b) => a.name.localeCompare(b.name));
+        break;
+      case "name-desc":
+        result.sort((a, b) => b.name.localeCompare(a.name));
+        break;
+      default:
+        break;
+    }
+
     return result;
-  }, [activeCategory, searchTerm]);
-  
+  }, [activeCategory, searchTerm, sortBy]);
+
   const visibleProducts = filteredProducts.slice(0, visibleCount);
-
-  // Toast helpers
-  const showToast = (message) => {
-    const id = Date.now();
-    setToasts((prev) => [...prev, { id, message, closing: false }]);
-    setTimeout(() => {
-      setToasts((prev) =>
-        prev.map((t) => (t.id === id ? { ...t, closing: true } : t)),
-      );
-      setTimeout(() => {
-        setToasts((prev) => prev.filter((t) => t.id !== id));
-      }, 300);
-    }, 3000);
-  };
-
-  const removeToast = (id) => {
-    setToasts((prev) =>
-      prev.map((t) => (t.id === id ? { ...t, closing: true } : t)),
-    );
-    setTimeout(() => {
-      setToasts((prev) => prev.filter((t) => t.id !== id));
-    }, 300);
-  };
-
-  // Cart functions
-  const addToCart = (product, selectedSize = null) => {
-    const size =
-      selectedSize || product.selectedSize || product.sizes?.[0] || "M";
-    const cartKey = `${product.id}-${size}`;
-
-    setCart((prev) => {
-      const existingItem = prev.find((item) => item.cartKey === cartKey);
-      if (existingItem) {
-        return prev.map((item) =>
-          item.cartKey === cartKey
-            ? { ...item, quantity: item.quantity + 1 }
-            : item,
-        );
-      }
-      return [
-        ...prev,
-        {
-          ...product,
-          selectedSize: size,
-          cartKey,
-          quantity: 1,
-        },
-      ];
-    });
-
-    showToast(`${product.name} (Size: ${size}) added to cart`);
-  };
-
-  const increaseQuantity = (cartKey) => {
-    setCart((prev) =>
-      prev.map((item) =>
-        item.cartKey === cartKey
-          ? { ...item, quantity: item.quantity + 1 }
-          : item,
-      ),
-    );
-  };
-
-  const decreaseQuantity = (cartKey) => {
-    setCart((prev) =>
-      prev
-        .map((item) =>
-          item.cartKey === cartKey
-            ? { ...item, quantity: item.quantity - 1 }
-            : item,
-        )
-        .filter((item) => item.quantity > 0),
-    );
-  };
-
-  const removeFromCart = (cartKey) => {
-    setCart((prev) => prev.filter((item) => item.cartKey !== cartKey));
-  };
-
-  const clearCart = () => {
-    setCart([]);
-    showToast("Cart cleared successfully");
-  };
-
-  const toggleWishlist = (id) => {
-  const product = products.find((p) => p.id === id);
-  const isAlready = wishlist.includes(id);
-
-  if (isAlready) {
-    setWishlist((prev) => prev.filter((item) => item !== id));
-    showToast(`${product?.name || "Item"} removed from wishlist`);
-  } else {
-    setWishlist((prev) => [...prev, id]);
-    showToast(`${product?.name || "Item"} added to wishlist`);
-  }
-};
 
   const openProductModal = (product) => {
     setSelectedProduct(product);
     setIsModalOpen(true);
   };
-
-  const wishlistItems = products.filter((product) =>
-    wishlist.includes(product.id),
-  );
-
-  const totalPrice = cart.reduce(
-    (sum, item) => sum + item.price * item.quantity,
-    0,
-  );
 
   const categories = [
     { key: "all", label: "All" },
@@ -467,7 +481,6 @@ function App() {
     { key: "under5k", label: "Under ₦5k" },
   ];
 
-  // High-performance drag logic
   const handleDragStart = (e) => {
     e.preventDefault();
     isDragging.current = true;
@@ -485,7 +498,6 @@ function App() {
       y: clientY - rect.top,
     };
 
-    // Disable transition while dragging
     button.style.transition = "none";
 
     const handleMove = (moveEvent) => {
@@ -511,7 +523,6 @@ function App() {
         const clampedX = Math.max(0, Math.min(newX, maxX));
         const clampedY = Math.max(0, Math.min(newY, maxY));
 
-        // Direct DOM update (no React re-render during drag)
         button.style.left = `${clampedX}px`;
         button.style.top = `${clampedY}px`;
         button.style.right = "auto";
@@ -527,13 +538,11 @@ function App() {
         rafId.current = null;
       }
 
-      const button = buttonRef.current;
-      if (button) {
-        button.style.transition = "transform 0.15s ease";
-
-        const finalX = parseFloat(button.style.left) || 0;
-        const finalY = parseFloat(button.style.top) || 0;
-
+      const btn = buttonRef.current;
+      if (btn) {
+        btn.style.transition = "transform 0.15s ease";
+        const finalX = parseFloat(btn.style.left) || 0;
+        const finalY = parseFloat(btn.style.top) || 0;
         setWhatsappPos({ x: finalX, y: finalY });
       }
 
@@ -567,10 +576,10 @@ function App() {
               placeholder="Search products..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
+              aria-label="Search products"
             />
           </SearchContainer>
 
-          {/* Desktop Categories */}
           <NavLinks>
             {categories.map((cat) => (
               <NavLink
@@ -583,13 +592,16 @@ function App() {
             ))}
           </NavLinks>
 
-          <Hamburger onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
+          <Hamburger
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
+          >
             {isMobileMenuOpen ? <X size={28} /> : <Menu size={28} />}
           </Hamburger>
 
-          {/* Wishlist Button */}
           <button
             onClick={() => setIsWishlistOpen(true)}
+            aria-label="Open wishlist"
             style={{
               position: "relative",
               background: "none",
@@ -625,9 +637,9 @@ function App() {
             )}
           </button>
 
-          {/* Cart Button */}
           <button
             onClick={() => setIsCartOpen(true)}
+            aria-label="Open cart"
             style={{
               position: "relative",
               background: "none",
@@ -660,7 +672,6 @@ function App() {
         </NavContent>
       </Navbar>
 
-      {/* Mobile Overlay + Menu */}
       <MobileOverlay
         open={isMobileMenuOpen}
         onClick={() => setIsMobileMenuOpen(false)}
@@ -726,44 +737,74 @@ function App() {
 
       <ProductsWrapper>
         <SectionHeader>
-          <h2 style={{ fontSize: "2.4rem", fontWeight: "700" }}>
-            Our Collection
-          </h2>
-          <p>{filteredProducts.length} products</p>
+          <div>
+            <h2 style={{ fontSize: "2.4rem", fontWeight: "700", marginBottom: 6 }}>
+              Our Collection
+            </h2>
+            <p style={{ color: "#666" }}>{filteredProducts.length} products</p>
+          </div>
+
+          <SortSelect
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value)}
+            aria-label="Sort products"
+          >
+            <option value="default">Sort: Default</option>
+            <option value="price-asc">Price: Low to High</option>
+            <option value="price-desc">Price: High to Low</option>
+            <option value="name-asc">Name: A to Z</option>
+            <option value="name-desc">Name: Z to A</option>
+          </SortSelect>
         </SectionHeader>
 
-        <Suspense fallback={<p>Loading products...</p>}>
-          <ProductsSection
-            products={visibleProducts}
-            addToCart={addToCart}
-            toggleWishlist={toggleWishlist}
-            wishlist={wishlist}
-            onOpenModal={openProductModal}
-          />
-        </Suspense>
-
-        {visibleCount < filteredProducts.length && (
-          <div style={{ textAlign: "center", marginTop: "40px" }}>
-            <button
-              onClick={() => setVisibleCount((prev) => prev + 12)}
-              style={{
-                background: "black",
-                color: "white",
-                border: "none",
-                padding: "14px 28px",
-                borderRadius: "50px",
-                fontSize: "1rem",
-                fontWeight: "600",
-                cursor: "pointer",
+        <Suspense fallback={<ProductSkeleton count={8} />}>
+          {isProductsLoading ? (
+            <ProductSkeleton count={8} />
+          ) : filteredProducts.length === 0 ? (
+            <EmptyState
+              title="No products found"
+              text="Try another category or search term."
+              actionLabel="View all products"
+              onAction={() => {
+                setActiveCategory("all");
+                setSearchTerm("");
+                setSortBy("default");
               }}
-            >
-              Load More Products
-            </button>
-          </div>
-        )}
+            />
+          ) : (
+            <>
+              <ProductsSection
+                products={visibleProducts}
+                addToCart={addToCart}
+                toggleWishlist={toggleWishlist}
+                wishlist={wishlist}
+                onOpenModal={openProductModal}
+              />
+
+              {visibleCount < filteredProducts.length && (
+                <div style={{ textAlign: "center", marginTop: "40px" }}>
+                  <button
+                    onClick={() => setVisibleCount((prev) => prev + 12)}
+                    style={{
+                      background: "black",
+                      color: "white",
+                      border: "none",
+                      padding: "14px 28px",
+                      borderRadius: "50px",
+                      fontSize: "1rem",
+                      fontWeight: "600",
+                      cursor: "pointer",
+                    }}
+                  >
+                    Load More Products
+                  </button>
+                </div>
+              )}
+            </>
+          )}
+        </Suspense>
       </ProductsWrapper>
 
-      {/* Trust Section */}
       <section
         style={{
           background: "white",
@@ -789,7 +830,6 @@ function App() {
               Delivery available across Nigeria
             </p>
           </div>
-
           <div>
             <h3 style={{ marginBottom: "8px", fontSize: "1.1rem" }}>
               🔒 Secure Payment
@@ -798,7 +838,6 @@ function App() {
               Pay safely with Paystack or order via WhatsApp
             </p>
           </div>
-
           <div>
             <h3 style={{ marginBottom: "8px", fontSize: "1.1rem" }}>
               💬 Easy Support
@@ -807,7 +846,6 @@ function App() {
               Chat with us instantly on WhatsApp
             </p>
           </div>
-
           <div>
             <h3 style={{ marginBottom: "8px", fontSize: "1.1rem" }}>
               ✨ Quality Fashion
@@ -824,15 +862,13 @@ function App() {
           background: "#111",
           color: "#aaa",
           textAlign: "center",
-          padding: "60px 20px 40px",
+          padding: "60px 20px 100px",
         }}
       >
         <h2 style={{ color: "white", marginBottom: "12px" }}>WUNMZYCo</h2>
         <p style={{ marginBottom: "20px" }}>
           Premium affordable fashion for everyday elegance.
         </p>
-
-        {/* Social Links */}
         <div
           style={{
             display: "flex",
@@ -841,77 +877,49 @@ function App() {
             marginBottom: "24px",
           }}
         >
-          <a
-            href="https://facebook.com/yourpage"
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{
-              color: "#aaa",
-              textDecoration: "none",
-              fontSize: "0.95rem",
-            }}
-          >
+          <a href="https://facebook.com/yourpage" target="_blank" rel="noopener noreferrer" style={{ color: "#aaa", textDecoration: "none" }}>
             Facebook
           </a>
-          <a
-            href="https://tiktok.com/@yourpage"
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{
-              color: "#aaa",
-              textDecoration: "none",
-              fontSize: "0.95rem",
-            }}
-          >
+          <a href="https://tiktok.com/@yourpage" target="_blank" rel="noopener noreferrer" style={{ color: "#aaa", textDecoration: "none" }}>
             TikTok
           </a>
-          <a
-            href="https://instagram.com/yourpage"
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{
-              color: "#aaa",
-              textDecoration: "none",
-              fontSize: "0.95rem",
-            }}
-          >
+          <a href="https://instagram.com/yourpage" target="_blank" rel="noopener noreferrer" style={{ color: "#aaa", textDecoration: "none" }}>
             Instagram
           </a>
-          <a
-            href="https://wa.me/2348060230990"
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{
-              color: "#aaa",
-              textDecoration: "none",
-              fontSize: "0.95rem",
-            }}
-          >
+          <a href="https://wa.me/2348060230990" target="_blank" rel="noopener noreferrer" style={{ color: "#aaa", textDecoration: "none" }}>
             WhatsApp
           </a>
         </div>
-
         <p style={{ fontSize: "0.9rem" }}>
           © 2026 WunmzyCo. All rights reserved.
         </p>
       </footer>
-      {/* Bottom Navigation (Mobile) */}
+
       <BottomNav>
         <NavItem
           onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+          aria-label="Go to shop"
         >
           <Search size={24} />
           Shop
         </NavItem>
-        <NavItem onClick={() => setIsWishlistOpen(true)}>
+        <NavItem onClick={() => setIsWishlistOpen(true)} aria-label="Open wishlist">
           <Heart size={24} fill={wishlist.length > 0 ? "#ef4444" : "none"} />
           Wishlist
         </NavItem>
-        <NavItem onClick={() => setIsCartOpen(true)}>
+        <NavItem onClick={() => setIsCartOpen(true)} aria-label="Open cart">
           <ShoppingCart size={24} />
           Cart
         </NavItem>
       </BottomNav>
+
+      <ScrollTopButton
+        $show={showScrollTop}
+        onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+        aria-label="Scroll to top"
+      >
+        <ArrowUp size={20} />
+      </ScrollTopButton>
 
       <Suspense fallback={null}>
         <CartDrawer
@@ -947,6 +955,7 @@ function App() {
           addToCart={addToCart}
           toggleWishlist={toggleWishlist}
           wishlist={wishlist}
+          showToast={showToast}
         />
 
         <WishlistDrawer
@@ -960,12 +969,12 @@ function App() {
         <Toast toasts={toasts} removeToast={removeToast} />
       </Suspense>
 
-      {/* High-performance Draggable WhatsApp Button */}
       <WhatsAppButton
         ref={buttonRef}
         href="https://wa.me/2348060230990"
         target="_blank"
         rel="noopener noreferrer"
+        aria-label="Chat on WhatsApp"
         onMouseDown={handleDragStart}
         onTouchStart={handleDragStart}
         style={{
