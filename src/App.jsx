@@ -877,16 +877,16 @@ function App() {
             marginBottom: "24px",
           }}
         >
-          <a href="https://facebook.com/yourpage" target="_blank" rel="noopener noreferrer" style={{ color: "#aaa", textDecoration: "none" }}>
+          <a href="https://web.facebook.com/wunmzy.co" target="_blank" rel="noopener noreferrer" style={{ color: "#aaa", textDecoration: "none" }}>
             Facebook
           </a>
-          <a href="https://tiktok.com/@yourpage" target="_blank" rel="noopener noreferrer" style={{ color: "#aaa", textDecoration: "none" }}>
+          <a href="https://www.tiktok.com/@wunmzy.co1" target="_blank" rel="noopener noreferrer" style={{ color: "#aaa", textDecoration: "none" }}>
             TikTok
           </a>
-          <a href="https://instagram.com/yourpage" target="_blank" rel="noopener noreferrer" style={{ color: "#aaa", textDecoration: "none" }}>
+          <a href="https://www.instagram.com/wunmzy_co/" target="_blank" rel="noopener noreferrer" style={{ color: "#aaa", textDecoration: "none" }}>
             Instagram
           </a>
-          <a href="https://wa.me/2348060230990" target="_blank" rel="noopener noreferrer" style={{ color: "#aaa", textDecoration: "none" }}>
+          <a href="https://wa.me/2347011726209" target="_blank" rel="noopener noreferrer" style={{ color: "#aaa", textDecoration: "none" }}>
             WhatsApp
           </a>
         </div>
@@ -971,7 +971,7 @@ function App() {
 
       <WhatsAppButton
         ref={buttonRef}
-        href="https://wa.me/2348060230990"
+        href="https://wa.me/2347011726209"
         target="_blank"
         rel="noopener noreferrer"
         aria-label="Chat on WhatsApp"
