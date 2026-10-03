@@ -335,7 +335,7 @@ function App() {
     setToasts((prev) => [...prev, { id, message, closing: false }]);
     setTimeout(() => {
       setToasts((prev) =>
-        prev.map((t) => (t.id === id ? { ...t, closing: true } : t))
+        prev.map((t) => (t.id === id ? { ...t, closing: true } : t)),
       );
       setTimeout(() => {
         setToasts((prev) => prev.filter((t) => t.id !== id));
@@ -345,7 +345,7 @@ function App() {
 
   const removeToast = (id) => {
     setToasts((prev) =>
-      prev.map((t) => (t.id === id ? { ...t, closing: true } : t))
+      prev.map((t) => (t.id === id ? { ...t, closing: true } : t)),
     );
     setTimeout(() => {
       setToasts((prev) => prev.filter((t) => t.id !== id));
@@ -435,7 +435,7 @@ function App() {
       result = result.filter(
         (product) =>
           product.name.toLowerCase().includes(term) ||
-          product.color.toLowerCase().includes(term)
+          product.color.toLowerCase().includes(term),
       );
     }
 
@@ -738,7 +738,9 @@ function App() {
       <ProductsWrapper>
         <SectionHeader>
           <div>
-            <h2 style={{ fontSize: "2.4rem", fontWeight: "700", marginBottom: 6 }}>
+            <h2
+              style={{ fontSize: "2.4rem", fontWeight: "700", marginBottom: 6 }}
+            >
               Our Collection
             </h2>
             <p style={{ color: "#666" }}>{filteredProducts.length} products</p>
@@ -877,16 +879,36 @@ function App() {
             marginBottom: "24px",
           }}
         >
-          <a href="https://web.facebook.com/wunmzy.co" target="_blank" rel="noopener noreferrer" style={{ color: "#aaa", textDecoration: "none" }}>
+          <a
+            href="https://web.facebook.com/wunmzy.co"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ color: "#aaa", textDecoration: "none" }}
+          >
             Facebook
           </a>
-          <a href="https://www.tiktok.com/@wunmzy.co1" target="_blank" rel="noopener noreferrer" style={{ color: "#aaa", textDecoration: "none" }}>
+          <a
+            href="https://www.tiktok.com/@wunmzy.co1"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ color: "#aaa", textDecoration: "none" }}
+          >
             TikTok
           </a>
-          <a href="https://www.instagram.com/wunmzy_co/" target="_blank" rel="noopener noreferrer" style={{ color: "#aaa", textDecoration: "none" }}>
+          <a
+            href="https://www.instagram.com/wunmzy_co/"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ color: "#aaa", textDecoration: "none" }}
+          >
             Instagram
           </a>
-          <a href="https://wa.me/2347011726209" target="_blank" rel="noopener noreferrer" style={{ color: "#aaa", textDecoration: "none" }}>
+          <a
+            href="https://wa.me/2347011726209"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ color: "#aaa", textDecoration: "none" }}
+          >
             WhatsApp
           </a>
         </div>
@@ -903,7 +925,10 @@ function App() {
           <Search size={24} />
           Shop
         </NavItem>
-        <NavItem onClick={() => setIsWishlistOpen(true)} aria-label="Open wishlist">
+        <NavItem
+          onClick={() => setIsWishlistOpen(true)}
+          aria-label="Open wishlist"
+        >
           <Heart size={24} fill={wishlist.length > 0 ? "#ef4444" : "none"} />
           Wishlist
         </NavItem>

@@ -87,6 +87,11 @@ const WhatsAppButton = styled.button`
   &:hover {
     background: #20ba5c;
   }
+
+  &:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
 `;
 
 const PaystackButtonStyled = styled.button`
@@ -114,6 +119,34 @@ const PaystackButtonStyled = styled.button`
   }
 `;
 
+const SELLER_WHATSAPP = "2348060230990";
+
+function isValidEmail(email) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(email).trim());
+}
+
+function normalizePhone(phone) {
+  let p = String(phone).replace(/[^\d+]/g, "");
+
+  // Local Nigerian format: 08012345678 -> 2348012345678
+  if (p.startsWith("0") && p.length === 11) {
+    return "234" + p.slice(1);
+  }
+
+  // Remove leading +
+  if (p.startsWith("+")) {
+    return p.slice(1);
+  }
+
+  return p;
+}
+
+function isValidPhone(phone) {
+  const normalized = normalizePhone(phone);
+  // Accept international numbers: 10 to 15 digits
+  return /^\d{10,15}$/.test(normalized);
+}
+
 const CheckoutModal = memo(
   ({ isOpen, onClose, totalPrice, cart, clearCart }) => {
     const [isLoading, setIsLoading] = useState(false);
@@ -128,13 +161,100 @@ const CheckoutModal = memo(
 
     if (!isOpen) return null;
 
-    const phoneNumber = "2348060230990";
-
     const handleChange = (e) => {
       setFormData({
         ...formData,
         [e.target.name]: e.target.value,
       });
+    };
+
+    const resetForm = () => {
+      setFormData({
+        name: "",
+        email: "",
+        phone: "",
+        address: "",
+        city: "",
+        notes: "",
+      });
+    };
+
+    const validateCheckoutForm = (requireEmail = true) => {
+      if (!formData.name.trim()) {
+        alert("Please enter your full name.");
+        return false;
+      }
+
+      if (requireEmail && !isValidEmail(formData.email)) {
+        alert("Please enter a valid email address.");
+        return false;
+      }
+
+      if (!isValidPhone(formData.phone)) {
+        alert(
+          "Please enter a valid phone number.\nExample: 08012345678 or +14155552671"
+        );
+        return false;
+      }
+
+      if (!formData.address.trim()) {
+        alert("Please enter your delivery address.");
+        return false;
+      }
+
+      if (!formData.city.trim()) {
+        alert("Please enter your city / state.");
+        return false;
+      }
+
+      if (!cart || cart.length === 0) {
+        alert("Your cart is empty.");
+        return false;
+      }
+
+      if (!totalPrice || Number(totalPrice) <= 0) {
+        alert("Invalid order total.");
+        return false;
+      }
+
+      return true;
+    };
+
+    const buildOrderItemsText = () => {
+      return cart
+        .map((item, index) => {
+          const sizeInfo = item.selectedSize
+            ? ` - Size: ${item.selectedSize}`
+            : "";
+          return `${index + 1}. ${item.name}${sizeInfo} × ${item.quantity} - ₦${(
+            item.price * item.quantity
+          ).toLocaleString()}`;
+        })
+        .join("\n");
+    };
+
+    const notifySellerOnWhatsApp = (paymentReference, paidAmount) => {
+      let message = `*PAYMENT RECEIVED - WunmzyCo*\n\n`;
+      message += `*Payment Reference:* ${paymentReference}\n`;
+      message += `*Amount Paid:* ₦${Number(paidAmount).toLocaleString()}\n\n`;
+      message += `*Customer Details*\n`;
+      message += `Name: ${formData.name}\n`;
+      message += `Email: ${formData.email}\n`;
+      message += `Phone: ${formData.phone}\n`;
+      message += `Address: ${formData.address}\n`;
+      message += `City/State: ${formData.city}\n`;
+
+      if (formData.notes) {
+        message += `Notes: ${formData.notes}\n`;
+      }
+
+      message += `\n*Order Items*\n${buildOrderItemsText()}\n\n`;
+      message += `Please confirm and process this order.`;
+
+      const url = `https://wa.me/${SELLER_WHATSAPP}?text=${encodeURIComponent(
+        message
+      )}`;
+      window.open(url, "_blank", "noopener,noreferrer");
     };
 
     const verifyPayment = async (reference) => {
@@ -144,67 +264,81 @@ const CheckoutModal = memo(
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ reference }),
+          body: JSON.stringify({
+            reference,
+            expectedAmount: Number(totalPrice),
+            expectedCurrency: "NGN",
+          }),
         });
 
         const result = await res.json();
 
         if (result.success) {
+          try {
+            localStorage.setItem(
+              "lastPaymentReference",
+              result.data.reference || reference
+            );
+          } catch (e) {
+            // ignore storage errors
+          }
+
           alert(
             `Payment successful!\n\nReference: ${result.data.reference}\nAmount: ₦${Number(
               result.data.amount
-            ).toLocaleString()}\n\nWe will contact you shortly regarding delivery.`
+            ).toLocaleString()}\n\nWe will contact you shortly about delivery.\nA WhatsApp message will open so the seller can process your order.`
           );
 
+          notifySellerOnWhatsApp(result.data.reference, result.data.amount);
+
           if (clearCart) clearCart();
+          resetForm();
           onClose();
         } else {
-          alert("Payment could not be verified. Please contact support.");
+          alert(
+            `${
+              result.message || "Payment could not be verified."
+            }\n\nIf money left your account, contact us on WhatsApp with this reference:\n${reference}`
+          );
           console.error(result);
         }
       } catch (error) {
         console.error("Verification error:", error);
-        alert("Could not verify payment. Please contact support.");
+        alert(
+          `Could not verify payment right now.\n\nIf money left your account, contact us on WhatsApp with this reference:\n${reference}`
+        );
       } finally {
         setIsLoading(false);
       }
     };
 
     const handlePaystackPayment = () => {
-      if (
-        !formData.name ||
-        !formData.email ||
-        !formData.phone ||
-        !formData.address ||
-        !formData.city
-      ) {
-        alert("Please fill in your name, email, phone, address and city.");
-        return;
-      }
+      if (isLoading) return;
 
-      if (!cart || cart.length === 0) {
-        alert("Your cart is empty.");
-        return;
-      }
+      if (!validateCheckoutForm(true)) return;
 
       if (!window.PaystackPop) {
-        alert("Paystack failed to load. Please refresh the page.");
+        alert("Paystack failed to load. Please refresh the page and try again.");
         return;
       }
 
       const publicKey = import.meta.env.VITE_PAYSTACK_PUBLIC_KEY;
 
       if (!publicKey) {
-        alert("Paystack public key is missing. Check your .env file.");
+        alert(
+          "Paystack is not configured yet. Please use WhatsApp order or contact support."
+        );
         return;
       }
 
       setIsLoading(true);
 
+      const normalizedPhone = normalizePhone(formData.phone);
+
       const handler = window.PaystackPop.setup({
         key: publicKey,
-        email: formData.email,
-        amount: Math.round(totalPrice * 100),
+        email: formData.email.trim(),
+        amount: Math.round(Number(totalPrice) * 100),
         currency: "NGN",
         ref: "WUNMZY_" + Date.now(),
         metadata: {
@@ -212,27 +346,27 @@ const CheckoutModal = memo(
             {
               display_name: "Customer Name",
               variable_name: "customer_name",
-              value: formData.name,
+              value: formData.name.trim(),
             },
             {
               display_name: "Phone Number",
               variable_name: "phone_number",
-              value: formData.phone,
+              value: normalizedPhone,
             },
             {
               display_name: "Delivery Address",
               variable_name: "delivery_address",
-              value: formData.address,
+              value: formData.address.trim(),
             },
             {
               display_name: "City / State",
               variable_name: "city_state",
-              value: formData.city,
+              value: formData.city.trim(),
             },
             {
               display_name: "Order Notes",
               variable_name: "order_notes",
-              value: formData.notes || "None",
+              value: formData.notes.trim() || "None",
             },
             {
               display_name: "Cart Items",
@@ -259,43 +393,30 @@ const CheckoutModal = memo(
       handler.openIframe();
     };
 
-    const createWhatsAppMessage = () => {
+    const handleSendToWhatsApp = () => {
+      if (!validateCheckoutForm(false)) return;
+
       let message = `*New Order from WunmzyCo Website*\n\n`;
       message += `*Customer Details*\n`;
       message += `Name: ${formData.name}\n`;
-      message += `Email: ${formData.email}\n`;
+      message += `Email: ${formData.email || "N/A"}\n`;
       message += `Phone: ${formData.phone}\n`;
       message += `Address: ${formData.address}\n`;
       message += `City/State: ${formData.city}\n`;
+
       if (formData.notes) {
         message += `Notes: ${formData.notes}\n`;
       }
-      message += `\n*Order Items*\n`;
 
-      cart.forEach((item, index) => {
-        const sizeInfo = item.selectedSize
-          ? ` - Size: ${item.selectedSize}`
-          : "";
-        message += `${index + 1}. ${item.name}${sizeInfo} × ${
-          item.quantity
-        } - *₦${(item.price * item.quantity).toLocaleString()}*\n`;
-      });
+      message += `\n*Order Items*\n${buildOrderItemsText()}\n\n`;
+      message += `*Total Amount: ₦${Number(totalPrice).toLocaleString()}*\n\n`;
+      message += `Please confirm my order. Thank you!`;
 
-      message += `\n*Total Amount: ₦${totalPrice.toLocaleString()}*\n\n`;
-      message += `Please confirm my order. Thank you! 🙏`;
+      const whatsappUrl = `https://wa.me/${SELLER_WHATSAPP}?text=${encodeURIComponent(
+        message
+      )}`;
 
-      return encodeURIComponent(message);
-    };
-
-    const handleSendToWhatsApp = () => {
-      if (!formData.name || !formData.phone || !formData.address || !formData.city) {
-        alert("Please enter your name, phone, address and city for WhatsApp order.");
-        return;
-      }
-
-      const message = createWhatsAppMessage();
-      const whatsappUrl = `https://wa.me/${phoneNumber}?text=${message}`;
-      window.open(whatsappUrl, "_blank");
+      window.open(whatsappUrl, "_blank", "noopener,noreferrer");
       onClose();
     };
 
@@ -308,6 +429,7 @@ const CheckoutModal = memo(
             </h2>
             <button
               onClick={onClose}
+              aria-label="Close checkout"
               style={{
                 background: "none",
                 border: "none",
@@ -319,7 +441,6 @@ const CheckoutModal = memo(
             </button>
           </ModalHeader>
 
-          {/* Customer + Delivery Details */}
           <div style={{ marginBottom: "16px" }}>
             <h4 style={{ marginBottom: "12px" }}>Your Details</h4>
             <Input
@@ -328,6 +449,7 @@ const CheckoutModal = memo(
               placeholder="Full Name *"
               value={formData.name}
               onChange={handleChange}
+              autoComplete="name"
             />
             <Input
               type="email"
@@ -335,13 +457,15 @@ const CheckoutModal = memo(
               placeholder="Email Address *"
               value={formData.email}
               onChange={handleChange}
+              autoComplete="email"
             />
             <Input
               type="tel"
               name="phone"
-              placeholder="Phone Number *"
+              placeholder="Phone Number * (e.g. 08012345678 or +14155552671)"
               value={formData.phone}
               onChange={handleChange}
+              autoComplete="tel"
             />
             <Input
               type="text"
@@ -349,6 +473,7 @@ const CheckoutModal = memo(
               placeholder="Delivery Address *"
               value={formData.address}
               onChange={handleChange}
+              autoComplete="street-address"
             />
             <Input
               type="text"
@@ -356,6 +481,7 @@ const CheckoutModal = memo(
               placeholder="City / State *"
               value={formData.city}
               onChange={handleChange}
+              autoComplete="address-level2"
             />
             <TextArea
               name="notes"
@@ -365,7 +491,6 @@ const CheckoutModal = memo(
             />
           </div>
 
-          {/* Order Summary */}
           <OrderSummary>
             <h4 style={{ marginBottom: "12px", fontSize: "1rem" }}>
               Order Summary ({cart.length} item
@@ -410,17 +535,15 @@ const CheckoutModal = memo(
               }}
             >
               <span>Total</span>
-              <span>₦{totalPrice.toLocaleString()}</span>
+              <span>₦{Number(totalPrice).toLocaleString()}</span>
             </div>
           </OrderSummary>
 
-          {/* WhatsApp Button */}
-          <WhatsAppButton onClick={handleSendToWhatsApp}>
+          <WhatsAppButton onClick={handleSendToWhatsApp} disabled={isLoading}>
             <MessageCircle size={22} />
             Order via WhatsApp
           </WhatsAppButton>
 
-          {/* Paystack Button */}
           <PaystackButtonStyled
             onClick={handlePaystackPayment}
             disabled={isLoading}

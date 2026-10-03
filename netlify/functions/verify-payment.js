@@ -1,75 +1,149 @@
 const https = require("https");
 
 exports.handler = async (event) => {
-  // Only allow POST
+  const headers = {
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Headers": "Content-Type",
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
+  };
+
+  if (event.httpMethod === "OPTIONS") {
+    return {
+      statusCode: 200,
+      headers,
+      body: "",
+    };
+  }
+
   if (event.httpMethod !== "POST") {
     return {
       statusCode: 405,
-      body: JSON.stringify({ error: "Method Not Allowed" }),
+      headers,
+      body: JSON.stringify({ success: false, message: "Method not allowed" }),
     };
   }
 
   try {
-    const { reference } = JSON.parse(event.body);
+    const body = JSON.parse(event.body || "{}");
+    const { reference, expectedAmount, expectedCurrency = "NGN" } = body;
 
     if (!reference) {
       return {
         statusCode: 400,
-        body: JSON.stringify({ error: "Payment reference is required" }),
+        headers,
+        body: JSON.stringify({ success: false, message: "Missing reference" }),
       };
     }
 
-    // Verify payment with Paystack
-    const response = await verifyWithPaystack(reference);
-
-    if (response.status && response.data.status === "success") {
-      return {
-        statusCode: 200,
-        body: JSON.stringify({
-          success: true,
-          message: "Payment verified successfully",
-          data: {
-            reference: response.data.reference,
-            amount: response.data.amount / 100, // convert from kobo
-            email: response.data.customer.email,
-            paid_at: response.data.paid_at,
-            channel: response.data.channel,
-            metadata: response.data.metadata,
-          },
-        }),
-      };
-    } else {
+    if (expectedAmount === undefined || expectedAmount === null) {
       return {
         statusCode: 400,
+        headers,
         body: JSON.stringify({
           success: false,
-          message: "Payment verification failed",
-          data: response.data,
+          message: "Missing expectedAmount",
         }),
       };
     }
+
+    const secretKey = process.env.PAYSTACK_SECRET_KEY;
+
+    if (!secretKey) {
+      return {
+        statusCode: 500,
+        headers,
+        body: JSON.stringify({
+          success: false,
+          message: "Paystack secret key not configured",
+        }),
+      };
+    }
+
+    const result = await verifyTransaction(reference, secretKey);
+    const data = result.data;
+
+    // 1) Payment must be successful
+    if (!result.status || data?.status !== "success") {
+      return {
+        statusCode: 400,
+        headers,
+        body: JSON.stringify({
+          success: false,
+          message: "Payment not successful",
+          data: data || null,
+        }),
+      };
+    }
+
+    // Paystack returns amount in kobo
+    const paidAmountKobo = Number(data.amount);
+    const expectedAmountKobo = Math.round(Number(expectedAmount) * 100);
+    const paidCurrency = String(data.currency || "").toUpperCase();
+    const expectedCur = String(expectedCurrency || "NGN").toUpperCase();
+
+    // 2) Currency must match
+    if (paidCurrency !== expectedCur) {
+      return {
+        statusCode: 400,
+        headers,
+        body: JSON.stringify({
+          success: false,
+          message: `Currency mismatch. Expected ${expectedCur}, got ${paidCurrency}`,
+        }),
+      };
+    }
+
+    // 3) Amount must match exactly
+    if (paidAmountKobo !== expectedAmountKobo) {
+      return {
+        statusCode: 400,
+        headers,
+        body: JSON.stringify({
+          success: false,
+          message: `Amount mismatch. Expected ₦${(
+            expectedAmountKobo / 100
+          ).toLocaleString()}, got ₦${(paidAmountKobo / 100).toLocaleString()}`,
+        }),
+      };
+    }
+
+    // All checks passed
+    return {
+      statusCode: 200,
+      headers,
+      body: JSON.stringify({
+        success: true,
+        data: {
+          reference: data.reference,
+          amount: paidAmountKobo / 100,
+          currency: paidCurrency,
+          paid_at: data.paid_at,
+          channel: data.channel,
+          customer: data.customer,
+        },
+      }),
+    };
   } catch (error) {
-    console.error("Verification error:", error);
+    console.error("Verify error:", error);
     return {
       statusCode: 500,
+      headers,
       body: JSON.stringify({
         success: false,
-        error: error.message || "Internal server error",
+        message: "Verification failed",
       }),
     };
   }
 };
 
-// Helper function to call Paystack API
-function verifyWithPaystack(reference) {
+function verifyTransaction(reference, secretKey) {
   return new Promise((resolve, reject) => {
     const options = {
       hostname: "api.paystack.co",
-      port: 443,
-      path: `/transaction/verify/${reference}`,
+      path: `/transaction/verify/${encodeURIComponent(reference)}`,
       method: "GET",
       headers: {
-        Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
+        Authorization: `Bearer ${secretKey}`,
         "Content-Type": "application/json",
       },
     };
@@ -83,18 +157,14 @@ function verifyWithPaystack(reference) {
 
       res.on("end", () => {
         try {
-          const parsed = JSON.parse(data);
-          resolve(parsed);
+          resolve(JSON.parse(data));
         } catch (err) {
           reject(err);
         }
       });
     });
 
-    req.on("error", (err) => {
-      reject(err);
-    });
-
+    req.on("error", reject);
     req.end();
   });
 }
