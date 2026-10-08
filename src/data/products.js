@@ -4,6 +4,12 @@ import BlackGownn from "../assets/products/BlackGownn.JPG";
 import BlueGownn from "../assets/products/BlueGownn.JPG";
 import BrownHoodie from "../assets/products/BrownHoodie.JPG";
 import BasicTop from "../assets/products/BasicTop.jpeg";
+import BasicTop01 from "../assets/products/BasicTop01.jpg"
+import BasicTop02 from "../assets/products/BasicTop02.jpg"
+import BasicTop03 from "../assets/products/BasicTop03.jpg"
+import BasicTop04 from "../assets/products/BasicTop04.jpg"
+import BasicTop05 from "../assets/products/BasicTop05.jpg"
+import BasicTop06 from "../assets/products/BasicTop06.jpg"
 import BasicTop1 from "../assets/products/BasicTop1.jpeg";
 import BasicTop2 from "../assets/products/BasicTop2.jpeg";
 import BasicTop3 from "../assets/products/BasicTop3.jpeg";
@@ -41,47 +47,103 @@ import Joggers from "../assets/products/Joggers.jpeg";
 import Joggers1 from "../assets/products/Joggers1.jpeg";
 import Joggers2 from "../assets/products/Joggers2.jpeg";
 import Joggers3 from "../assets/products/Joggers3.jpeg";
+import skirt1 from "../assets/products/skirt1.jpg";
+import LongDress0 from "../assets/products/LongDress0.jpg"
+import LongDress2 from "../assets/products/LongDress2.jpg"
+import LongDress3 from "../assets/products/LongDress3.jpg"
+import LongDress4 from "../assets/products/LongDress4.jpg"
+import LongDress5 from "../assets/products/LongDress5.jpg"
+import LongDress6 from "../assets/products/LongDress6.jpg"
+import LongDress7 from "../assets/products/LongDress7.jpg"
+import LongDress8 from "../assets/products/LongDress8.jpg"
+import LongDress9 from "../assets/products/LongDress9.jpg"
+import LongDress10 from "../assets/products/LongDress10.jpg"
+import LongDress11 from "../assets/products/LongDress11.jpg"
+import LongDress12 from "../assets/products/LongDress12.jpg"
+import LongDress13 from "../assets/products/LongDress13.jpg"
+import LongDress14 from "../assets/products/LongDress14.jpg"
+import LongDress15 from "../assets/products/LongDress15.jpg"
+import LongDress16 from "../assets/products/LongDress16.jpg"
+import LongDress17 from "../assets/products/LongDress17.jpg"
+import LongDress18 from "../assets/products/LongDress18.jpg"
+import LongDress19 from "../assets/products/LongDress19.jpg"
+import LongDress20 from "../assets/products/LongDress20.jpg"
+import LongDress21 from "../assets/products/LongDress21.jpg"
+import LongDress22 from "../assets/products/LongDress22.jpg"
+import LongDress23 from "../assets/products/LongDress23.jpg"
+
 
 
 const products = [
   // ===== TOPS (11) =====
-  { id: 1, name: "Basic Top", price: 3499, category: "tops", image: BasicTop, color: "Black", sizes: ["M", "L", "XL"], description: "Premium Basic Top.", stock: 15, featured: true },
-  { id: 2, name: "Basic Top", price: 3499, category: "tops", image: BasicTop1, color: "Brown", sizes: ["S", "M", "L"], description: "Premium Basic Top.", stock: 25, featured: true },
-  { id: 3, name: "Basic Top", price: 3499, category: "tops", image: BasicTop2, color: "Black", sizes: ["M", "L"], description: "Premium Basic Top.", stock: 20, featured: true },
-  { id: 4, name: "Basic Top", price: 3499, category: "tops", image: BasicTop3, color: "Ash", sizes: ["S", "M", "L", "XL"], description: "Premium Basic Top.", stock: 18, featured: true },
-  { id: 5, name: "Basic Top", price: 3499, category: "tops", image: BasicTop4, color: "Blue", sizes: ["M", "L", "XL"], description: "P top.", stock: 22, featured: true },
-  { id: 6, name: "Basic Top", price: 3499, category: "tops", image: BasicTop5, color: "Brown", sizes: ["L", "XL"], description: "Premium Basic Top.", stock: 14, featured: true },
-  { id: 7, name: "Basic Top", price: 3499, category: "tops", image: BasicTop6, color: "Black", sizes: ["S", "M"], description: "Premium Basic Top.", stock: 30, featured: true },
-  { id: 8, name: "Basic Top", price: 3499, category: "tops", image: BasicTop7, color: "Blue", sizes: ["M", "L"], description: "Premium Basic Top.", stock: 28, featured: false },
-  { id: 9, name: "Basic Top", price: 3499, category: "tops", image: BasicTop8, color: "Black", sizes: ["M", "L", "XL"], description: "Premium Basic Top.", stock: 16, featured: true },
-  { id: 10, name: "Basic Top", price: 3499, category: "tops", image: BasicTop9, color: "Blue", sizes: ["L", "XL"], description: "Premium Basic Top.", stock: 12, featured: true },
-  { id: 11, name: "Basic Top", price: 3499, category: "tops", image: BasicTop10, color: "Brown", sizes: ["S", "M", "L"], description: "Premium Basic Top.", stock: 20, featured: false },
-  { id: 12, name: "Basic Top", price: 3499, category: "tops", image: BasicTop11, color: "Black", sizes: ["M", "L"], description: "Premium Basic Top.", stock: 18, featured: true },
-  { id: 13, name: "Basic Top", price: 3499, category: "tops", image: BasicTop12, color: "Blue", sizes: ["S", "M", "L"], description: "Premium Basic Top.", stock: 22, featured: true },
-  { id: 14, name: "Basic Top", price: 3499, category: "tops", image: BasicTop13, color: "Brown", sizes: ["M", "L", "XL"], description: "Premium Basic Top.", stock: 16, featured: false },
-  { id: 15, name: "Basic Top", price: 3499, category: "tops", image: BasicTop14, color: "Black", sizes: ["S", "M"], description: "Premium Basic Top.", stock: 20, featured: true },
-  { id: 16, name: "Basic Top", price: 3499, category: "tops", image: BasicTop15, color: "Blue", sizes: ["M", "L"], description: "Premium Basic Top.", stock: 18, featured: true },
-  { id: 17, name: "Basic Top", price: 3499, category: "tops", image: BasicTop16, color: "Brown", sizes: ["S", "M", "L"], description: "Premium Basic Top.", stock: 22, featured: false },
+  { id: 1, name: "Basic Top", price: 3499, category: "tops", image: BasicTop, color: "Black", sizes: ["M"], description: "Premium Basic Top.", stock: 15, featured: true },
+  { id: 2, name: "Basic Top", price: 3499, category: "tops", image: BasicTop1, color: "Brown", sizes: ["M"], description: "Premium Basic Top.", stock: 25, featured: true },
+  { id: 3, name: "Basic Top", price: 3499, category: "tops", image: BasicTop2, color: "Black", sizes: ["M"], description: "Premium Basic Top.", stock: 20, featured: true },
+  { id: 4, name: "Basic Top", price: 3499, category: "tops", image: BasicTop3, color: "Ash", sizes: ["M"], description: "Premium Basic Top.", stock: 18, featured: true },
+  { id: 5, name: "Basic Top", price: 3499, category: "tops", image: BasicTop4, color: "Blue", sizes: ["M"], description: "P top.", stock: 22, featured: true },
+  { id: 6, name: "Basic Top", price: 3499, category: "tops", image: BasicTop5, color: "Brown", sizes: ["M"], description: "Premium Basic Top.", stock: 14, featured: true },
+  { id: 7, name: "Basic Top", price: 3499, category: "tops", image: BasicTop6, color: "Black", sizes: ["M"], description: "Premium Basic Top.", stock: 30, featured: true },
+  { id: 8, name: "Basic Top", price: 3499, category: "tops", image: BasicTop7, color: "Blue", sizes: ["M"], description: "Premium Basic Top.", stock: 28, featured: false },
+  { id: 9, name: "Basic Top", price: 3499, category: "tops", image: BasicTop8, color: "Black", sizes: ["M"], description: "Premium Basic Top.", stock: 16, featured: true },
+  { id: 10, name: "Basic Top", price: 3499, category: "tops", image: BasicTop9, color: "Blue", sizes: ["M"], description: "Premium Basic Top.", stock: 12, featured: true },
+  { id: 11, name: "Basic Top", price: 3499, category: "tops", image: BasicTop10, color: "Brown", sizes: ["M"], description: "Premium Basic Top.", stock: 20, featured: false },
+  { id: 12, name: "Basic Top", price: 3499, category: "tops", image: BasicTop11, color: "Black", sizes: ["M"], description: "Premium Basic Top.", stock: 18, featured: true },
+  { id: 13, name: "Basic Top", price: 3499, category: "tops", image: BasicTop12, color: "Blue", sizes: ["M"], description: "Premium Basic Top.", stock: 22, featured: true },
+  { id: 14, name: "Basic Top", price: 3499, category: "tops", image: BasicTop13, color: "Brown", sizes: ["M"], description: "Premium Basic Top.", stock: 16, featured: false },
+  { id: 15, name: "Basic Top", price: 3499, category: "tops", image: BasicTop14, color: "Black", sizes: ["M"], description: "Premium Basic Top.", stock: 20, featured: true },
+  { id: 16, name: "Basic Top", price: 3499, category: "tops", image: BasicTop15, color: "Blue", sizes: ["M"], description: "Premium Basic Top.", stock: 18, featured: true },
+  { id: 17, name: "Basic Top", price: 3499, category: "tops", image: BasicTop16, color: "Brown", sizes: ["M"], description: "Premium Basic Top.", stock: 22, featured: false },
+  { id: 18, name: "Pink Ribbed Crop Tank with White Trim", price: 3499, category: "tops", image: BasicTop01, color: "Pink", sizes: ["M"], description: "Premium Basic Top.", stock: 18, featured: true },
+  { id: 19, name: "Blue Ribbed Crop Tank with White Trim", price: 3499, category: "tops", image: BasicTop02, color: "Blue", sizes: ["M"], description: "Premium Basic Top.", stock: 18, featured: true },
+  { id: 20, name: "Red Ribbed Crop Tank Top", price: 3499, category: "tops", image: BasicTop03, color: "Red", sizes: ["M"], description: "Premium Basic Top.", stock: 18, featured: true },
+  { id: 21, name: "Cream Wandering Willow Graphic Baby Tee", price: 3499, category: "tops", image: BasicTop04, color: "Cream", sizes: ["M"], description: "Premium Basic Top.", stock: 18, featured: true },
+  { id: 22, name: "Blush Twist-Front Halter Ribbed Top", price: 3499, category: "tops", image: BasicTop05, color: "Blush", sizes: ["M"], description: "Premium Basic Top.", stock: 18, featured: true },
+  { id: 23, name: "Beige Ribbed Logo Tank Top", price: 3499, category: "tops", image: BasicTop06, color: "Beige", sizes: ["M", "L"], description: "Premium Basic Top.", stock: 18, featured: true },
+
+
 
   // ===== GOWNS (11) =====
-  { id: 18, name: "Shirt Gown", price: 9999, category: "gowns", image: ShirtGown, color: "", sizes: [""], description: "Elegant shirt gown.", stock: 15, featured: true },
-  { id: 19, name: "Shirt Gown", price: 9999, category: "gowns", image: ShirtGown1, color: "", sizes: [""], description: "Elegant shirt gown.", stock: 18, featured: true },
-  { id: 20, name: "Club Dress", price: 7999, category: "gowns", image: ClubDress, color: "", sizes: [""], description: "Classic club dress.", stock: 20, featured: true },
-  { id: 21, name: "Club Dress", price: 7999, category: "gowns", image: ClubDress1, color: "", sizes: [""], description: "Classic club dress.", stock: 8, featured: true },
-  { id: 22, name: "Dinner Dress", price: 7999, category: "gowns", image: DinnerDress, color: "", sizes: ["L", "XL"], description: "Unique dinner dress", stock: 12, featured: true },
-  { id: 23, name: "Long Dress", price: 7999, category: "gowns", image: LongDress, color: "Black", sizes: ["S", "M", "L"], description: "Perfect for evening events.", stock: 10, featured: true },
-  { id: 24, name: "Long Dress", price: 7999, category: "gowns", image: LongDress1, color: "Blue", sizes: ["M", "L", "XL"], description: "Stylish party gown.", stock: 14, featured: true },
-  { id: 25, name: "Black Long Gown", price: 32000, category: "gowns", image: BlackGownn, color: "Black", sizes: ["M", "L"], description: "Long elegant gown.", stock: 16, featured: false },
-  { id: 26, name: "Blue Soft Gown", price: 27000, category: "gowns", image: BlueGownn, color: "Blue", sizes: ["S", "M", "L"], description: "Soft and comfortable gown.", stock: 19, featured: true },
+  { id: 24, name: "Shirt Gown", price: 9999, category: "gowns", image: ShirtGown, color: "", sizes: [""], description: "Elegant shirt gown.", stock: 15, featured: true },
+  { id: 25, name: "Shirt Gown", price: 9999, category: "gowns", image: ShirtGown1, color: "", sizes: [""], description: "Elegant shirt gown.", stock: 18, featured: true },
+  { id: 26, name: "Club Dress", price: 7999, category: "gowns", image: ClubDress, color: "", sizes: [""], description: "Classic club dress.", stock: 20, featured: true },
+  { id: 27, name: "Club Dress", price: 7999, category: "gowns", image: ClubDress1, color: "", sizes: [""], description: "Classic club dress.", stock: 8, featured: true },
+  { id: 28, name: "Dinner Dress", price: 7999, category: "gowns", image: DinnerDress, color: "", sizes: ["L", "XL"], description: "Unique dinner dress", stock: 12, featured: true },
+  { id: 29, name: "Long Dress", price: 7999, category: "gowns", image: LongDress, color: "Black", sizes: ["S", "M", "L"], description: "Perfect for evening events.", stock: 10, featured: true },
+  { id: 30, name: "Long Dress", price: 7999, category: "gowns", image: LongDress1, color: "Blue", sizes: ["M", "L", "XL"], description: "Stylish party gown.", stock: 14, featured: true },
+  { id: 31, name: "Black Long Gown", price: 32000, category: "gowns", image: BlackGownn, color: "Black", sizes: ["M", "L"], description: "Long elegant gown.", stock: 16, featured: false },
+  { id: 32, name: "Blue Soft Gown", price: 27000, category: "gowns", image: BlueGownn, color: "Blue", sizes: ["S", "M", "L"], description: "Soft and comfortable gown.", stock: 19, featured: true },
+  { id: 33, name: "Long Dress", price: 7999, category: "gowns", image: LongDress0, color: "Black", sizes: ["S", "M", "L"], description: "Perfect for evening events.", stock: 10, featured: true },
+  { id: 34, name: "Long Dress", price: 7999, category: "gowns", image: LongDress2, color: "Black", sizes: ["Free Size"], description: "Perfect for evening events.", stock: 10, featured: true },
+  { id: 35, name: "Long Dress", price: 7999, category: "gowns", image: LongDress3, color: "Black", sizes: ["Free Size"], description: "Perfect for evening events.", stock: 10, featured: true },
+  { id: 36, name: "Burgundy Long-Sleeve Jumpsuit with Chain Belt", price: 24999, category: "gowns", image: LongDress4, color: "Burgundy", sizes: ["Free Size"], description: "Perfect for evening events.", stock: 10, featured: true },
+  { id: 37, name: "Lilac One-Shoulder Midi Dress with Corset Belt", price: 29999, category: "gowns", image: LongDress5, color: "Lilac", sizes: ["Free Size"], description: "Perfect for outing.", stock: 10, featured: true },
+  { id: 38, name: "Red Scoop-Neck Ribbed Midi Dress with Chain Belt", price: 29999, category: "gowns", image: LongDress6, color: "Red", sizes: ["Free Size"], description: "Perfect for outing.", stock: 10, featured: true },
+  { id: 39, name: "Orange Strapless Ribbed Midi Dress with Chain Belt", price: 29999, category: "gowns", image: LongDress7, color: "Orange", sizes: ["Free Size"], description: "Perfect for outing.", stock: 10, featured: true },
+  { id: 40, name: "White Halter Ribbed Mini Dress", price: 24999, category: "gowns", image: LongDress8, color: "White", sizes: ["Free Size"], description: "Perfect for outing.", stock: 10, featured: true },
+  { id: 41, name: "Blush Sweetheart Mini Dress with Corset Belt", price: 24999, category: "gowns", image: LongDress9, color: "Blush", sizes: ["Free Size"], description: "Perfect for outing.", stock: 10, featured: true },
+  { id: 42, name: "Navy Square-Neck Ribbed Midi Dress with Chain Belt", price: 24999, category: "gowns", image: LongDress10, color: "Navy Blue", sizes: ["Free Size"], description: "Perfect for outing.", stock: 10, featured: true },
+  { id: 43, name: "Navy Corset-Detail Ribbed Midi Dress", price: 24999, category: "gowns", image: LongDress11, color: "Navy Blue", sizes: ["Free Size"], description: "Perfect for outing.", stock: 10, featured: true },
+  { id: 44, name: "Black Square-Neck Tie-Waist Midi Dress", price: 24999, category: "gowns", image: LongDress12, color: "Black", sizes: ["Free Size"], description: "Perfect for outing.", stock: 10, featured: true },
+  { id: 45, name: "White Cowl-Neck Halter Ribbed Midi Dress", price: 24999, category: "gowns", image: LongDress13, color: "White", sizes: ["Free Size"], description: "Perfect for outing.", stock: 10, featured: true },
+  { id: 46, name: "Blush Sweetheart Mini Dress with Chain Belt", price: 24999, category: "gowns", image: LongDress14, color: "Blush", sizes: ["Free Size"], description: "Perfect for outing.", stock: 10, featured: true },
+  { id: 47, name: "Cream Tie-Waist Ribbed Midi Dress", price: 24999, category: "gowns", image: LongDress15, color: "Cream", sizes: ["Free Size"], description: "Perfect for outing.", stock: 10, featured: true },
+  { id: 48, name: "White Cross-Strap Bodycon Dress", price: 24999, category: "gowns", image: LongDress16, color: "White", sizes: ["Free Size"], description: "Perfect for outing.", stock: 10, featured: true },
+  { id: 49, name: "Magenta Chevron Knit Dress with Gold Chain Belt", price: 24999, category: "gowns", image: LongDress17, color: "Magenta", sizes: ["Free Size"], description: "Perfect for outing.", stock: 10, featured: true },
+  { id: 50, name: "Mauve Ribbed Dress with Lace-Up Corset Belt", price: 24999, category: "gowns", image: LongDress18, color: "Mauve", sizes: ["Free Size"], description: "Perfect for outing.", stock: 10, featured: true },
+  { id: 51, name: "Black Ribbed Mini Dress with Gold Chain Belt", price: 24999, category: "gowns", image: LongDress19, color: "Black", sizes: ["Free Size"], description: "Perfect for outing.", stock: 10, featured: true },
+  { id: 52, name: "Burgundy Striped Turtleneck Dress with Corset Belt", price: 29999, category: "gowns", image: LongDress20, color: "Burgundy", sizes: ["Free Size"], description: "Perfect for outing.", stock: 10, featured: true },
+  { id: 53, name: "Cream Ribbed Bodycon Dress with Chain Belt", price: 29999, category: "gowns", image: LongDress21, color: "Cream", sizes: ["Free Size"], description: "Perfect for outing.", stock: 10, featured: true },
+  { id: 54, name: "Cream Ribbed Mini Dress with Corset Belt", price: 29999, category: "gowns", image: LongDress22, color: "Cream", sizes: ["Free Size"], description: "Perfect for outing.", stock: 10, featured: true },
+  { id: 55, name: "Lilac One-Shoulder Ribbed Midi Dress", price: 29999, category: "gowns", image: LongDress23, color: "Lilac", sizes: ["Free Size"], description: "Perfect for outing.", stock: 10, featured: true },
 
 
   // ===== SKIRTS (8) =====
-  { id: 27, name: "Silk Skirt", price: 6999, category: "skirts", image: SilkSkirt, color: "", sizes: ["S", "M", "L"], description: "Elegant black midi skirt.", stock: 22, featured: true },
-  { id: 28, name: "Blue Flare Skirt", price: 15000, category: "skirts", image: BlueGown, color: "Blue", sizes: ["M", "L"], description: "Beautiful blue flare skirt.", stock: 18, featured: false },
-  { id: 29, name: "Black Pencil Skirt", price: 16000, category: "skirts", image: BlackGownn, color: "Black", sizes: ["S", "M", "L"], description: "Classic pencil skirt.", stock: 25, featured: true },
-  { id: 30, name: "Blue A-Line Skirt", price: 14000, category: "skirts", image: BlueGownn, color: "Blue", sizes: ["M", "L", "XL"], description: "Stylish A-line skirt.", stock: 20, featured: false },
-  
- 
+  { id: 56, name: "Silk Skirt", price: 6999, category: "skirts", image: SilkSkirt, color: "", sizes: ["S", "M", "L"], description: "Elegant black midi skirt.", stock: 22, featured: true },
+  { id: 57, name: "Blue Flare Skirt", price: 15000, category: "skirts", image: BlueGown, color: "Blue", sizes: ["M", "L"], description: "Beautiful blue flare skirt.", stock: 18, featured: false },
+  { id: 58, name: "Black Pencil Skirt", price: 16000, category: "skirts", image: BlackGownn, color: "Black", sizes: ["S", "M", "L"], description: "Classic pencil skirt.", stock: 25, featured: true },
+  { id: 59, name: "Blue A-Line Skirt", price: 14000, category: "skirts", image: BlueGownn, color: "Blue", sizes: ["M", "L", "XL"], description: "Stylish A-line skirt.", stock: 20, featured: false },
+  { id: 60, name: "Blue A-Line Skirt", price: 14000, category: "skirts", image: skirt1, color: "Blue", sizes: ["M", "L", "XL"], description: "Stylish A-line skirt.", stock: 20, featured: false },
+
 
   // ===== BUBU (7) =====
   { id: 31, name: "Bubu Gown", price: 8499, category: "bubu", image: BubuGown, color: "Black", sizes: ["Free Size"], description: "Loose and comfortable bubu.", stock: 20, featured: true },
